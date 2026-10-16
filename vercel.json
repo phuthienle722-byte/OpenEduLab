@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/go/:code", "destination": "/api/go/:code" }
+  ]
+}

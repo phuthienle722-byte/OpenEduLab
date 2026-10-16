@@ -1,0 +1,494 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { CheckCircle2, Globe, Search, Sparkles, Upload, X } from 'lucide-react';
+import { BrowserMockupFrame } from './BrowserMockupFrame';
+import { CategoryId, CountryCode, EducationLevelId, Language, VN_SUBJECTS, WebProject } from '../types';
+import { translations } from '../translations';
+import { ALL_COUNTRIES } from '../data/countries';
+
+interface SubmitModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (projectData: Omit<WebProject, 'id' | 'createdAt' | 'views' | 'likes'>) => void;
+  editingProject?: WebProject | null;
+  onUpdate?: (project: WebProject) => void;
+  lang: Language;
+  isAdmin: boolean;
+}
+
+export const SubmitModal: React.FC<SubmitModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  editingProject,
+  onUpdate,
+  lang,
+  isAdmin,
+}) => {
+  const t = translations[lang];
+
+  const [url, setUrl] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [country, setCountry] = useState<CountryCode>('VN');
+  const [countrySearch, setCountrySearch] = useState('');
+  const [countryOpen, setCountryOpen] = useState(false);
+  const countryRef = useRef<HTMLDivElement>(null);
+  const [category, setCategory] = useState<CategoryId>('toan');
+  const [educationLevel, setEducationLevel] = useState<EducationLevelId>('general');
+  const [authorName, setAuthorName] = useState('');
+  const [authorContact, setAuthorContact] = useState('');
+  const [customThumbnail, setCustomThumbnail] = useState('');
+  const [tagsInput, setTagsInput] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (editingProject) {
+      setUrl(editingProject.url || '');
+      setTitle(editingProject.title || '');
+      setDescription(editingProject.description || '');
+      setCountry((editingProject.country as CountryCode) || 'VN');
+      setCategory((editingProject.category as CategoryId) || 'toan');
+      setEducationLevel((editingProject.educationLevel as EducationLevelId) || 'general');
+      setAuthorName(editingProject.authorName || '');
+      setAuthorContact(editingProject.authorContact || '');
+      setCustomThumbnail(editingProject.previewImage || '');
+      setTagsInput(Array.isArray(editingProject.tags) ? editingProject.tags.join(', ') : '');
+    } else {
+      setUrl('');
+      setTitle('');
+      setDescription('');
+      setCountry('VN');
+      setCategory('toan');
+      setEducationLevel('general');
+      setAuthorName('');
+      setAuthorContact('');
+      setCustomThumbnail('');
+      setTagsInput('');
+    }
+    setCountrySearch('');
+    setCountryOpen(false);
+    setIsSuccess(false);
+  }, [isOpen, editingProject]);
+
+  // Lọc danh sách quốc gia theo từ khóa (tên quốc tế hoặc tên Việt)
+  const filteredCountries = useMemo(() => {
+    const q = countrySearch.trim().toLowerCase();
+    if (!q) return ALL_COUNTRIES;
+    return ALL_COUNTRIES.filter(
+      (c) =>
+        c.nameEn.toLowerCase().includes(q) ||
+        c.nameVi.toLowerCase().includes(q) ||
+        c.code.toLowerCase() === q
+    );
+  }, [countrySearch]);
+
+  const selectedCountry =
+    ALL_COUNTRIES.find((c) => c.code === country) || null;
+
+  // Đóng dropdown khi bấm ra ngoài
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
+        setCountryOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!url.trim() || !title.trim()) return;
+
+    let normalizedUrl = url.trim();
+    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+      normalizedUrl = 'https://' + normalizedUrl;
+    }
+
+    const tags = tagsInput
+      ? tagsInput.split(',').map((tag) => tag.trim()).filter(Boolean)
+      : [category, country];
+
+    if (editingProject && onUpdate) {
+      onUpdate({
+        ...editingProject,
+        url: normalizedUrl,
+        title: title.trim(),
+        description: description.trim() || t.smDefaultDesc,
+        country,
+        category,
+        educationLevel,
+        authorName: authorName.trim() || t.smDefaultAuthor,
+        authorContact: authorContact.trim(),
+        previewImage: customThumbnail.trim() || undefined,
+        tags,
+      });
+    } else {
+      onSubmit({
+        url: normalizedUrl,
+        title: title.trim(),
+        description: description.trim() || t.smDefaultDesc,
+        country,
+        category,
+        educationLevel,
+        status: 'pending',
+        authorName: authorName.trim() || t.smDefaultAuthor,
+        authorContact: authorContact.trim(),
+        previewImage: customThumbnail.trim() || undefined,
+        tags,
+      });
+    }
+
+    setIsSuccess(true);
+    setTimeout(() => {
+      setIsSuccess(false);
+      // Reset form
+      setUrl('');
+      setTitle('');
+      setDescription('');
+      setAuthorName('');
+      setAuthorContact('');
+      setCustomThumbnail('');
+      setTagsInput('');
+      onClose();
+    }, 2200);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setCustomThumbnail(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div
+      id="submit-modal-backdrop"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        id="submit-modal-card"
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden my-8 flex flex-col max-h-[90vh]"
+      >
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+              <Globe className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base">
+                {editingProject ? t.smEditTitle : t.submitModalTitle}
+              </h3>
+              <p className="text-xs text-slate-500">
+                {isAdmin
+                  ? t.smAdminNote
+                  : t.submitModalSubtitle}
+              </p>
+            </div>
+          </div>
+          <button
+            id="submit-modal-close-btn"
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Success View */}
+        {isSuccess ? (
+          <div className="p-10 flex flex-col items-center justify-center text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center animate-bounce">
+              <CheckCircle2 className="w-10 h-10" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">
+              {editingProject ? t.smEditSavedTitle : t.submitSuccess}
+            </h3>
+            <p className="text-xs text-slate-600 max-w-md leading-relaxed">
+              {editingProject ? t.smEditSavedDesc : t.smSuccessDesc}
+            </p>
+          </div>
+        ) : (
+          /* Form Content with scroll */
+          <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5">
+            {/* Website URL */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                {t.websiteUrlLabel} <span className="text-rose-500">*</span>
+              </label>
+              <input
+                id="input-website-url"
+                type="url"
+                required
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder={t.websiteUrlPlaceholder}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-mono"
+              />
+              <p className="mt-1 text-[11px] text-slate-500">
+                {t.smSubmitUrlHint}
+              </p>
+            </div>
+
+            {/* Title & Description */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  {t.websiteTitleLabel} <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  id="input-website-title"
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={t.websiteTitlePlaceholder}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  {t.descriptionLabel}
+                </label>
+                <textarea
+                  id="input-website-description"
+                  rows={2}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder={t.descriptionPlaceholder}
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Two Essential Classifications: Category and Education Level */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
+              {/* Category / Field */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  {t.categoryLabel}
+                </label>
+                <select
+                  id="select-website-category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value as CategoryId)}
+                  className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-xs text-slate-800 bg-white focus:outline-none focus:border-indigo-500 truncate"
+                >
+                  {VN_SUBJECTS.map((subj) => (
+                    <option key={subj.id} value={subj.id}>
+                      {t.categoryNames[subj.id] ?? subj.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Education Level (Cấp học) */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  {t.levelLabel}
+                </label>
+                <select
+                  id="select-website-level"
+                  value={educationLevel}
+                  onChange={(e) => setEducationLevel(e.target.value as EducationLevelId)}
+                  className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-xs text-slate-800 bg-white focus:outline-none focus:border-indigo-500 truncate"
+                >
+                  {Object.entries(t.educationLevelNames).map(([id, name]) => (
+                    <option key={id} value={id}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Country / Region — ưu tiên Đông Nam Á, có tìm kiếm theo tên quốc tế; mặc định Việt Nam */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                {t.countryLabel}
+              </label>
+              <div className="relative" ref={countryRef}>
+                <button
+                  type="button"
+                  id="btn-select-country"
+                  onClick={() => setCountryOpen((o) => !o)}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-slate-200 text-xs text-slate-800 bg-white focus:outline-none focus:border-indigo-500"
+                >
+                  <span className="flex items-center gap-2">
+                    <Globe className="w-3.5 h-3.5 text-slate-500" />
+                    {selectedCountry ? `${selectedCountry.nameEn} (${selectedCountry.code})` : t.countryLabel}
+                  </span>
+                  <span className="text-slate-400">{countryOpen ? '▲' : '▼'}</span>
+                </button>
+
+                {countryOpen && (
+                  <div className="absolute z-30 mt-1 w-full bg-white rounded-lg border border-slate-200 shadow-lg overflow-hidden">
+                    {/* Ô tìm kiếm theo tên quốc tế */}
+                    <div className="p-2 border-b border-slate-100">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 rounded-md border border-slate-100">
+                        <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <input
+                          type="text"
+                          value={countrySearch}
+                          onChange={(e) => setCountrySearch(e.target.value)}
+                          placeholder={t.smCountryPlaceholder}
+                          className="w-full bg-transparent text-xs text-slate-800 focus:outline-none"
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+                    <ul className="max-h-52 overflow-y-auto py-1">
+                      {filteredCountries.map((c) => (
+                        <li key={c.code}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCountry(c.code);
+                              setCountryOpen(false);
+                              setCountrySearch('');
+                            }}
+                            className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-indigo-50 transition-colors ${
+                              c.code === country ? 'text-indigo-600 font-semibold bg-indigo-50/60' : 'text-slate-700'
+                            }`}
+                          >
+                            <span>{c.nameEn}</span>
+                            <span className="text-slate-400">{c.code}</span>
+                          </button>
+                        </li>
+                      ))}
+                      {filteredCountries.length === 0 && (
+                        <li className="px-3 py-2 text-xs text-slate-400">{t.smCountryNoResult}</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              {selectedCountry && (
+                <p className="mt-1 text-[11px] text-slate-400">
+                  {t.smCountryHint} • {selectedCountry.nameEn} ({selectedCountry.code})
+                </p>
+              )}
+            </div>
+
+            {/* Author info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  {t.authorLabel}
+                </label>
+                <input
+                  id="input-author-name"
+                  type="text"
+                  value={authorName}
+                  onChange={(e) => setAuthorName(e.target.value)}
+                  placeholder={t.authorPlaceholder}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  {t.contactLabel}
+                </label>
+                <input
+                  id="input-author-contact"
+                  type="text"
+                  value={authorContact}
+                  onChange={(e) => setAuthorContact(e.target.value)}
+                  placeholder={t.contactPlaceholder}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                {t.smTagsLabel}
+              </label>
+              <input
+                id="input-tags"
+                type="text"
+                value={tagsInput}
+                onChange={(e) => setTagsInput(e.target.value)}
+                placeholder={t.smTagsPlaceholder}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+
+            {/* Thumbnail upload or custom URL */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                {t.thumbnailLabel}
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">{t.thumbnailHint}</p>
+
+              <div className="flex items-center gap-2">
+                <input
+                  id="input-thumbnail-url"
+                  type="url"
+                  value={customThumbnail}
+                  onChange={(e) => setCustomThumbnail(e.target.value)}
+                  placeholder={t.smThumbnailPlaceholder}
+                  className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 font-mono"
+                />
+                <label className="cursor-pointer px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center space-x-1 shrink-0 transition-colors">
+                  <Upload className="w-3.5 h-3.5 text-slate-600" />
+                  <span>{t.smUploadImage}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Real-time Browser Mockup Preview */}
+            <div className="pt-2 border-t border-slate-100">
+              <div className="flex items-center space-x-1.5 text-xs font-bold text-indigo-700 mb-2">
+                <Sparkles className="w-4 h-4" />
+                <span>{t.previewMockup}</span>
+              </div>
+              <div className="max-w-md mx-auto">
+                <BrowserMockupFrame
+                  url={url || 'https://my-app.vercel.app'}
+                  title={title || t.smMockupTitle}
+                  previewImage={customThumbnail}
+                  aspectRatio="video"
+                  lang={lang}
+                />
+              </div>
+            </div>
+
+            {/* Submit button */}
+            <div className="pt-3">
+              <button
+                id="submit-project-confirm-btn"
+                type="submit"
+                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>{t.submitBtn}</span>
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+};
