@@ -652,35 +652,44 @@ const handleUpdateProject = (updated: WebProject) => {
   const filteredProjects = useMemo(() => {
     return localizedProjects
       .filter((project) => {
-        // Náº¿u ngÆ°á»i dĂ¹ng báº­t nĂºt "Ná»•i tiáº¿ng": hiá»ƒn thá»‹ cĂ¡c mĂ´ phá»ng ná»•i tiáº¿ng (PhET, GeoGebra, NetSim...)
-        // Máº·c Ä‘á»‹nh: hiá»ƒn thá»‹ cĂ¡c bĂ i do admin duyá»‡t (tab "BĂ i Ä‘Äƒng táº£i" - cháº¿ Ä‘á»™ cá»™ng Ä‘á»“ng)
-        if (filters.onlyFamous) {
-          if (!project.isFamous) return false;
-        } else {
-          if (project.isFamous) return false;
-          // BIáº¾N KIá»‚M SOĂT Cá»˜NG Äá»’NG: náº¿u báº­t, chá»‰ hiá»‡n bĂ i ngÆ°á»i dĂ¹ng Ä‘Äƒng Ä‘Ă£ duyá»‡t,
-          // má»i bĂ i máº«u (khĂ´ng pháº£i ná»•i tiáº¿ng) Ä‘á»u bá»‹ áº©n khá»i tab "BĂ i Ä‘Äƒng táº£i".
-          if (communityOnly && !project.isUserSubmission) return false;
-        }
+        // Không hiển thị 17 dự án nổi tiếng mẫu theo yêu cầu
+        if (project.isFamous) return false;
 
-        // Category / Subject filter
+        // Chỉ hiển thị bài do người dùng / cộng đồng đăng tải đã duyệt
+        if (communityOnly && !project.isUserSubmission) return false;
+
+        // Category / Subject filter (Hỗ trợ đầy đủ các môn học THCS)
         if (filters.category !== 'ALL') {
           const cat = filters.category;
           const subjectAliases: Record<string, string[]> = {
             toan: ['toan', 'math'],
-            vat_ly: ['vat_ly', 'physics', 'stem'],
-            hoa_hoc: ['hoa_hoc', 'chemistry'],
-            sinh_hoc: ['sinh_hoc', 'biology', 'health_medicine'],
-            tin_hoc: ['tin_hoc', 'informatics', 'computer_science'],
+            math: ['toan', 'math'],
+            khtn: ['khtn', 'natural_sciences', 'physics', 'chemistry', 'biology', 'vat_ly', 'hoa_hoc', 'sinh_hoc', 'stem', 'khtn_stem'],
+            natural_sciences: ['khtn', 'natural_sciences', 'physics', 'chemistry', 'biology', 'vat_ly', 'hoa_hoc', 'sinh_hoc', 'stem', 'khtn_stem'],
+            physics: ['physics', 'vat_ly'],
+            vat_ly: ['physics', 'vat_ly'],
+            chemistry: ['chemistry', 'hoa_hoc'],
+            hoa_hoc: ['chemistry', 'hoa_hoc'],
+            biology: ['biology', 'sinh_hoc', 'health_medicine'],
+            sinh_hoc: ['biology', 'sinh_hoc', 'health_medicine'],
+            tin_hoc: ['tin_hoc', 'cong_nghe', 'informatics', 'computer_science', 'tools_utilities'],
+            informatics: ['tin_hoc', 'cong_nghe', 'informatics', 'computer_science', 'tools_utilities'],
+            cong_nghe: ['tin_hoc', 'cong_nghe', 'informatics', 'computer_science', 'tools_utilities'],
             ngu_van: ['ngu_van', 'literature'],
+            literature: ['ngu_van', 'literature'],
             tieng_anh: ['tieng_anh', 'english', 'languages'],
-            lich_su: ['lich_su', 'history', 'history_society'],
-            dia_li: ['dia_li', 'geography'],
-            khtn_stem: ['khtn_stem', 'stem', 'natural_sciences'],
-            cong_nghe: ['cong_nghe', 'tools_utilities'],
-            khac: ['khac', 'general', 'arts_design'],
+            english: ['tieng_anh', 'english', 'languages'],
+            history: ['history', 'geography', 'lich_su', 'dia_li', 'history_society'],
+            lich_su: ['history', 'geography', 'lich_su', 'dia_li', 'history_society'],
+            dia_li: ['history', 'geography', 'lich_su', 'dia_li', 'history_society'],
+            general: ['general', 'khac', 'arts_design', 'gdcd'],
+            khac: ['general', 'khac', 'arts_design', 'gdcd'],
           };
-          const matches = (subjectAliases[cat] || [cat]).includes(project.category);
+          const aliasList = subjectAliases[cat] || [cat];
+          const matches = aliasList.some(alias => 
+            project.category === alias || 
+            (project.tags && project.tags.some(t => t.toLowerCase().includes(alias.toLowerCase())))
+          );
           if (!matches) return false;
         }
 
@@ -748,10 +757,8 @@ const handleUpdateProject = (updated: WebProject) => {
         {/* Left Navigation Sidebar (~208–224px desktop) */}
         <Sidebar
           currentCategory={filters.category}
-          onSelectCategory={(category) => setFilters({ ...filters, category })}
-          onlyFamous={filters.onlyFamous}
-          onToggleFamous={(isFamous) => {
-            setFilters({ ...filters, onlyFamous: isFamous });
+          onSelectCategory={(category) => {
+            setFilters({ ...filters, category: category as any });
             if (showGuide) handleExitGuide();
           }}
           showGuide={showGuide}
@@ -759,8 +766,7 @@ const handleUpdateProject = (updated: WebProject) => {
           onCloseGuide={handleExitGuide}
           onOpenSubmit={handleOpenSubmitNew}
           lang={lang}
-          approvedCount={defaultApprovedCount}
-          famousCount={famousCount}
+          totalCount={filteredProjects.length}
         />
 
         {/* Right Simulation Library Area */}
@@ -773,7 +779,7 @@ const handleUpdateProject = (updated: WebProject) => {
               </div>
               <div>
                 <h2 className="text-lg sm:text-xl font-bold text-[#0B3B78] tracking-tight">
-                  {showGuide ? 'Cẩm nang hướng dẫn tạo mô phỏng AI' : 'Mô phỏng nổi bật'}
+                  {showGuide ? 'Kiến tạo — Cẩm nang tạo mô phỏng AI' : (filters.category === 'ALL' ? 'Mô phỏng học tập THCS' : 'Mô phỏng theo môn học')}
                 </h2>
                 <p className="text-xs text-[#58779B]">
                   Cùng thử mô phỏng, khám phá điều hay và chia sẻ ý tưởng học tập!
@@ -807,12 +813,6 @@ const handleUpdateProject = (updated: WebProject) => {
             onViewModeChange={setViewMode}
             lang={lang}
             totalResults={filteredProjects.length}
-            approvedCount={defaultApprovedCount}
-            famousCount={famousCount}
-            onOpenSubmit={handleOpenSubmitNew}
-            showGuide={showGuide}
-            onOpenGuide={handleOpenGuide}
-            onCloseGuide={handleExitGuide}
           />
 
           {/* Tab "Hướng dẫn tạo mô phỏng" */}

@@ -1,271 +1,183 @@
 import React from 'react';
 import {
-  Home,
-  Sparkles,
-  UploadCloud,
-  Rocket,
-  BookOpen,
   LayoutGrid,
   FlaskConical,
   Calculator,
   Cpu,
+  BookText,
   Languages,
+  Compass,
+  Sparkles,
   PlusCircle,
-  Atom,
+  BookOpen,
 } from 'lucide-react';
 import { CategoryId, Language } from '../types';
 import { translations } from '../translations';
+import { RocketFlying } from './RocketFlying';
 
 interface SidebarProps {
-  currentCategory: CategoryId | 'ALL';
-  onSelectCategory: (category: CategoryId | 'ALL') => void;
-  onlyFamous: boolean;
-  onToggleFamous: (isFamous: boolean) => void;
+  currentCategory: CategoryId | 'ALL' | string;
+  onSelectCategory: (category: CategoryId | 'ALL' | string) => void;
   showGuide: boolean;
   onOpenGuide: () => void;
   onCloseGuide: () => void;
   onOpenSubmit: () => void;
   lang: Language;
-  approvedCount: number;
-  famousCount: number;
+  totalCount: number;
+}
+
+// Danh mục đầy đủ các môn học cấp THCS (Chương trình GDPT)
+interface THCSSubject {
+  id: CategoryId | 'ALL' | string;
+  name: string;
+  icon: React.ReactNode;
+  badge?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   currentCategory,
   onSelectCategory,
-  onlyFamous,
-  onToggleFamous,
   showGuide,
   onOpenGuide,
   onCloseGuide,
   onOpenSubmit,
-  lang,
-  approvedCount,
-  famousCount,
+  totalCount,
 }) => {
-  const t = translations[lang];
+  const thcsSubjects: THCSSubject[] = [
+    {
+      id: 'ALL',
+      name: 'Tất cả môn học',
+      icon: <LayoutGrid className="w-4 h-4 text-[#0785F9]" />,
+    },
+    {
+      id: 'natural_sciences',
+      name: 'Khoa học tự nhiên',
+      icon: <FlaskConical className="w-4 h-4 text-[#24B34B]" />,
+      badge: 'Lý-Hóa-Sinh',
+    },
+    {
+      id: 'math',
+      name: 'Toán học',
+      icon: <Calculator className="w-4 h-4 text-[#FF8A18]" />,
+    },
+    {
+      id: 'informatics',
+      name: 'Tin học & Công nghệ',
+      icon: <Cpu className="w-4 h-4 text-[#0785F9]" />,
+    },
+    {
+      id: 'literature',
+      name: 'Ngữ văn',
+      icon: <BookText className="w-4 h-4 text-rose-500" />,
+    },
+    {
+      id: 'english',
+      name: 'Tiếng Anh',
+      icon: <Languages className="w-4 h-4 text-blue-500" />,
+    },
+    {
+      id: 'history',
+      name: 'Lịch sử & Địa lí',
+      icon: <Compass className="w-4 h-4 text-amber-600" />,
+    },
+    {
+      id: 'general',
+      name: 'GDCD & Môn khác',
+      icon: <Sparkles className="w-4 h-4 text-purple-500" />,
+    },
+  ];
 
-  // Helper when clicking main navigation links
-  const handleNavHome = () => {
-    onCloseGuide();
-    onToggleFamous(false);
-    onSelectCategory('ALL');
+  const handleSelectSubject = (id: CategoryId | 'ALL' | string) => {
+    if (showGuide) onCloseGuide();
+    onSelectCategory(id);
   };
 
-  const handleNavFamous = () => {
-    onCloseGuide();
-    onToggleFamous(true);
-  };
-
-  const handleNavCommunity = () => {
-    onCloseGuide();
-    onToggleFamous(false);
-  };
-
-  const handleNavStem = () => {
-    onCloseGuide();
-    onSelectCategory('stem');
-  };
-
-  const handleNavGuide = () => {
+  const handleOpenKienTao = () => {
     onOpenGuide();
   };
 
   return (
     <aside
-      className="hidden md:flex flex-col w-54 lg:w-56 shrink-0 bg-white border border-[#E2EDF8] rounded-2xl p-3.5 shadow-xs sticky top-20 self-start text-xs max-h-[calc(100vh-6rem)] overflow-y-auto"
-      aria-label="Thanh điều hướng danh mục"
+      className="hidden md:flex flex-col w-54 lg:w-56 shrink-0 bg-white border border-[#E2EDF8] rounded-2xl p-3 shadow-xs sticky top-20 self-start text-xs max-h-[calc(100vh-6rem)] justify-between"
+      aria-label="Thanh danh mục môn học THCS"
     >
-      {/* 1. Nhóm Điều hướng chính */}
-      <div className="space-y-1">
-        <button
-          id="sidebar-nav-home"
-          onClick={handleNavHome}
-          className={`w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl font-semibold transition-all text-left ${
-            !showGuide && !onlyFamous && currentCategory === 'ALL'
-              ? 'bg-[#E2F1FF] text-[#0785F9] font-bold shadow-xs'
-              : 'text-[#23466F] hover:bg-slate-50 hover:text-[#0785F9]'
-          }`}
-        >
-          <Home className="w-4 h-4 shrink-0" />
-          <span className="truncate">Trang chủ</span>
-        </button>
-
-        <button
-          id="sidebar-nav-famous"
-          onClick={handleNavFamous}
-          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold transition-all text-left ${
-            !showGuide && onlyFamous
-              ? 'bg-[#E2F1FF] text-[#0785F9] font-bold shadow-xs'
-              : 'text-[#23466F] hover:bg-slate-50 hover:text-[#0785F9]'
-          }`}
-        >
-          <div className="flex items-center space-x-2.5 truncate">
-            <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
-            <span className="truncate">Mô phỏng nổi tiếng</span>
+      {/* 1. Phần Môn học THCS (tích hợp thay thế trang chủ) */}
+      <div className="flex-1 overflow-y-auto pr-0.5 space-y-1">
+        <div className="flex items-center justify-between px-2.5 pb-2 pt-1 border-b border-[#E2EDF8] mb-2">
+          <div className="flex items-center space-x-1.5 text-[11px] font-bold text-[#0B3B78] uppercase tracking-wider">
+            <BookOpen className="w-3.5 h-3.5 text-[#0785F9]" />
+            <span>Môn học THCS</span>
           </div>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">
-            {famousCount}
+          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[#E2F1FF] text-[#0785F9] font-bold">
+            {totalCount}
           </span>
-        </button>
-
-        <button
-          id="sidebar-nav-community"
-          onClick={handleNavCommunity}
-          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold transition-all text-left ${
-            !showGuide && !onlyFamous && currentCategory !== 'ALL'
-              ? 'bg-[#E2F1FF] text-[#0785F9] font-bold shadow-xs'
-              : 'text-[#23466F] hover:bg-slate-50 hover:text-[#0785F9]'
-          }`}
-        >
-          <div className="flex items-center space-x-2.5 truncate">
-            <UploadCloud className="w-4 h-4 text-[#0785F9] shrink-0" />
-            <span className="truncate">Cộng đồng chia sẻ</span>
-          </div>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">
-            {approvedCount}
-          </span>
-        </button>
-
-        <button
-          id="sidebar-nav-stem"
-          onClick={handleNavStem}
-          className={`w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl font-semibold transition-all text-left ${
-            !showGuide && currentCategory === 'stem'
-              ? 'bg-[#E2F1FF] text-[#0785F9] font-bold shadow-xs'
-              : 'text-[#23466F] hover:bg-slate-50 hover:text-[#0785F9]'
-          }`}
-        >
-          <Rocket className="w-4 h-4 text-purple-600 shrink-0" />
-          <span className="truncate">Dự án STEM</span>
-        </button>
-
-        <button
-          id="sidebar-nav-guide"
-          onClick={handleNavGuide}
-          className={`w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl font-semibold transition-all text-left ${
-            showGuide
-              ? 'bg-[#E2F1FF] text-[#0785F9] font-bold shadow-xs'
-              : 'text-[#23466F] hover:bg-slate-50 hover:text-[#0785F9]'
-          }`}
-        >
-          <BookOpen className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span className="truncate">Cẩm nang tạo AI</span>
-        </button>
-      </div>
-
-      {/* Đường kẻ phân cách */}
-      <div className="my-3 border-t border-[#E2EDF8]" />
-
-      {/* 2. Nhóm Môn học */}
-      <div>
-        <div className="px-3 pb-1.5 text-[10px] font-bold tracking-wider text-[#58779B] uppercase">
-          Môn học
         </div>
+
         <div className="space-y-0.5">
-          <button
-            onClick={() => {
-              onCloseGuide();
-              onSelectCategory('ALL');
-            }}
-            className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl transition-all text-left ${
-              !showGuide && currentCategory === 'ALL'
-                ? 'bg-[#E2F1FF] text-[#0B3B78] font-bold'
-                : 'text-[#23466F] hover:bg-slate-50'
-            }`}
-          >
-            <LayoutGrid className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-            <span className="truncate">Tất cả môn học</span>
-          </button>
-
-          <button
-            onClick={() => {
-              onCloseGuide();
-              onSelectCategory('natural_sciences');
-            }}
-            className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl transition-all text-left ${
-              !showGuide && currentCategory === 'natural_sciences'
-                ? 'bg-[#E2F1FF] text-[#0B3B78] font-bold'
-                : 'text-[#23466F] hover:bg-slate-50'
-            }`}
-          >
-            <FlaskConical className="w-3.5 h-3.5 text-[#24B34B] shrink-0" />
-            <span className="truncate">Khoa học tự nhiên</span>
-          </button>
-
-          <button
-            onClick={() => {
-              onCloseGuide();
-              onSelectCategory('math');
-            }}
-            className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl transition-all text-left ${
-              !showGuide && currentCategory === 'math'
-                ? 'bg-[#E2F1FF] text-[#0B3B78] font-bold'
-                : 'text-[#23466F] hover:bg-slate-50'
-            }`}
-          >
-            <Calculator className="w-3.5 h-3.5 text-[#FF8A18] shrink-0" />
-            <span className="truncate">Toán học</span>
-          </button>
-
-          <button
-            onClick={() => {
-              onCloseGuide();
-              onSelectCategory('informatics');
-            }}
-            className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl transition-all text-left ${
-              !showGuide && currentCategory === 'informatics'
-                ? 'bg-[#E2F1FF] text-[#0B3B78] font-bold'
-                : 'text-[#23466F] hover:bg-slate-50'
-            }`}
-          >
-            <Cpu className="w-3.5 h-3.5 text-[#0785F9] shrink-0" />
-            <span className="truncate">Tin học & Công nghệ</span>
-          </button>
-
-          <button
-            onClick={() => {
-              onCloseGuide();
-              onSelectCategory('physics');
-            }}
-            className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl transition-all text-left ${
-              !showGuide && currentCategory === 'physics'
-                ? 'bg-[#E2F1FF] text-[#0B3B78] font-bold'
-                : 'text-[#23466F] hover:bg-slate-50'
-            }`}
-          >
-            <Atom className="w-3.5 h-3.5 text-[#8B5CF6] shrink-0" />
-            <span className="truncate">Vật lí</span>
-          </button>
-
-          <button
-            onClick={() => {
-              onCloseGuide();
-              onSelectCategory('english');
-            }}
-            className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl transition-all text-left ${
-              !showGuide && currentCategory === 'english'
-                ? 'bg-[#E2F1FF] text-[#0B3B78] font-bold'
-                : 'text-[#23466F] hover:bg-slate-50'
-            }`}
-          >
-            <Languages className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-            <span className="truncate">Tiếng Anh</span>
-          </button>
+          {thcsSubjects.map((subject) => {
+            const isSelected = !showGuide && currentCategory === subject.id;
+            return (
+              <button
+                key={subject.id}
+                onClick={() => handleSelectSubject(subject.id)}
+                className={`w-full flex items-center justify-between px-2.5 py-2.5 rounded-xl transition-all text-left cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#E2F1FF] text-[#0785F9] font-bold shadow-xs'
+                    : 'text-[#23466F] hover:bg-slate-50 hover:text-[#0785F9]'
+                }`}
+              >
+                <div className="flex items-center space-x-2.5 truncate">
+                  <span className="shrink-0">{subject.icon}</span>
+                  <span className="truncate">{subject.name}</span>
+                </div>
+                {subject.badge && !isSelected && (
+                  <span className="text-[9px] font-semibold px-1 py-0.2 rounded bg-slate-100 text-[#58779B] shrink-0">
+                    {subject.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Đường kẻ phân cách */}
-      <div className="my-3 border-t border-[#E2EDF8]" />
+      {/* 2. Đường kẻ phân cách */}
+      <div className="my-2.5 border-t border-[#E2EDF8]" />
 
-      {/* 3. Lời mời đóng góp bài (thân thiện với học sinh & thầy cô) */}
-      <div className="mt-auto pt-1 bg-[#F8FBFF] p-3 rounded-xl border border-[#E2EDF8]">
-        <p className="text-[11px] font-medium text-[#23466F] mb-2 leading-tight">
-          Bạn có mô phỏng hay? Chia sẻ cùng mọi người nhé!
-        </p>
+      {/* 3. Phần KIẾN TẠO độc lập dưới góc trái + Nút Chia sẻ */}
+      <div className="space-y-2 shrink-0">
+        {/* Nút Kiến tạo độc lập */}
+        <button
+          id="sidebar-nav-kientao"
+          onClick={handleOpenKienTao}
+          className={`w-full p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center space-x-2.5 ${
+            showGuide
+              ? 'bg-[#E2F1FF] border-[#0785F9] shadow-xs ring-2 ring-[#0785F9]/20'
+              : 'bg-[#F8FBFF] hover:bg-[#E2F1FF]/60 border-[#E2EDF8] hover:border-[#0785F9]/30'
+          }`}
+          title="Mở cẩm nang hướng dẫn tạo mô phỏng AI"
+        >
+          <div className="w-8 h-8 rounded-lg bg-white border border-[#E2EDF8] flex items-center justify-center shrink-0 shadow-xs">
+            <RocketFlying className="w-5 h-5 animate-rocket" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between">
+              <span className="font-extrabold text-[#0B3B78] text-xs">Kiến tạo</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-100 text-purple-700">
+                AI Prompt
+              </span>
+            </div>
+            <p className="text-[10px] text-[#58779B] truncate leading-tight mt-0.5">
+              Cẩm nang tạo mô phỏng
+            </p>
+          </div>
+        </button>
+
+        {/* Nút Chia sẻ mô phỏng */}
         <button
           onClick={onOpenSubmit}
           className="w-full flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-[#0785F9] hover:bg-[#006FE6] text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
+          title="Đăng tải và chia sẻ mô phỏng của bạn"
         >
           <PlusCircle className="w-3.5 h-3.5" />
           <span>Chia sẻ mô phỏng</span>
