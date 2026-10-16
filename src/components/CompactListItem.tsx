@@ -55,30 +55,30 @@ export const CompactListItem: React.FC<CompactListItemProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between py-2.5 px-3.5 bg-white hover:bg-slate-50/90 rounded-xl border border-slate-200/80 hover:border-indigo-300 shadow-xs hover:shadow-sm transition-all gap-3">
-      {/* Tên mô phỏng + icon môn học (rút gọn: ẩn tác giả và chữ môn để tăng chỗ hiển thị tên) */}
+    <div className="flex items-center justify-between py-2.5 px-3.5 bg-white hover:bg-[#F8FBFF] rounded-xl border border-[#E2EDF8] hover:border-[#0785F9]/40 shadow-xs hover:shadow-sm transition-all gap-3">
+      {/* Tên mô phỏng + icon môn học */}
       <div className="flex items-center space-x-2 sm:space-x-2.5 min-w-0 flex-1 overflow-hidden">
         {project.isFamous && (
           <span
             title={t.famousTabShort}
             className="p-1 rounded-md bg-amber-50 text-amber-500 shrink-0"
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 fill-amber-400" />
           </span>
         )}
 
         <h4
           onClick={handleVisit}
-          className="font-bold text-slate-900 text-xs sm:text-sm truncate hover:text-indigo-600 cursor-pointer shrink-1 min-w-[80px]"
+          className="font-bold text-[#0B3B78] text-xs sm:text-sm truncate hover:text-[#0785F9] cursor-pointer shrink-1 min-w-[80px]"
           title={project.title}
         >
           {project.title}
         </h4>
 
-        {/* Icon môn học - chỉ icon, ẩn chữ để tăng khoảng trống cho tên */}
+        {/* Icon môn học */}
         <span
           title={t.categoryNames[project.category] || project.category}
-          className="shrink-0 w-6 h-6 inline-flex items-center justify-center rounded-md bg-indigo-50 border border-indigo-200/60 text-sm leading-none"
+          className="shrink-0 w-6 h-6 inline-flex items-center justify-center rounded-md bg-[#E2F1FF] border border-[#0785F9]/20 text-sm leading-none"
         >
           {SUBJECT_EMOJIS[project.category] || '📘'}
         </span>
@@ -88,7 +88,7 @@ export const CompactListItem: React.FC<CompactListItemProps> = ({
       <div className="flex items-center space-x-1.5 shrink-0">
         <button
           onClick={() => onOpenQR(project)}
-          className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-white transition-colors cursor-pointer"
+          className="p-1.5 rounded-lg border border-[#E2EDF8] text-[#58779B] hover:text-[#0785F9] hover:bg-[#E2F1FF] transition-colors cursor-pointer"
           title={t.generateQR}
         >
           <QrCode className="w-3.5 h-3.5" />
@@ -96,8 +96,8 @@ export const CompactListItem: React.FC<CompactListItemProps> = ({
 
         <button
           onClick={handleVisit}
-          className="p-1.5 rounded-lg bg-slate-900 hover:bg-indigo-600 text-white transition-colors cursor-pointer"
-          title={t.visitWebsite}
+          className="p-1.5 rounded-lg bg-[#0785F9] hover:bg-[#006FE6] text-white transition-colors cursor-pointer"
+          title="Xem mô phỏng"
         >
           <ExternalLink className="w-3.5 h-3.5" />
         </button>

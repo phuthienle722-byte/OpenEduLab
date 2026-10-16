@@ -17,6 +17,7 @@ import { translations } from './translations';
 import { Header } from './components/Header';
 import { StatsBanner } from './components/StatsBanner';
 import { FilterBar } from './components/FilterBar';
+import { Sidebar } from './components/Sidebar';
 import { ProjectCard } from './components/ProjectCard';
 import { TimelineLayerCard } from './components/TimelineLayerCard';
 import { CompactListItem } from './components/CompactListItem';
@@ -728,7 +729,7 @@ const handleUpdateProject = (updated: WebProject) => {
   const pendingCount = projects.filter((p) => p.status === 'pending').length;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-[#F8FBFF] text-slate-900 flex flex-col font-sans">
       {/* Top Header */}
       <Header
         lang={lang}
@@ -742,55 +743,45 @@ const handleUpdateProject = (updated: WebProject) => {
         isCloudSyncing={isCloudSyncing}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        {/* Streamlined Banner Hero */}
-        <StatsBanner
-          projects={projects}
-          lang={lang}
-          onOpenSubmit={handleOpenSubmitNew}
-        />
-
-        {/* Filter and View Mode Switcher */}
-        <FilterBar
-          filters={filters}
-          onFilterChange={setFilters}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          lang={lang}
-          totalResults={filteredProjects.length}
-          approvedCount={defaultApprovedCount}
-          famousCount={famousCount}
-          onOpenSubmit={handleOpenSubmitNew}
+      {/* Main Container with Left Sidebar & Right Library */}
+      <main className="flex-1 max-w-[1536px] w-full mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-5 flex gap-5 items-start">
+        {/* Left Navigation Sidebar (~208–224px desktop) */}
+        <Sidebar
+          currentCategory={filters.category}
+          onSelectCategory={(category) => setFilters({ ...filters, category })}
+          onlyFamous={filters.onlyFamous}
+          onToggleFamous={(isFamous) => {
+            setFilters({ ...filters, onlyFamous: isFamous });
+            if (showGuide) handleExitGuide();
+          }}
           showGuide={showGuide}
           onOpenGuide={handleOpenGuide}
           onCloseGuide={handleExitGuide}
+          onOpenSubmit={handleOpenSubmitNew}
+          lang={lang}
+          approvedCount={defaultApprovedCount}
+          famousCount={famousCount}
         />
 
-        {/* Tab "Hướng dẫn tạo mô phỏng" */}
-        {showGuide ? (
-          <SimulationGuide
-            lang={lang}
-            onSubmit={() => {
-              handleExitGuide();
-              handleOpenSubmitNew();
-            }}
-          />
-        ) : (
-          /* Empty State */
-          <>
-          {filteredProjects.length === 0 ? (
-          <div className="py-16 text-center bg-white rounded-2xl border border-slate-200/80 p-8">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mx-auto mb-3">
-              <Globe className="w-7 h-7" />
+        {/* Right Simulation Library Area */}
+        <div className="flex-1 min-w-0">
+          {/* Library Header (Tiêu đề "Mô phỏng nổi bật" + "Xem tất cả →") */}
+          <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#E2EDF8]">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[#E2F1FF] text-[#0785F9] flex items-center justify-center font-bold shadow-xs">
+                <Sparkles className="w-4 h-4 fill-[#0785F9]" />
+              </div>
+              <div>
+                <h2 className="text-lg sm:text-xl font-bold text-[#0B3B78] tracking-tight">
+                  {showGuide ? 'Cẩm nang hướng dẫn tạo mô phỏng AI' : 'Mô phỏng nổi bật'}
+                </h2>
+                <p className="text-xs text-[#58779B]">
+                  Cùng thử mô phỏng, khám phá điều hay và chia sẻ ý tưởng học tập!
+                </p>
+              </div>
             </div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">
-              {t.noWebsitesFound}
-            </h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto mb-5">
-              {t.emptyStateHint}
-            </p>
-            <div className="flex items-center justify-center space-x-3">
+
+            {!showGuide && (
               <button
                 onClick={() =>
                   setFilters({
@@ -801,61 +792,119 @@ const handleUpdateProject = (updated: WebProject) => {
                     onlyFamous: false,
                   })
                 }
-                className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                className="text-xs font-bold text-[#0785F9] hover:text-[#006FE6] flex items-center space-x-1 cursor-pointer transition-colors"
               >
-                {t.clearFilters}
+                <span>Xem tất cả →</span>
               </button>
-              <button
-                onClick={handleOpenSubmitNew}
-                className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-xs"
-              >
-                {t.submitWebsite}
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Render based on View Mode: Expanded (Äáº§y Ä‘á»§ mockup, QR, mĂ´ táº£) vs Compact (Chá»‰ TĂªn & LÄ©nh vá»±c) */
-          <>
-            {viewMode === 'expanded' ? (
-              <div
-                id="projects-expanded-view"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                {filteredProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    lang={lang}
-                    isAdmin={isAdmin}
-                    onOpenQR={(p) => setSelectedQRProject(p)}
-                    onEditProject={handleOpenEditProject}
-                    onDeleteRequest={(p) => setProjectToDelete(p)}
-                    onLike={handleLike}
-                    onVisit={handleVisit}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div id="projects-compact-view" className="space-y-2 max-w-4xl mx-auto">
-                {filteredProjects.map((project) => (
-                  <CompactListItem
-                    key={project.id}
-                    project={project}
-                    lang={lang}
-                    isAdmin={isAdmin}
-                    onOpenQR={(p) => setSelectedQRProject(p)}
-                    onEditProject={handleOpenEditProject}
-                    onDeleteRequest={(p) => setProjectToDelete(p)}
-                    onLike={handleLike}
-                    onVisit={handleVisit}
-                  />
-                ))}
-              </div>
             )}
-          </>
-        )}
-          </>
-        )}
+          </div>
+
+          {/* Filter Bar */}
+          <FilterBar
+            filters={filters}
+            onFilterChange={setFilters}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            lang={lang}
+            totalResults={filteredProjects.length}
+            approvedCount={defaultApprovedCount}
+            famousCount={famousCount}
+            onOpenSubmit={handleOpenSubmitNew}
+            showGuide={showGuide}
+            onOpenGuide={handleOpenGuide}
+            onCloseGuide={handleExitGuide}
+          />
+
+          {/* Tab "Hướng dẫn tạo mô phỏng" */}
+          {showGuide ? (
+            <SimulationGuide
+              lang={lang}
+              onSubmit={() => {
+                handleExitGuide();
+                handleOpenSubmitNew();
+              }}
+            />
+          ) : (
+            /* Empty State */
+            <>
+              {filteredProjects.length === 0 ? (
+                <div className="py-16 text-center bg-white rounded-2xl border border-[#E2EDF8] p-8 shadow-xs">
+                  <div className="w-14 h-14 rounded-2xl bg-[#E2F1FF] text-[#0785F9] flex items-center justify-center mx-auto mb-3">
+                    <Globe className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-base font-bold text-[#0B3B78] mb-1">
+                    {t.noWebsitesFound}
+                  </h3>
+                  <p className="text-xs text-[#58779B] max-w-sm mx-auto mb-5">
+                    {t.emptyStateHint}
+                  </p>
+                  <div className="flex items-center justify-center space-x-3">
+                    <button
+                      onClick={() =>
+                        setFilters({
+                          searchQuery: '',
+                          category: 'ALL',
+                          educationLevel: 'ALL',
+                          sortBy: 'newest',
+                          onlyFamous: false,
+                        })
+                      }
+                      className="px-4 py-2 rounded-xl border border-[#E2EDF8] text-xs font-semibold text-[#23466F] hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                      {t.clearFilters}
+                    </button>
+                    <button
+                      onClick={handleOpenSubmitNew}
+                      className="px-4 py-2 rounded-xl bg-[#0785F9] text-white text-xs font-bold hover:bg-[#006FE6] shadow-xs cursor-pointer transition-colors"
+                    >
+                      {t.submitWebsite}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Render based on View Mode: Expanded (Lưới 4 cột) vs Compact (Rút gọn) */
+                <>
+                  {viewMode === 'expanded' ? (
+                    <div
+                      id="projects-expanded-view"
+                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
+                    >
+                      {filteredProjects.map((project) => (
+                        <ProjectCard
+                          key={project.id}
+                          project={project}
+                          lang={lang}
+                          isAdmin={isAdmin}
+                          onOpenQR={(p) => setSelectedQRProject(p)}
+                          onEditProject={handleOpenEditProject}
+                          onDeleteRequest={(p) => setProjectToDelete(p)}
+                          onLike={handleLike}
+                          onVisit={handleVisit}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div id="projects-compact-view" className="space-y-2 max-w-4xl">
+                      {filteredProjects.map((project) => (
+                        <CompactListItem
+                          key={project.id}
+                          project={project}
+                          lang={lang}
+                          isAdmin={isAdmin}
+                          onOpenQR={(p) => setSelectedQRProject(p)}
+                          onEditProject={handleOpenEditProject}
+                          onDeleteRequest={(p) => setProjectToDelete(p)}
+                          onLike={handleLike}
+                          onVisit={handleVisit}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </div>
       </main>
 
       {/* Footer */}

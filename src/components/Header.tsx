@@ -6,6 +6,8 @@ import {
   ShieldAlert,
   ChevronDown,
   RefreshCw,
+  Plus,
+  Sparkles,
 } from 'lucide-react';
 import { Language } from '../types';
 import { translations } from '../translations';
@@ -52,32 +54,35 @@ export const Header: React.FC<HeaderProps> = ({
   const currentLangObj = languages.find((l) => l.code === lang) || languages[0];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#E2EDF8] shadow-xs">
+      <div className="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-3 sm:gap-6">
           {/* Logo & Branding */}
           <div className="flex items-center space-x-3 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
-              <Globe2 className="w-6 h-6" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0785F9] to-[#006FE6] text-white flex items-center justify-center shadow-md shadow-[#0785F9]/25">
+              <Globe2 className="w-5 h-5" />
             </div>
-            <div>
-              <span className="font-extrabold text-slate-900 tracking-tight text-base sm:text-lg">
-                {t.appName}
+            <div className="flex flex-col">
+              <span className="font-extrabold text-[#0B3B78] tracking-tight text-lg leading-tight">
+                OpenEduLab
+              </span>
+              <span className="text-[10px] text-[#58779B] font-medium hidden sm:block leading-tight">
+                Khám phá · Sáng tạo · Chia sẻ
               </span>
             </div>
           </div>
 
           {/* Quick Search Bar */}
-          <div className="flex-1 max-w-md hidden md:block">
+          <div className="flex-1 max-w-lg hidden md:block">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#58779B] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 id="header-search-input"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                placeholder={t.searchPlaceholder}
-                className="w-full pl-9 pr-3 py-2 bg-slate-100/80 hover:bg-slate-100 focus:bg-white rounded-xl border border-slate-200/80 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                placeholder="Tìm mô phỏng, môn học, chủ đề…"
+                className="w-full pl-9 pr-8 py-2 bg-[#F8FBFF] hover:bg-slate-100/70 focus:bg-white rounded-xl border border-[#E2EDF8] text-xs text-[#23466F] placeholder-[#58779B] focus:outline-none focus:ring-2 focus:ring-[#0785F9]/20 focus:border-[#0785F9] transition-all"
               />
               {searchQuery && (
                 <button
@@ -95,27 +100,37 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Background cloud sync non-intrusive indicator */}
             {isCloudSyncing && (
               <div
-                className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-indigo-50/90 border border-indigo-200/70 text-indigo-700 text-xs font-semibold animate-fade-in select-none"
+                className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-[#E2F1FF] border border-[#0785F9]/30 text-[#0785F9] text-xs font-semibold select-none"
                 title={t.amSyncing}
                 role="status"
                 aria-live="polite"
               >
-                <RefreshCw className="w-3.5 h-3.5 text-indigo-600 animate-spin" />
-                <span className="hidden md:inline">{t.amSyncing}</span>
+                <RefreshCw className="w-3.5 h-3.5 text-[#0785F9] animate-spin" />
+                <span className="hidden xl:inline text-[11px]">{t.amSyncing}</span>
               </div>
             )}
+
+            {/* Submit / Share Button */}
+            <button
+              onClick={onOpenSubmit}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#0785F9] hover:bg-[#006FE6] text-white text-xs font-bold transition-all shadow-xs shadow-[#0785F9]/20 cursor-pointer"
+              title="Chia sẻ mô phỏng mới"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Chia sẻ mô phỏng</span>
+            </button>
 
             {/* Language Switcher Dropdown */}
             <div className="relative">
               <button
                 id="language-selector-btn"
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200/80 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-colors"
+                className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border border-[#E2EDF8] bg-white hover:bg-slate-50 text-xs font-semibold text-[#23466F] transition-colors"
                 title={t.selectLanguage}
               >
                 <span>{currentLangObj.flag}</span>
                 <span className="hidden sm:inline">{currentLangObj.name}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronDown className="w-3.5 h-3.5 text-[#58779B]" />
               </button>
 
               {langMenuOpen && (
@@ -124,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className="fixed inset-0 z-10"
                     onClick={() => setLangMenuOpen(false)}
                   />
-                  <div className="absolute right-0 mt-1.5 w-40 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-20 animate-fade-in">
+                  <div className="absolute right-0 mt-1.5 w-40 bg-white rounded-xl shadow-xl border border-[#E2EDF8] py-1 z-20 animate-fade-in">
                     {languages.map((item) => (
                       <button
                         key={item.code}
@@ -134,8 +149,8 @@ export const Header: React.FC<HeaderProps> = ({
                         }}
                         className={`w-full px-3 py-2 text-left text-xs flex items-center justify-between transition-colors ${
                           lang === item.code
-                            ? 'bg-indigo-50 text-indigo-700 font-bold'
-                            : 'text-slate-700 hover:bg-slate-50'
+                            ? 'bg-[#E2F1FF] text-[#0785F9] font-bold'
+                            : 'text-[#23466F] hover:bg-slate-50'
                         }`}
                       >
                         <span className="flex items-center space-x-2">
@@ -150,10 +165,6 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-            {/*
-              Google Sheets sync hidden for security (auto-sync fixed URL only).
-            */}
-
             {/* Admin Portal Toggle */}
             <button
               id="header-admin-btn"
@@ -161,13 +172,13 @@ export const Header: React.FC<HeaderProps> = ({
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                 isAdmin
                   ? 'bg-amber-500/10 border-amber-400/80 text-amber-800 hover:bg-amber-500/20'
-                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  : 'bg-white border-[#E2EDF8] text-[#23466F] hover:bg-slate-50'
               }`}
             >
               {isAdmin ? (
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
               ) : (
-                <ShieldAlert className="w-3.5 h-3.5 text-slate-500" />
+                <ShieldAlert className="w-3.5 h-3.5 text-[#58779B]" />
               )}
               <span className="hidden sm:inline">{isAdmin ? t.adminMode : t.adminPortal}</span>
               {pendingCount > 0 && (
@@ -182,14 +193,14 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Mobile Search Bar */}
         <div className="pb-3 md:hidden">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#58779B] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               id="mobile-search-input"
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className="w-full pl-9 pr-3 py-2 bg-slate-100/90 rounded-xl border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              placeholder="Tìm mô phỏng, môn học, chủ đề…"
+              className="w-full pl-9 pr-3 py-2 bg-[#F8FBFF] rounded-xl border border-[#E2EDF8] text-xs text-[#23466F] placeholder-[#58779B] focus:outline-none focus:ring-2 focus:ring-[#0785F9]/20"
             />
           </div>
         </div>

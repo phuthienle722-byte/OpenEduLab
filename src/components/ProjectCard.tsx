@@ -7,8 +7,10 @@ import {
   Share2,
   Trash2,
   User,
+  Eye,
+  ArrowRight,
 } from 'lucide-react';
-import { WebProject, Language } from '../types';
+import { WebProject, Language, CategoryId } from '../types';
 import { translations } from '../translations';
 import { BrowserMockupFrame } from './BrowserMockupFrame';
 import { formatTimeAgo } from '../utils/screenshot';
@@ -26,6 +28,25 @@ interface ProjectCardProps {
   onVisit: (projectId: string, url: string) => void;
 }
 
+// Subject badge color mapping based on design guide
+const getCategoryBadgeClass = (category: CategoryId): string => {
+  switch (category) {
+    case 'math':
+      return 'bg-[#FF8A18]/10 text-[#FF8A18] border-[#FF8A18]/30';
+    case 'physics':
+      return 'bg-[#8B5CF6]/10 text-[#8B5CF6] border-[#8B5CF6]/30';
+    case 'chemistry':
+    case 'biology':
+    case 'natural_sciences':
+      return 'bg-[#24B34B]/10 text-[#24B34B] border-[#24B34B]/30';
+    case 'informatics':
+    case 'stem':
+      return 'bg-[#0785F9]/10 text-[#0785F9] border-[#0785F9]/30';
+    default:
+      return 'bg-slate-100 text-[#58779B] border-[#E2EDF8]';
+  }
+};
+
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
   lang,
@@ -38,11 +59,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   const t = translations[lang];
   const [isLiked, setIsLiked] = useState(false);
-  const goUrl = project.goLink || getGoUrl(
-    window.location,
-    project.url,
-    { title: project.title, authorName: project.authorName, authorEmail: project.authorContact }
-  );
+  const goUrl =
+    project.goLink ||
+    getGoUrl(window.location, project.url, {
+      title: project.title,
+      authorName: project.authorName,
+      authorEmail: project.authorContact,
+    });
   const displayUrl = isAdmin ? undefined : goUrl;
 
   const handleLike = (e: React.MouseEvent) => {
@@ -78,10 +101,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   return (
     <div
       id={`project-card-${project.id}`}
-      className="group relative flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-1"
+      className="group relative flex flex-col bg-white rounded-2xl border border-[#E2EDF8] shadow-xs hover:shadow-md hover:border-[#0785F9]/40 transition-all duration-200 overflow-hidden hover:-translate-y-0.5"
     >
-      {/* Top Media: Browser Mockup Frame */}
-      <div className="p-3 bg-slate-50/50 border-b border-slate-100">
+      {/* Top Media: Browser Mockup Frame with 16:9 ratio */}
+      <div className="relative p-2.5 bg-[#F8FBFF] border-b border-[#E2EDF8]">
         <BrowserMockupFrame
           url={project.url}
           title={project.title}
@@ -92,113 +115,137 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           aspectRatio="video"
           lang={lang}
         />
+
+        {/* Pill nhãn môn học nổi trên góc ảnh */}
+        <div className="absolute top-4 left-4 z-10">
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-md shadow-xs ${getCategoryBadgeClass(
+              project.category
+            )}`}
+          >
+            {t.categoryNames[project.category] || project.category}
+          </span>
+        </div>
       </div>
 
       {/* Content Area */}
-      <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+      <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2.5">
         <div>
-          {/* Badges: Country, Education Level, Category, Time Ago */}
-          <div className="flex flex-wrap items-center gap-1.5 mb-2">
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700">
-              {t.countryNames[project.country] || countryDisplayName(project.country, t.countryNames)}
-            </span>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-              {t.categoryNames[project.category] || project.category}
-            </span>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+          {/* Metadata Badges: Cấp học & Quốc gia & Thời gian */}
+          <div className="flex items-center gap-1.5 mb-1.5 text-[10px]">
+            <span className="px-2 py-0.5 rounded-md font-semibold bg-[#E2F1FF] text-[#0785F9]">
               {t.educationLevelNames[project.educationLevel] || project.educationLevel}
             </span>
-            <span className="ml-auto text-[10px] text-slate-400 font-medium">
+            <span className="px-1.5 py-0.5 rounded-md text-slate-600 bg-slate-100 font-medium">
+              {t.countryNames[project.country] || countryDisplayName(project.country, t.countryNames)}
+            </span>
+            <span className="ml-auto text-[#58779B] font-medium">
               {formatTimeAgo(project.createdAt, lang)}
             </span>
           </div>
 
-          {/* Title */}
+          {/* Title: Xanh navy #0B3B78, tối đa 2 dòng */}
           <h3
             onClick={handleVisit}
-            className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-indigo-600 transition-colors cursor-pointer"
+            className="text-sm font-bold text-[#0B3B78] line-clamp-2 leading-snug group-hover:text-[#0785F9] transition-colors cursor-pointer"
             title={project.title}
           >
             {project.title}
           </h3>
 
-          {/* Description */}
-          <p className="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">
-            {project.description}
-          </p>
+          {/* Description: Tối đa 2 dòng chữ #58779B */}
+          {project.description && (
+            <p className="text-xs text-[#58779B] line-clamp-2 mt-1 leading-relaxed">
+              {project.description}
+            </p>
+          )}
         </div>
 
-        {/* Submitter Info & Tags */}
-        <div className="pt-2 border-t border-slate-100/80 flex items-center justify-between text-[11px] text-slate-500">
-          <div className="flex items-center space-x-1.5 truncate max-w-[180px]" title={t.authorNoteTitle.replace('{name}', project.authorName)}>
-            <div className="w-4 h-4 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[9px] shrink-0">
+        {/* Author info & stats row */}
+        <div className="pt-2 border-t border-[#E2EDF8] flex items-center justify-between text-[11px] text-[#58779B]">
+          <div
+            className="flex items-center space-x-1.5 truncate max-w-[130px]"
+            title={t.authorNoteTitle.replace('{name}', project.authorName)}
+          >
+            <div className="w-4 h-4 rounded-full bg-[#E2F1FF] text-[#0785F9] flex items-center justify-center text-[9px] shrink-0 font-bold">
               <User className="w-2.5 h-2.5" />
             </div>
-            <span className="truncate font-medium text-slate-700">{project.authorName}</span>
+            <span className="truncate font-medium text-[#23466F]">{project.authorName}</span>
           </div>
 
-          {/* Like button */}
-          <button
-            onClick={handleLike}
-            className={`flex items-center space-x-1 text-xs transition-colors ${
-              isLiked ? 'text-rose-600 font-bold' : 'text-slate-400 hover:text-rose-500'
-            }`}
-          >
-            <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-current' : ''}`} />
-            <span>{project.likes + (isLiked ? 1 : 0)}</span>
-          </button>
+          <div className="flex items-center space-x-2.5 shrink-0">
+            {/* Views counter */}
+            <span className="flex items-center space-x-1 text-[11px] text-[#58779B]" title="Lượt xem">
+              <Eye className="w-3 h-3 text-[#58779B]" />
+              <span>{project.views}</span>
+            </span>
+
+            {/* Like button with Red Heart */}
+            <button
+              onClick={handleLike}
+              className={`flex items-center space-x-1 text-xs transition-colors cursor-pointer ${
+                isLiked ? 'text-[#FF3B4E] font-bold' : 'text-[#58779B] hover:text-[#FF3B4E]'
+              }`}
+              title="Yêu thích"
+            >
+              <Heart
+                className={`w-3.5 h-3.5 ${
+                  isLiked ? 'fill-[#FF3B4E] text-[#FF3B4E]' : 'text-[#58779B]'
+                }`}
+              />
+              <span>{project.likes + (isLiked ? 1 : 0)}</span>
+            </button>
+          </div>
         </div>
 
         {/* Bottom Interactive Action Row */}
-        <div className="pt-1 flex items-center justify-between gap-2">
-          {/* Primary Action: Visit Web */}
+        <div className="pt-1 flex items-center justify-between gap-1.5">
+          {/* Primary Action: Xem mô phỏng → */}
           <button
             id={`visit-btn-${project.id}`}
             onClick={handleVisit}
-            className="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white text-xs font-semibold flex items-center justify-center space-x-1.5 shadow-xs transition-colors"
+            className="flex-1 py-2 px-2.5 rounded-xl bg-[#0785F9] hover:bg-[#006FE6] text-white text-xs font-bold flex items-center justify-center space-x-1 shadow-xs transition-all cursor-pointer"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
-            <span className="truncate">{t.visitWebsite}</span>
+            <span className="truncate">Xem mô phỏng →</span>
           </button>
 
           {/* Secondary Action: QR Code Button */}
           <button
             id={`qr-btn-${project.id}`}
             onClick={() => onOpenQR(project)}
-            className="py-2 px-3 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold flex items-center space-x-1 transition-colors"
+            className="p-2 rounded-xl border border-[#E2EDF8] text-[#23466F] hover:bg-[#E2F1FF] hover:text-[#0785F9] text-xs transition-colors cursor-pointer"
             title={t.generateQR}
           >
-            <QrCode className="w-3.5 h-3.5 text-indigo-600" />
-            <span className="hidden sm:inline">{t.generateQR}</span>
+            <QrCode className="w-3.5 h-3.5 text-[#0785F9]" />
           </button>
 
           {/* Share Button */}
           <button
             onClick={handleShare}
-            className="p-2 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-2 rounded-xl border border-[#E2EDF8] text-[#58779B] hover:text-[#23466F] hover:bg-slate-50 transition-colors cursor-pointer"
             title={t.shareLinkTitle}
           >
             <Share2 className="w-3.5 h-3.5" />
           </button>
 
-          {/* Admin Edit Action Button (chỉnh sửa mọi thông tin của mô phỏng) */}
+          {/* Admin Edit Action Button */}
           {isAdmin && (
             <button
               id={`edit-btn-${project.id}`}
               onClick={() => onEditProject(project)}
-              className="p-2 rounded-xl border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
+              className="p-2 rounded-xl border border-[#E2EDF8] text-[#58779B] hover:text-[#0785F9] hover:border-[#0785F9]/30 hover:bg-[#E2F1FF] transition-colors cursor-pointer"
               title={t.amEdit}
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
           )}
 
-          {/* Admin Delete Action Button (with safety confirmation) */}
+          {/* Admin Delete Action Button */}
           {isAdmin && (
             <button
               id={`delete-btn-${project.id}`}
               onClick={() => onDeleteRequest(project)}
-              className="p-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors"
+              className="p-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
               title={t.deleteAdminTitle}
             >
               <Trash2 className="w-3.5 h-3.5" />

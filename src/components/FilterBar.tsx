@@ -1,23 +1,20 @@
 import React from 'react';
 import {
   AlignLeft,
-  CheckCircle2,
   LayoutGrid,
   RotateCcw,
   Sparkles,
   UploadCloud,
-  X,
+  Layers,
 } from 'lucide-react';
 import {
   CategoryId,
   EducationLevelId,
   FilterState,
   Language,
-  VN_SUBJECTS,
   ViewMode,
 } from '../types';
 import { translations } from '../translations';
-import { RocketFlying } from './RocketFlying';
 
 interface FilterBarProps {
   filters: FilterState;
@@ -43,29 +40,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   totalResults,
   approvedCount,
   famousCount,
-  onOpenSubmit,
   showGuide,
   onOpenGuide,
   onCloseGuide,
 }) => {
   const t = translations[lang];
 
-  const handleCategoryChange = (category: CategoryId | 'ALL') => {
-    onFilterChange({ ...filters, category });
-  };
-
-  const handleOpenGuideTab = () => {
-    onFilterChange({
-      searchQuery: '',
-      category: 'ALL',
-      educationLevel: 'ALL',
-      sortBy: 'newest',
-      onlyFamous: false,
-    });
-    if (onOpenGuide) onOpenGuide();
-  };
-
-  const handleCloseGuideTab = () => {
+  const toggleFamousFilter = (isFamous: boolean) => {
+    onFilterChange({ ...filters, onlyFamous: isFamous });
     if (onCloseGuide) onCloseGuide();
   };
 
@@ -77,11 +59,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     onFilterChange({ ...filters, sortBy });
   };
 
-  const toggleFamousFilter = (isFamous: boolean) => {
-    onFilterChange({ ...filters, onlyFamous: isFamous });
-    if (onCloseGuide) onCloseGuide();
-  };
-
   const handleResetFilters = () => {
     onFilterChange({
       searchQuery: '',
@@ -90,6 +67,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       sortBy: 'newest',
       onlyFamous: false,
     });
+    if (onCloseGuide) onCloseGuide();
   };
 
   const isFiltered =
@@ -98,209 +76,130 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     filters.searchQuery !== '';
 
   return (
-    <div className="w-full bg-white rounded-2xl border border-slate-200/90 p-3 sm:p-4 shadow-xs mb-5 space-y-3">
-      {/* 1. Thanh điều khiển chính: Hai Tab rõ ràng [📤 Bài đăng tải] & [⭐ Nổi tiếng] cùng cụm Icon chế độ xem */}
-      <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100 flex-wrap sm:flex-nowrap">
-        {/* Bên trái: 2 Tab phân biệt rõ ràng */}
+    <div className="w-full bg-white rounded-2xl border border-[#E2EDF8] p-3 sm:p-3.5 shadow-xs mb-4 space-y-2.5">
+      {/* Primary Bar: Tabs [Mô phỏng nổi tiếng] / [Bài cộng đồng] + Level + Sort + View Mode */}
+      <div className="flex items-center justify-between gap-2.5 flex-wrap">
+        {/* Tabs: Phân loại Nổi tiếng vs Cộng đồng */}
         <div className="flex items-center space-x-1.5 sm:space-x-2">
-          {/* Tab 1: Bài đăng tải của giáo viên/học sinh/người dùng */}
-          <button
-            id="tab-user-submitted-btn"
-            onClick={() => toggleFamousFilter(false)}
-            className={`flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-              !filters.onlyFamous && !showGuide
-                ? 'bg-indigo-600 text-white border-indigo-700 shadow-sm shadow-indigo-500/20 ring-2 ring-indigo-300/40'
-                : 'bg-slate-100/90 text-slate-700 border-slate-200/80 hover:bg-slate-200/80 hover:text-slate-900'
-            }`}
-            title={t.uploadTabTitle}
-          >
-            <UploadCloud className="w-3.5 h-3.5" />
-            <span className="whitespace-nowrap">{t.uploadTab}</span>
-            <span
-              className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
-                !filters.onlyFamous && !showGuide
-                  ? 'bg-indigo-700 text-white'
-                  : 'bg-slate-200 text-slate-700'
-              }`}
-            >
-              {approvedCount}
-            </span>
-          </button>
-
-          {/* Tab 2: Mô phỏng nổi tiếng quốc tế (PhET, GeoGebra, NetSim...) */}
+          {/* Tab: Nổi tiếng */}
           <button
             id="tab-famous-btn"
             onClick={() => toggleFamousFilter(true)}
-            className={`flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
               filters.onlyFamous && !showGuide
-                ? 'bg-amber-500 text-white border-amber-600 shadow-sm shadow-amber-500/20 ring-2 ring-amber-300/50'
-                : 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100 hover:border-amber-300'
+                ? 'bg-[#0785F9] text-white border-[#0785F9] shadow-xs'
+                : 'bg-white text-[#23466F] border-[#E2EDF8] hover:bg-[#E2F1FF] hover:text-[#0785F9]'
             }`}
-            title={t.famousTabTitle}
           >
-            <Sparkles
-              className={`w-3.5 h-3.5 ${
-                filters.onlyFamous && !showGuide ? 'text-amber-100 fill-amber-100' : 'text-amber-600 fill-amber-500'
-              }`}
-            />
-            <span className="whitespace-nowrap">{t.famousTabShort}</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+            <span>Nổi tiếng</span>
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
                 filters.onlyFamous && !showGuide
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-amber-200/90 text-amber-950'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-slate-100 text-slate-600'
               }`}
             >
               {famousCount}
             </span>
           </button>
 
-          {/* Tab 3: Hướng dẫn tạo mô phỏng bằng AI */}
+          {/* Tab: Cộng đồng chia sẻ */}
           <button
-            id="tab-guide-btn"
-            onClick={showGuide ? handleCloseGuideTab : handleOpenGuideTab}
-            className={`flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-              showGuide
-                ? 'bg-slate-900 text-white border-slate-950 shadow-sm shadow-slate-500/20 ring-2 ring-slate-400/40'
-                : 'bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100 hover:border-slate-400'
+            id="tab-user-submitted-btn"
+            onClick={() => toggleFamousFilter(false)}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+              !filters.onlyFamous && !showGuide
+                ? 'bg-[#0785F9] text-white border-[#0785F9] shadow-xs'
+                : 'bg-white text-[#23466F] border-[#E2EDF8] hover:bg-[#E2F1FF] hover:text-[#0785F9]'
             }`}
-            title={t.guideTabTitle}
           >
-            <RocketFlying
-              className={`w-4 h-4 shrink-0 animate-rocket ${
-                showGuide ? 'fill-indigo-400 text-indigo-300 drop-shadow-[0_0_6px_rgba(129,140,248,0.9)]' : 'text-indigo-500'
+            <UploadCloud className="w-3.5 h-3.5" />
+            <span>Cộng đồng</span>
+            <span
+              className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+                !filters.onlyFamous && !showGuide
+                  ? 'bg-white/20 text-white'
+                  : 'bg-slate-100 text-slate-600'
               }`}
-            />
-            <span className={`whitespace-nowrap ${
-              showGuide ? 'text-amber-300 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)]' : ''
-            }`}>
-              {t.guideTab}
+            >
+              {approvedCount}
             </span>
           </button>
         </div>
 
-        {/*
-          Bên phải: Cụm chế độ xem [☰ Rút gọn] [⊞ Mở rộng]
-        */}
-        <div className="flex items-center space-x-2 ml-auto">
-
-          {/* Cụm chế độ xem: [☰ Rút gọn] & [⊞ Mở rộng] */}
-          <div className="flex items-center space-x-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/70">
-            {/* Rút gọn */}
-            <button
-              id="view-mode-compact-btn"
-              onClick={() => onViewModeChange('compact')}
-              className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-                viewMode === 'compact'
-                  ? 'bg-white text-indigo-700 shadow-xs font-bold'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-              title={t.viewModeCompact}
-              aria-label={t.viewModeCompact}
+        {/* Secondary controls: Education level, Sorting, View mode */}
+        <div className="flex items-center space-x-2 flex-wrap ml-auto">
+          {/* Cấp học dropdown */}
+          <div className="flex items-center space-x-1">
+            <select
+              id="filter-education-level-select"
+              value={filters.educationLevel}
+              onChange={(e) => handleLevelChange(e.target.value as EducationLevelId | 'ALL')}
+              className="px-2.5 py-1.5 rounded-xl border border-[#E2EDF8] bg-[#F8FBFF] text-xs font-semibold text-[#23466F] focus:outline-none focus:ring-2 focus:ring-[#0785F9]/20 cursor-pointer"
             >
-              <AlignLeft className="w-4 h-4" />
-            </button>
+              <option value="ALL">Mọi cấp học</option>
+              <option value="primary">Tiểu học</option>
+              <option value="secondary">THCS</option>
+              <option value="highschool">THPT</option>
+              <option value="university">Đại học</option>
+            </select>
+          </div>
 
-            {/* Mở rộng */}
+          {/* Sắp xếp dropdown */}
+          <div className="flex items-center space-x-1">
+            <select
+              id="filter-sort-by-select"
+              value={filters.sortBy}
+              onChange={(e) => handleSortChange(e.target.value as FilterState['sortBy'])}
+              className="px-2.5 py-1.5 rounded-xl border border-[#E2EDF8] bg-[#F8FBFF] text-xs font-semibold text-[#23466F] focus:outline-none focus:ring-2 focus:ring-[#0785F9]/20 cursor-pointer"
+            >
+              <option value="newest">Mới nhất</option>
+              <option value="most_liked">Yêu thích nhất</option>
+              <option value="most_viewed">Lượt xem nhiều</option>
+              <option value="oldest">Cũ nhất</option>
+            </select>
+          </div>
+
+          {/* View mode toggle (Lưới vs Rút gọn) */}
+          <div className="flex items-center bg-[#F8FBFF] p-0.5 rounded-xl border border-[#E2EDF8]">
             <button
-              id="view-mode-expanded-btn"
               onClick={() => onViewModeChange('expanded')}
-              className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 viewMode === 'expanded'
-                  ? 'bg-white text-indigo-700 shadow-xs font-bold'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white text-[#0785F9] shadow-xs'
+                  : 'text-[#58779B] hover:text-[#23466F]'
               }`}
-              title={t.viewModeExpanded}
-              aria-label={t.viewModeExpanded}
+              title="Chế độ xem lưới"
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => onViewModeChange('compact')}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'compact'
+                  ? 'bg-white text-[#0785F9] shadow-xs'
+                  : 'text-[#58779B] hover:text-[#23466F]'
+              }`}
+              title="Chế độ xem rút gọn"
+            >
+              <AlignLeft className="w-3.5 h-3.5" />
             </button>
           </div>
-        </div>
-      </div>
 
-      {/* 2. Hàng bộ lọc: Môn học, Cấp học, Sắp xếp theo - ĐƯỢC TỐI ƯU TRÊN MỌI THIẾT BỊ */}
-      {!showGuide && (
-      <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5 items-center">
-        {/* Môn học / Lĩnh vực (Category) */}
-        <div>
-          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-0.5 truncate">
-            {t.categoryLabel}
-          </label>
-          <select
-            id="filter-category-select"
-            value={filters.category}
-            onChange={(e) => handleCategoryChange(e.target.value as CategoryId | 'ALL')}
-            className="w-full px-2 py-1.5 bg-slate-50 hover:bg-slate-100 focus:bg-white rounded-xl border border-slate-200 text-[11px] sm:text-xs text-slate-800 font-medium focus:outline-none focus:border-indigo-500 transition-colors truncate cursor-pointer"
-          >
-            <option value="ALL">📁 {t.allCategories}</option>
-            {VN_SUBJECTS.map((subj) => (
-              <option key={subj.id} value={subj.id}>
-                {t.categoryNames[subj.id] ?? subj.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Cấp học phù hợp (Education Level) */}
-        <div>
-          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-0.5 truncate">
-            {t.levelLabel}
-          </label>
-          <select
-            id="filter-level-select"
-            value={filters.educationLevel}
-            onChange={(e) => handleLevelChange(e.target.value as EducationLevelId | 'ALL')}
-            className="w-full px-2 py-1.5 bg-slate-50 hover:bg-slate-100 focus:bg-white rounded-xl border border-slate-200 text-[11px] sm:text-xs text-slate-800 font-medium focus:outline-none focus:border-indigo-500 transition-colors truncate cursor-pointer"
-          >
-            <option value="ALL">🎓 {t.allLevels}</option>
-            {Object.entries(t.educationLevelNames).map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Sắp xếp theo (Sort By) */}
-        <div>
-          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-0.5 truncate">
-            {t.sortBy}
-          </label>
-          <select
-            id="filter-sort-select"
-            value={filters.sortBy}
-            onChange={(e) => handleSortChange(e.target.value as FilterState['sortBy'])}
-            className="w-full px-2 py-1.5 bg-slate-50 hover:bg-slate-100 focus:bg-white rounded-xl border border-slate-200 text-[11px] sm:text-xs text-slate-800 font-medium focus:outline-none focus:border-indigo-500 transition-colors truncate cursor-pointer"
-          >
-            <option value="newest">🕒 {t.sortNewest}</option>
-            <option value="most_liked">❤️ {t.sortMostLiked}</option>
-            <option value="most_viewed">👁️ {t.sortMostViewed}</option>
-            <option value="oldest">⏳ {t.sortOldest}</option>
-          </select>
-        </div>
-      </div>
-      )}
-
-      {/* Tóm tắt kết quả lọc & Nút Đặt lại bộ lọc */}
-      {!showGuide && (isFiltered || totalResults === 0) && (
-        <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-          <span>
-            {filters.onlyFamous
-              ? t.resultsFamousFound.replace('{count}', String(totalResults))
-              : t.resultsApprovedFound.replace('{count}', String(totalResults))}
-          </span>
+          {/* Clear filters button */}
           {isFiltered && (
             <button
               onClick={handleResetFilters}
-              className="inline-flex items-center space-x-1 text-indigo-600 hover:text-indigo-800 text-[11px] font-semibold bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded-md transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl border border-rose-200 text-rose-600 bg-rose-50 hover:bg-rose-100 text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer"
+              title="Xóa bộ lọc"
             >
               <RotateCcw className="w-3 h-3" />
-              <span>{t.clearFilters}</span>
+              <span className="hidden sm:inline">Đặt lại</span>
             </button>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
