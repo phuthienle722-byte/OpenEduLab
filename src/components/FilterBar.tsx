@@ -62,8 +62,28 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </span>
       </div>
 
-      {/* Bên phải: Lọc cấp học, sắp xếp, chế độ xem */}
-      <div className="flex items-center space-x-2 flex-wrap ml-auto">
+      {/* Bên phải: Các bộ lọc và chế độ xem */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {/* Môn học dropdown (đặc biệt hữu ích trên mobile) */}
+        <div className="flex items-center space-x-1">
+          <select
+            id="filter-category-select"
+            value={filters.category}
+            onChange={(e) => onFilterChange({ ...filters, category: e.target.value as any })}
+            className="px-2.5 py-1.5 rounded-xl border border-[#E2EDF8] bg-[#F8FBFF] text-xs font-semibold text-[#23466F] focus:outline-none focus:ring-2 focus:ring-[#0785F9]/20 cursor-pointer max-w-[140px] truncate"
+          >
+            <option value="ALL">Tất cả môn học</option>
+            <option value="natural_sciences">KHTN (Lý - Hóa - Sinh)</option>
+            <option value="math">Toán học</option>
+            <option value="informatics">Tin học & Công nghệ</option>
+            <option value="literature">Ngữ văn</option>
+            <option value="english">Tiếng Anh</option>
+            <option value="history">Lịch sử & Địa lí</option>
+            <option value="stem">STEM & Thí nghiệm ảo</option>
+            <option value="general">Môn học khác</option>
+          </select>
+        </div>
+
         {/* Cấp học dropdown */}
         <div className="flex items-center space-x-1">
           <select

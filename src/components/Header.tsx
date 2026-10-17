@@ -22,6 +22,8 @@ interface HeaderProps {
   onOpenSubmit: () => void;
   pendingCount: number;
   isCloudSyncing?: boolean;
+  showGuide?: boolean;
+  onOpenGuide?: () => void;
 }
 
 const languages: { code: Language; name: string; flag: string }[] = [
@@ -47,6 +49,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSubmit,
   pendingCount,
   isCloudSyncing = false,
+  showGuide = false,
+  onOpenGuide,
 }) => {
   const t = translations[lang];
   const [langMenuOpen, setLangMenuOpen] = useState(false);
@@ -108,6 +112,22 @@ export const Header: React.FC<HeaderProps> = ({
                 <RefreshCw className="w-3.5 h-3.5 text-[#0785F9] animate-spin" />
                 <span className="hidden xl:inline text-[11px]">{t.amSyncing}</span>
               </div>
+            )}
+
+            {/* Cẩm nang AI Button */}
+            {onOpenGuide && (
+              <button
+                onClick={onOpenGuide}
+                className={`flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                  showGuide
+                    ? 'bg-amber-100 border-amber-300 text-amber-900'
+                    : 'bg-amber-50 hover:bg-amber-100 border-amber-200 text-amber-800'
+                }`}
+                title="Cẩm nang tạo mô phỏng AI (SimBot v24)"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+                <span className="hidden sm:inline">Cẩm nang AI</span>
+              </button>
             )}
 
             {/* Submit / Share Button */}

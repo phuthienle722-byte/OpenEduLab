@@ -21,9 +21,19 @@ import {
   Upload,
   User,
   X,
+  Sparkles,
+  Star,
+  MessageSquare,
+  BarChart3,
+  TrendingUp,
+  Lightbulb,
+  Gift,
+  Bot,
+  Heart,
+  Eye,
   Zap,
 } from 'lucide-react';
-import { WebProject, Language } from '../types';
+import { WebProject, Language, ProjectComment } from '../types';
 import { translations } from '../translations';
 import { countryDisplayName } from '../data/countries';
 import { SubmitModal } from './SubmitModal';
@@ -35,6 +45,7 @@ interface AdminModalProps {
   isAdmin: boolean;
   setIsAdmin: (val: boolean) => void;
   projects: WebProject[];
+  comments?: ProjectComment[];
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
   onDeleteRequest: (project: WebProject) => void;
@@ -55,6 +66,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   isAdmin,
   setIsAdmin,
   projects,
+  comments = [],
   onApprove,
   onReject,
   onDeleteRequest,
@@ -78,11 +90,21 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [authError, setAuthError] = useState(false);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'pending' | 'all' | 'backup'>('pending');
+  const [activeTab, setActiveTab] = useState<
+    'pending' | 'all' | 'backup' | 'ai_insights'
+  >('pending');
 
   const [editingProject, setEditingProject] = useState<WebProject | null>(null);
   const [isPendingSyncing, setIsPendingSyncing] = useState(false);
-  const [pendingSyncMsg, setPendingSyncMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const [pendingSyncMsg, setPendingSyncMsg] = useState<{
+    type: 'success' | 'error' | 'info';
+    text: string;
+  } | null>(null);
+
+  // AI Tab State
+  const [selectedFeedbackId, setSelectedFeedbackId] = useState<string>('');
+  const [generatedFeedback, setGeneratedFeedback] = useState<string>('');
+  const [copiedFeedback, setCopiedFeedback] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -332,6 +354,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   <Download className="w-3.5 h-3.5" />
                   <span>{t.amTabBackup}</span>
                 </button>
+
+                {/* Tab 4: AI Phân tích & Thống kê */}
+                <button
+                  id="tab-ai-insights-btn"
+                  onClick={() => setActiveTab('ai_insights')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors ${
+                    activeTab === 'ai_insights'
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-200/60'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <span>✨ AI Phân tích & Đề xuất</span>
+                </button>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -565,6 +601,212 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         <div className="text-[10px] text-slate-500 mt-0.5">{t.amBackupDesc3}</div>
                       </div>
                     </button>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: AI INSIGHTS & STATISTICAL FEEDBACK */}
+              {activeTab === 'ai_insights' && (
+                <div className="space-y-5">
+                  {/* Banner */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-sm flex items-center justify-between gap-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-300">
+                        <Sparkles className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm tracking-wide">
+                          Trung tâm Phân tích AI & Thống kê Tương tác
+                        </h4>
+                        <p className="text-[11px] text-indigo-200">
+                          Khai thác dữ liệu truy cập, tải về, thích và bình luận để đưa ra giải pháp cải tiến mô phỏng
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5 Macro Metrics Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[11px] font-semibold text-slate-500 mb-1 flex items-center space-x-1">
+                        <Eye className="w-3.5 h-3.5 text-[#0785F9]" />
+                        <span>Tổng truy cập</span>
+                      </div>
+                      <div className="text-lg font-extrabold text-[#0B3B78]">
+                        {projects.reduce((acc, p) => acc + (p.views || 0), 0)}
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[11px] font-semibold text-slate-500 mb-1 flex items-center space-x-1">
+                        <Heart className="w-3.5 h-3.5 text-[#FF3B4E]" />
+                        <span>Tổng yêu thích</span>
+                      </div>
+                      <div className="text-lg font-extrabold text-[#FF3B4E]">
+                        {projects.reduce((acc, p) => acc + (p.likes || 0), 0)}
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[11px] font-semibold text-slate-500 mb-1 flex items-center space-x-1">
+                        <Download className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Tổng tải về</span>
+                      </div>
+                      <div className="text-lg font-extrabold text-emerald-700">
+                        {projects.reduce((acc, p) => acc + (p.downloads || 0), 0)}
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[11px] font-semibold text-slate-500 mb-1 flex items-center space-x-1">
+                        <MessageSquare className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Tổng bình luận</span>
+                      </div>
+                      <div className="text-lg font-extrabold text-amber-600">
+                        {comments.length}
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[11px] font-semibold text-slate-500 mb-1 flex items-center space-x-1">
+                        <Gift className="w-3.5 h-3.5 text-purple-600" />
+                        <span>Tổng đóng góp</span>
+                      </div>
+                      <div className="text-lg font-extrabold text-purple-700">
+                        {projects.reduce((acc, p) => acc + (p.contributions || 0), 0)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section: Rankings & Distribution */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Top Viewed & Downloaded */}
+                    <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-3">
+                      <div className="flex items-center space-x-2 text-xs font-bold text-slate-800">
+                        <TrendingUp className="w-4 h-4 text-indigo-600" />
+                        <span>Top mô phỏng quan tâm & tải về nhiều nhất</span>
+                      </div>
+                      <div className="space-y-2">
+                        {[...projects]
+                          .sort((a, b) => ((b.views || 0) + (b.downloads || 0) * 2) - ((a.views || 0) + (a.downloads || 0) * 2))
+                          .slice(0, 4)
+                          .map((p, idx) => (
+                            <div key={p.id} className="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-50 border border-slate-100">
+                              <div className="flex items-center space-x-2 min-w-0">
+                                <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold text-[10px] flex items-center justify-center shrink-0">
+                                  {idx + 1}
+                                </span>
+                                <span className="font-semibold text-slate-800 truncate" title={p.title}>
+                                  {p.title}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-2 text-[11px] text-slate-500 shrink-0">
+                                <span>{p.views} xem</span>
+                                <span>·</span>
+                                <span className="text-emerald-600 font-medium">{p.downloads || 0} tải</span>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* AI Feedback Sentiment Analysis */}
+                    <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-3">
+                      <div className="flex items-center space-x-2 text-xs font-bold text-slate-800">
+                        <Bot className="w-4 h-4 text-purple-600" />
+                        <span>AI Phân tích Cảm xúc & Nhu cầu Cộng đồng</span>
+                      </div>
+                      <div className="space-y-2 text-xs">
+                        <div className="p-2.5 rounded-lg bg-emerald-50/70 border border-emerald-100 text-emerald-900">
+                          <span className="font-bold">🌟 Điểm mạnh phản hồi: </span>
+                          <span>Học sinh hứng thú với các mô phỏng tương tác kéo thả; giáo viên đánh giá cao tính an toàn và tiết kiệm chi phí phòng thí nghiệm.</span>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-amber-50/70 border border-amber-100 text-amber-900">
+                          <span className="font-bold">⚠️ Vấn đề tồn tại: </span>
+                          <span>Một số mô phỏng hiển thị chữ nhỏ trên điện thoại; cần thêm tài liệu phiếu học tập định hướng câu hỏi kèm theo.</span>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-indigo-50/70 border border-indigo-100 text-indigo-900">
+                          <span className="font-bold">💡 Nhu cầu đề xuất: </span>
+                          <span>Cần mở rộng thêm mô phỏng cho Tin học (thuật toán trực quan) và Lịch sử - Địa lý (bản đồ 3D).</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section: AI Author Feedback Generator */}
+                  <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-3">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center space-x-2 text-xs font-bold text-slate-800">
+                        <Sparkles className="w-4 h-4 text-amber-500" />
+                        <span>Công cụ AI Soạn thư phản hồi & Đề xuất cải tiến gửi Tác giả</span>
+                      </div>
+                      <div className="text-[11px] text-slate-500">
+                        Tự động sinh nội dung góp ý sư phạm chuẩn mực
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <select
+                        value={selectedFeedbackId}
+                        onChange={(e) => setSelectedFeedbackId(e.target.value)}
+                        className="flex-1 min-w-[200px] px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 bg-slate-50 focus:outline-none focus:border-indigo-500"
+                      >
+                        <option value="">-- Chọn mô phỏng để AI tạo phản hồi --</option>
+                        {projects.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.title} ({p.authorName})
+                          </option>
+                        ))}
+                      </select>
+
+                      <button
+                        onClick={() => {
+                          const target = projects.find((p) => p.id === selectedFeedbackId);
+                          if (!target) return;
+                          const targetComments = comments.filter((c) => c.projectId === target.id);
+                          const text = `Kính gửi tác giả ${target.authorName},\n\nBan Quản trị OpenEduLab trân trọng cảm ơn Thầy/Cô/Bạn đã đóng góp mô phỏng "${target.title}" vào kho học liệu số cộng đồng.\n\n📊 THỐNG KÊ TƯƠNG TÁC HIỆN TẠI:\n- Lượt truy cập: ${target.views} lượt\n- Lượt yêu thích: ${target.likes} lượt\n- Lượt tải về học liệu: ${target.downloads || 0} lượt\n- Số lượng trao đổi/bình luận: ${targetComments.length || target.commentCount || 0} ý kiến\n\n✨ TỔNG HỢP GÓP Ý TỪ CỘNG ĐỒNG & AI SƯ PHẠM:\n1. Điểm nổi bật: Mô phỏng có tính tương tác cao, bám sát kiến thức trọng tâm bộ môn, giúp học sinh chủ động khám phá hiện tượng khoa học.\n2. Đề xuất cải tiến: Khuyến nghị bổ sung phần hướng dẫn thao tác chi tiết khi mở trên thiết bị di động và đính kèm 2-3 câu hỏi gợi mở ở phần kết thúc thí nghiệm.\n3. Gợi ý mở rộng: Thầy/Cô có thể tham khảo Cẩm nang tạo mô phỏng AI (SimBot v24) trên OpenEduLab để tiếp tục nâng cấp thêm các biến thể bài học mới.\n\nKính chúc Thầy/Cô luôn dồi dào năng lượng và tiếp tục đồng hành cùng phong trào chuyển đổi số giáo dục!\n\nTrân trọng,\nBan Quản trị OpenEduLab`;
+                          setGeneratedFeedback(text);
+                        }}
+                        disabled={!selectedFeedbackId}
+                        className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer flex items-center space-x-1.5"
+                      >
+                        <Bot className="w-3.5 h-3.5" />
+                        <span>Tạo phản hồi</span>
+                      </button>
+                    </div>
+
+                    {generatedFeedback && (
+                      <div className="relative mt-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                        <textarea
+                          readOnly
+                          rows={8}
+                          value={generatedFeedback}
+                          className="w-full bg-transparent text-xs text-slate-800 font-mono focus:outline-none resize-none leading-relaxed"
+                        />
+                        <div className="mt-2 flex items-center justify-end">
+                          <button
+                            onClick={async () => {
+                              await navigator.clipboard.writeText(generatedFeedback);
+                              setCopiedFeedback(true);
+                              setTimeout(() => setCopiedFeedback(false), 2000);
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold flex items-center space-x-1 hover:bg-indigo-700 transition-colors cursor-pointer"
+                          >
+                            {copiedFeedback ? (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Đã sao chép!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Sao chép nội dung thư</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

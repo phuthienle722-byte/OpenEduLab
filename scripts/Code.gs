@@ -23,6 +23,7 @@
 
 const MAIN_SHEET = "WebHub_Projects";
 const SUBMISSION_SHEET = "WebHub_Submissions";
+const COMMENTS_SHEET = "WebHub_Comments";
 
 const HEADERS = [
   "ID",
@@ -42,7 +43,22 @@ const HEADERS = [
   "Views",
   "Likes",
   "IsUserSubmission",
-  "GoLink"
+  "GoLink",
+  "Downloads",
+  "Contributions",
+  "CommentCount"
+];
+
+const COMMENT_HEADERS = [
+  "ID",
+  "ProjectID",
+  "AuthorName",
+  "AuthorRole",
+  "Category",
+  "Content",
+  "Rating",
+  "CreatedAt",
+  "Likes"
 ];
 
 function ensureSheet(name) {
@@ -62,6 +78,27 @@ function ensureSheet(name) {
     sheet.setColumnWidth(4, 280); // Description
     sheet.setColumnWidth(8, 100); // Status
     sheet.setColumnWidth(9, 100); // IsFamous
+  }
+  return sheet;
+}
+
+function ensureCommentsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(COMMENTS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(COMMENTS_SHEET);
+    sheet.appendRow(COMMENT_HEADERS);
+    const headerRange = sheet.getRange(1, 1, 1, COMMENT_HEADERS.length);
+    headerRange.setFontWeight("bold");
+    headerRange.setBackground("#0D9488"); // Teal 600
+    headerRange.setFontColor("#FFFFFF");
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 140); // ID
+    sheet.setColumnWidth(2, 140); // ProjectID
+    sheet.setColumnWidth(3, 160); // AuthorName
+    sheet.setColumnWidth(4, 120); // AuthorRole
+    sheet.setColumnWidth(5, 140); // Category
+    sheet.setColumnWidth(6, 320); // Content
   }
   return sheet;
 }
@@ -113,13 +150,44 @@ function parseRows(sheet) {
       tags: row[col("tags", 13)] ? String(row[col("tags", 13)]).split(",").map(function (t) { return t.trim(); }) : [],
       views: Number(row[col("views", 14)] || 0),
       likes: Number(row[col("likes", 15)] || 0),
-      goLink: String(row[col("golink", 17)] || "")
+      goLink: String(row[col("golink", 17)] || ""),
+      downloads: Number(row[col("downloads", 18)] || 0),
+      contributions: Number(row[col("contributions", 19)] || 0),
+      commentCount: Number(row[col("commentcount", 20)] || 0)
     });
   }
   return { rows: projects };
 }
 
-// Chuyển project thành 1 hàng 17 cột
+function parseComments(sheet, targetProjectId) {
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return { rows: [] };
+  const headers = data[0].map(function (h) { return String(h).trim().toLowerCase(); });
+  const col = function (name, defaultIdx) {
+    const idx = headers.indexOf(name.toLowerCase());
+    return idx >= 0 ? idx : defaultIdx;
+  };
+  const comments = [];
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const pid = String(row[col("projectid", 1)] || "");
+    if (targetProjectId && pid !== targetProjectId) continue;
+    comments.push({
+      id: String(row[col("id", 0)] || ("comm-" + i)),
+      projectId: pid,
+      authorName: String(row[col("authorname", 2)] || "Thành viên"),
+      authorRole: String(row[col("authorrole", 3)] || "guest"),
+      category: String(row[col("category", 4)] || "experience"),
+      content: String(row[col("content", 5)] || ""),
+      rating: Number(row[col("rating", 6)] || 5),
+      createdAt: row[col("createdat", 7)] ? (row[col("createdat", 7)] instanceof Date ? row[col("createdat", 7)].toISOString() : String(row[col("createdat", 7)])) : new Date().toISOString(),
+      likes: Number(row[col("likes", 8)] || 0)
+    });
+  }
+  return { rows: comments };
+}
+
+// Chuyển project thành 1 hàng 21 cột (18 cột cũ + 3 cột mới ở cuối)
 function projectToRow(p) {
   return [
     p.id || ("proj-" + new Date().getTime()),
@@ -139,7 +207,10 @@ function projectToRow(p) {
     p.views || 0,
     p.likes || 0,
     p.isUserSubmission ? true : false,
-    p.goLink || ""
+    p.goLink || "",
+    p.downloads || 0,
+    p.contributions || 0,
+    p.commentCount || 0
   ];
 }
 
@@ -582,14 +653,20 @@ function seedFamousData() {
   return SEED_FOR_SHEET.length;
 }
 
-// Đọc dữ liệu theo GET - hỗ trợ 2 loại:
+// Đọc dữ liệu theo GET - hỗ trợ 3 loại:
 //   ?action=getProjects    -> dữ liệu ĐÃ DUYỆT trên MAIN_SHEET (mặc định, dùng cho đồng bộ chính)
 //   ?action=getSubmissions -> dự án MỚI trên SUBMISSION_SHEET (quản lý bài chờ duyệt)
+//   ?action=getComments    -> danh sách bình luận trên COMMENTS_SHEET (lọc theo &projectId=... nếu có)
 function doGet(e) {
   try {
     const action = (e && e.parameter && e.parameter.action) || "getProjects";
     if (action === "getSubmissions") {
       const result = parseRows(ensureSheet(SUBMISSION_SHEET));
+      return createJsonResponse({ status: "success", total: result.rows.length, data: result.rows });
+    }
+    if (action === "getComments") {
+      const pid = e && e.parameter && e.parameter.projectId ? String(e.parameter.projectId) : undefined;
+      const result = parseComments(ensureCommentsSheet(), pid);
       return createJsonResponse({ status: "success", total: result.rows.length, data: result.rows });
     }
     const result = parseRows(ensureSheet(MAIN_SHEET));
@@ -599,9 +676,10 @@ function doGet(e) {
   }
 }
 
-// Xử lý ghi dữ liệu (POST) - quản lý 2 tab:
+// Xử lý ghi dữ liệu (POST) - quản lý 3 tab:
 //   SUBMISSION_SHEET: dự án mới người dùng đăng (chờ duyệt / từ chối) để admin quản lý THÊM - XÓA.
 //   MAIN_SHEET:       mô phỏng ĐÃ DUYỆT đang hiển thị trên website.
+//   COMMENTS_SHEET:   khu vực trao đổi, đánh giá, góp ý kinh nghiệm giảng dạy.
 function doPost(e) {
   try {
     // Đọc body ĐÚNG charset UTF-8 (tránh lỗi tiếng Việt / ký tự SEA bị vỡ chữ trong sheet).
@@ -699,8 +777,8 @@ function doPost(e) {
       });
     }
 
-    // 7. Cập nhật số liệu thống kê (Views / Likes) của bài ĐÃ DUYỆT trên MAIN_SHEET.
-    //    Gửi theo batch: payload.items = [{ projectId, views, likes }, ...]
+    // 7. Cập nhật số liệu thống kê (Views / Likes / Downloads / Contributions / CommentCount) của bài ĐÃ DUYỆT trên MAIN_SHEET.
+    //    Gửi theo batch: payload.items = [{ projectId, views, likes, downloads, contributions, commentCount }, ...]
     if (payload.action === "updateStats" && payload.items && Array.isArray(payload.items)) {
       const sheet = ensureSheet(MAIN_SHEET);
       const data = sheet.getDataRange().getValues();
@@ -711,8 +789,11 @@ function doPost(e) {
           if (String(payload.items[k].projectId) === String(data[i][0])) { match = payload.items[k]; break; }
         }
         if (match) {
-          sheet.getRange(i + 1, 15).setValue(Number(match.views) >= 0 ? Number(match.views) : (Number(data[i][14]) || 0));
-          sheet.getRange(i + 1, 16).setValue(Number(match.likes) >= 0 ? Number(match.likes) : (Number(data[i][15]) || 0));
+          if (match.views !== undefined && Number(match.views) >= 0) sheet.getRange(i + 1, 15).setValue(Number(match.views));
+          if (match.likes !== undefined && Number(match.likes) >= 0) sheet.getRange(i + 1, 16).setValue(Number(match.likes));
+          if (match.downloads !== undefined && Number(match.downloads) >= 0) sheet.getRange(i + 1, 19).setValue(Number(match.downloads));
+          if (match.contributions !== undefined && Number(match.contributions) >= 0) sheet.getRange(i + 1, 20).setValue(Number(match.contributions));
+          if (match.commentCount !== undefined && Number(match.commentCount) >= 0) sheet.getRange(i + 1, 21).setValue(Number(match.commentCount));
           updated++;
         }
       }
@@ -736,6 +817,37 @@ function doPost(e) {
         }
       }
       return createJsonResponse({ status: "success", message: "Đã cập nhật GoLink cho " + updated + " mô phỏng", updated: updated });
+    }
+
+    // 9. Thêm bình luận / bài học kinh nghiệm mới vào tab WebHub_Comments và đồng thời cập nhật commentCount
+    if (payload.action === "addComment" && payload.comment) {
+      const c = payload.comment;
+      const cSheet = ensureCommentsSheet();
+      const row = [
+        c.id || ("comm-" + new Date().getTime()),
+        c.projectId || "",
+        c.authorName || "Thành viên",
+        c.authorRole || "guest",
+        c.category || "experience",
+        c.content || "",
+        c.rating || 5,
+        c.createdAt || new Date().toISOString(),
+        c.likes || 0
+      ];
+      cSheet.appendRow(row);
+
+      if (c.projectId) {
+        const mSheet = ensureSheet(MAIN_SHEET);
+        const mData = mSheet.getDataRange().getValues();
+        for (let i = 1; i < mData.length; i++) {
+          if (String(mData[i][0]) === String(c.projectId)) {
+            const currentCount = Number(mData[i][20]) || 0;
+            mSheet.getRange(i + 1, 21).setValue(currentCount + 1);
+            break;
+          }
+        }
+      }
+      return createJsonResponse({ status: "success", message: "Đã ghi nhận bình luận mới vào tab WebHub_Comments" });
     }
 
     return createJsonResponse({ status: "ignored", message: "Không có hành động phù hợp" });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, Pencil, QrCode, Sparkles, Trash2 } from 'lucide-react';
+import { ExternalLink, Pencil, QrCode, Sparkles, Trash2, MessageSquare } from 'lucide-react';
 import { WebProject, Language } from '../types';
 import { translations } from '../translations';
 import { getGoUrl } from '../utils/goLink';
@@ -19,6 +19,7 @@ const SUBJECT_EMOJIS: Record<string, string> = {
   stem: '🚀',
   general: '📚',
   // Legacy compatibility
+  toan: '📐',
   languages: '💬',
   computer_science: '💻',
   history_society: '🏛️',
@@ -32,6 +33,7 @@ interface CompactListItemProps {
   lang: Language;
   isAdmin: boolean;
   onOpenQR: (project: WebProject) => void;
+  onOpenDiscussion: (project: WebProject) => void;
   onEditProject: (project: WebProject) => void;
   onDeleteRequest: (project: WebProject) => void;
   onLike: (projectId: string) => void;
@@ -43,6 +45,7 @@ export const CompactListItem: React.FC<CompactListItemProps> = ({
   lang,
   isAdmin,
   onOpenQR,
+  onOpenDiscussion,
   onEditProject,
   onDeleteRequest,
   onVisit,
@@ -87,6 +90,18 @@ export const CompactListItem: React.FC<CompactListItemProps> = ({
       {/* Quick Action Buttons */}
       <div className="flex items-center space-x-1.5 shrink-0">
         <button
+          onClick={() => onOpenDiscussion(project)}
+          className="px-2 py-1.5 rounded-lg bg-[#E2F1FF] text-[#0785F9] hover:bg-[#0785F9] hover:text-white transition-colors cursor-pointer text-xs font-bold flex items-center space-x-1"
+          title="Khu vực bình luận & trao đổi kinh nghiệm"
+        >
+          <MessageSquare className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Bình luận</span>
+          {(project.commentCount ?? 0) > 0 && (
+            <span className="text-[10px] ml-0.5">({project.commentCount})</span>
+          )}
+        </button>
+
+        <button
           onClick={() => onOpenQR(project)}
           className="p-1.5 rounded-lg border border-[#E2EDF8] text-[#58779B] hover:text-[#0785F9] hover:bg-[#E2F1FF] transition-colors cursor-pointer"
           title={t.generateQR}
@@ -97,7 +112,7 @@ export const CompactListItem: React.FC<CompactListItemProps> = ({
         <button
           onClick={handleVisit}
           className="p-1.5 rounded-lg bg-[#0785F9] hover:bg-[#006FE6] text-white transition-colors cursor-pointer"
-          title="Xem mô phỏng"
+          title="Xem nhanh mô phỏng"
         >
           <ExternalLink className="w-3.5 h-3.5" />
         </button>

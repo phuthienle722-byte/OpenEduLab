@@ -8,6 +8,8 @@ import {
   FilterState,
   Language,
   LANGUAGE_CODES,
+  ProjectComment,
+  ProjectStatsDirty,
   ViewMode,
   WebProject,
 } from './types';
@@ -26,6 +28,7 @@ import { QRCodeModal } from './components/QRCodeModal';
 import { SubmitModal } from './components/SubmitModal';
 import { AdminModal } from './components/AdminModal';
 import { DeleteConfirmModal } from './components/DeleteConfirmModal';
+import { DiscussionHubModal } from './components/DiscussionHubModal';
 import { Globe, Plus, Sparkles } from 'lucide-react';
 import {
   getStoredScriptUrl,
@@ -37,6 +40,9 @@ import {
   fetchSubmissionsFromSheet,
   deleteSubmissionsFromSheet,
   updateStatsInSheet,
+  fetchCommentsFromSheet,
+  pushCommentToSheet,
+  STORAGE_KEY_COMMENTS,
 } from './services/googleSync';
 import {
   isCommunityApprovedOnly,
@@ -46,6 +52,75 @@ import {
 const STORAGE_KEY_PROJECTS = 'webhub_projects_data_v3';
 const STORAGE_KEY_LANG = 'webhub_language_preference';
 const STORAGE_KEY_ADMIN = 'webhub_admin_session';
+
+const DEFAULT_SEED_COMMENTS: ProjectComment[] = [
+  {
+    id: 'comm-seed-lk-1',
+    projectId: 'proj-1792199361860',
+    authorName: 'Thầy Quốc Dũng (GV KHTN 9)',
+    authorRole: 'teacher',
+    category: 'experience',
+    content: 'Mô phỏng tán sắc ánh sáng qua lăng kính rất trực quan! Học sinh quan sát rõ góc lệch và dải màu cầu vồng khi thay đổi góc tới và chiết suất của lăng kính trong bài học KHTN 9.',
+    rating: 5,
+    createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+    likes: 12,
+  },
+  {
+    id: 'comm-seed-lk-2',
+    projectId: 'proj-1792199361860',
+    authorName: 'Minh Quân (Học sinh 9A1)',
+    authorRole: 'student',
+    category: 'feedback',
+    content: 'Em thích nhất phần điều chỉnh bước sóng ánh sáng đơn sắc để quan sát tia khúc xạ đổi hướng. Trực quan và dễ hiểu hơn nhiều so với hình vẽ tĩnh trong SGK ạ!',
+    rating: 5,
+    createdAt: new Date(Date.now() - 3600000 * 24 * 1.2).toISOString(),
+    likes: 7,
+  },
+  {
+    id: 'comm-seed-lk-3',
+    projectId: 'proj-1792199361860',
+    authorName: 'Cô Hoàng Mai (GV Vật Lý THCS)',
+    authorRole: 'teacher',
+    category: 'question',
+    content: 'Tác giả có thể bổ sung tùy chọn hiển thị đường pháp tuyến và số đo góc tới $i_1$, góc ló $i_2$ trên hình vẽ để học sinh đối chiếu số liệu lý thuyết không thầy Liêm?',
+    rating: 5,
+    createdAt: new Date(Date.now() - 3600000 * 6).toISOString(),
+    likes: 4,
+  },
+  {
+    id: 'comm-seed-1',
+    projectId: 'proj-1741697206385',
+    authorName: 'Thầy Lê Minh (GV KHTN 7)',
+    authorRole: 'teacher',
+    category: 'experience',
+    content: 'Đã ứng dụng trong tiết đo tốc độ chuyển động bài 8 KHTN 7. Học sinh thao tác bấm giờ trực tiếp trên điện thoại rất hào hứng, số liệu đo giữa các nhóm đồng đều!',
+    rating: 5,
+    createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
+    likes: 8,
+  },
+  {
+    id: 'comm-seed-2',
+    projectId: 'proj-1741697206385',
+    authorName: 'Hồng Anh (Học sinh 7A2)',
+    authorRole: 'student',
+    category: 'feedback',
+    content: 'Giao diện đồng hồ số to rõ, dễ nhìn từ xa khi làm thí nghiệm. Nếu tác giả bổ sung thêm nút lưu lịch sử 5 lần bấm gần nhất (lap time) thì làm báo cáo nhóm sẽ tiện hơn rất nhiều ạ!',
+    rating: 4,
+    createdAt: new Date(Date.now() - 3600000 * 24 * 1.5).toISOString(),
+    likes: 5,
+  },
+  {
+    id: 'comm-seed-3',
+    projectId: 'proj-1741697206385',
+    authorName: 'Cô Thu Trang (Tổ trưởng Chuyên môn)',
+    authorRole: 'teacher',
+    category: 'question',
+    content: 'Mô phỏng này có xuất bảng dữ liệu sang file Excel hoặc đồng bộ trực tiếp vào Google Sheets cho học sinh không thầy Liêm?',
+    rating: 5,
+    createdAt: new Date(Date.now() - 3600000 * 8).toISOString(),
+    likes: 3,
+  },
+];
 
 // Helper to ensure famous platforms and community submissions are cleanly separated
 const sanitizeAndMigrateProjects = (loadedList: WebProject[]): WebProject[] => {
@@ -118,8 +193,11 @@ const mergeCloudProject = (
   cloud: WebProject
 ): WebProject => ({
   ...cloud,
-  views: Math.max(local.views, cloud.views),
-  likes: Math.max(local.likes, cloud.likes),
+  views: Math.max(local.views || 0, cloud.views || 0),
+  likes: Math.max(local.likes || 0, cloud.likes || 0),
+  downloads: Math.max(local.downloads || 0, cloud.downloads || 0),
+  contributions: Math.max(local.contributions || 0, cloud.contributions || 0),
+  commentCount: Math.max(local.commentCount || 0, cloud.commentCount || 0),
   isFamous: local.isFamous === true || cloud.isFamous === true,
   isUserSubmission:
     local.isUserSubmission === true || cloud.isUserSubmission === true,
@@ -129,7 +207,7 @@ export default function App() {
   // 1. Language state
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_LANG);
-    // TrĂ¡nh giĂ¡ trá»‹ cÅ© (ja/fr) khĂ´ng cĂ²n Ä‘Æ°á»£c há»— trá»£ â†’ quay vá» tiáº¿ng Viá»‡t
+    // Tránh giá trị cũ không còn được hỗ trợ -> quay về tiếng Việt
     return LANGUAGE_CODES.includes(saved as Language) ? (saved as Language) : 'vi';
   });
 
@@ -150,7 +228,7 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY_ADMIN, val ? 'true' : 'false');
   };
 
-  // Biáº¿n kiá»ƒm soĂ¡t cháº¿ Ä‘á»™ cá»™ng Ä‘á»“ng: tab "BĂ i Ä‘Äƒng táº£i" chá»‰ hiá»ƒn thá»‹ bĂ i admin duyá»‡t
+  // Biến kiểm soát chế độ cộng đồng: tab "Bài đăng tải" chỉ hiển thị bài admin duyệt
   const [communityOnly, setCommunityOnly] = useState<boolean>(() =>
     isCommunityApprovedOnly()
   );
@@ -185,7 +263,7 @@ export default function App() {
                     (existing) => existing.id === item.id || existing.url === item.url
                   )
                 ) {
-                  // Giá»¯ nguyĂªn tráº¡ng thĂ¡i (approved / pending / rejected) khi táº£i láº¡i
+                  // Giữ nguyên trạng thái (approved / pending / rejected) khi tải lại
                   mergedList.push({ ...item });
                 }
               }
@@ -214,8 +292,32 @@ export default function App() {
     }
   }, [projects]);
 
-  // Theo dĂµi cĂ¡c thay Ä‘á»•i Views/Likes cá»¥c bá»™ chÆ°a ká»‹p Ä‘á»“ng bá»™ lĂªn Google Sheets.
-  const statsDirtyRef = useRef<Map<string, { views: number; likes: number }>>(new Map());
+  // 3b. Comments State (Local-first with persistent storage + Google Sheets sync)
+  const [comments, setComments] = useState<ProjectComment[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_COMMENTS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to load comments from localStorage', e);
+    }
+    return DEFAULT_SEED_COMMENTS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_COMMENTS, JSON.stringify(comments));
+    } catch (e) {
+      console.error('Failed to save comments to localStorage', e);
+    }
+  }, [comments]);
+
+  const [selectedDiscussionProject, setSelectedDiscussionProject] = useState<WebProject | null>(null);
+
+  // Theo dõi các thay đổi thống kê (Views, Likes, Downloads, Contributions, CommentCount) chưa kịp đồng bộ lên Google Sheets.
+  const statsDirtyRef = useRef<Map<string, ProjectStatsDirty>>(new Map());
   const statsTimerRef = useRef<number | null>(null);
 
   const flushStatsSync = useCallback(() => {
@@ -227,42 +329,46 @@ export default function App() {
     if (dirty.size === 0) return;
     const scriptUrl = getStoredScriptUrl();
     if (scriptUrl && isAutoSyncEnabled()) {
-      const items = Array.from(dirty.entries()).map(([projectId, s]) => ({
-        projectId,
-        views: s.views,
-        likes: s.likes,
-      }));
+      const items = Array.from(dirty.values()) as ProjectStatsDirty[];
       updateStatsInSheet(scriptUrl, items);
     }
     dirty.clear();
   }, []);
 
-  // Gá»™p cĂ¡c thay Ä‘á»•i stats vĂ  gá»­i lĂªn Sheets sau 4 giĂ¢y trá»… (debounce)
+  // Gộp các thay đổi stats và gửi lên Sheets sau 4 giây trễ (debounce)
   const markStatsDirty = useCallback(
-    (id: string, views: number, likes: number) => {
-      const prev = statsDirtyRef.current.get(id) || { views: 0, likes: 0 };
+    (id: string, partial: Partial<ProjectStatsDirty>) => {
+      const currentProject = projects.find((p) => p.id === id);
+      const prev = statsDirtyRef.current.get(id) || {
+        projectId: id,
+        views: currentProject?.views || 0,
+        likes: currentProject?.likes || 0,
+        downloads: currentProject?.downloads || 0,
+        contributions: currentProject?.contributions || 0,
+        commentCount: currentProject?.commentCount || 0,
+      };
       statsDirtyRef.current.set(id, {
-        views: Math.max(prev.views, views),
-        likes: Math.max(prev.likes, likes),
+        projectId: id,
+        views: partial.views !== undefined ? Math.max(prev.views || 0, partial.views) : (prev.views || 0),
+        likes: partial.likes !== undefined ? Math.max(prev.likes || 0, partial.likes) : (prev.likes || 0),
+        downloads: partial.downloads !== undefined ? Math.max(prev.downloads || 0, partial.downloads) : (prev.downloads || 0),
+        contributions: partial.contributions !== undefined ? Math.max(prev.contributions || 0, partial.contributions) : (prev.contributions || 0),
+        commentCount: partial.commentCount !== undefined ? Math.max(prev.commentCount || 0, partial.commentCount) : (prev.commentCount || 0),
       });
       if (statsTimerRef.current !== null) window.clearTimeout(statsTimerRef.current);
       statsTimerRef.current = window.setTimeout(flushStatsSync, 4000);
     },
-    [flushStatsSync]
+    [flushStatsSync, projects]
   );
 
-  // Dá»n dáº¹p timer vĂ  Ä‘áº©y stats cĂ²n dang dá»Ÿ khi Ä‘Ă³ng trang
+  // Dọn dẹp timer và đẩy stats còn dang dở khi đóng trang
   useEffect(() => {
     const flushOnUnload = () => {
       const dirty = statsDirtyRef.current;
       if (dirty.size === 0) return;
       const scriptUrl = getStoredScriptUrl();
       if (!scriptUrl || !isAutoSyncEnabled()) return;
-      const items = Array.from(dirty.entries()).map(([projectId, s]) => ({
-        projectId,
-        views: s.views,
-        likes: s.likes,
-      }));
+      const items = Array.from(dirty.values()) as ProjectStatsDirty[];
       updateStatsInSheet(scriptUrl, items);
     };
     window.addEventListener('beforeunload', flushOnUnload);
@@ -414,7 +520,32 @@ export default function App() {
         });
       // Äá»“ng thá»i kĂ©o danh sĂ¡ch bĂ i chá» duyá»‡t tá»« Ä‘Ă¡m mĂ¢y vá»
       const syncPendingPromise = syncPendingFromCloud();
-      Promise.allSettled([syncApprovedPromise, syncPendingPromise]).finally(() => {
+      const syncCommentsPromise = fetchCommentsFromSheet(scriptUrl)
+        .then((result) => {
+          if (!result.success || !result.data || !Array.isArray(result.data)) return;
+          setComments((prev) => {
+            const cloudComments = result.data as ProjectComment[];
+            const merged = [...prev];
+            let changed = false;
+            for (const cc of cloudComments) {
+              const idx = merged.findIndex((c) => c.id === cc.id);
+              if (idx >= 0) {
+                const maxLikes = Math.max(merged[idx].likes || 0, cc.likes || 0);
+                if (merged[idx].likes !== maxLikes) {
+                  merged[idx] = { ...merged[idx], likes: maxLikes };
+                  changed = true;
+                }
+              } else {
+                merged.push(cc);
+                changed = true;
+              }
+            }
+            return changed ? merged : prev;
+          });
+        })
+        .catch((err) => console.warn('Background comments sync notice:', err));
+
+      Promise.allSettled([syncApprovedPromise, syncPendingPromise, syncCommentsPromise]).finally(() => {
         setIsCloudSyncing(false);
       });
     }
@@ -443,8 +574,11 @@ export default function App() {
               if (dirty) {
                 cp = {
                   ...cp,
-                  views: Math.max(cp.views, dirty.views),
-                  likes: Math.max(cp.likes, dirty.likes),
+                  views: Math.max(cp.views || 0, dirty.views || 0),
+                  likes: Math.max(cp.likes || 0, dirty.likes || 0),
+                  downloads: Math.max(cp.downloads || 0, dirty.downloads || 0),
+                  contributions: Math.max(cp.contributions || 0, dirty.contributions || 0),
+                  commentCount: Math.max(cp.commentCount || 0, dirty.commentCount || 0),
                 };
               }
               const idx = merged.findIndex((p) => p.id === cp.id);
@@ -468,6 +602,32 @@ export default function App() {
         .catch((err) => {
           console.warn('Polling approved sync notice:', err);
         });
+
+      // Kéo bình luận định kỳ
+      fetchCommentsFromSheet(scriptUrl)
+        .then((result) => {
+          if (!result.success || !result.data || !Array.isArray(result.data)) return;
+          setComments((prev) => {
+            const cloudComments = result.data as ProjectComment[];
+            const merged = [...prev];
+            let changed = false;
+            for (const cc of cloudComments) {
+              const idx = merged.findIndex((c) => c.id === cc.id);
+              if (idx >= 0) {
+                const maxLikes = Math.max(merged[idx].likes || 0, cc.likes || 0);
+                if (merged[idx].likes !== maxLikes) {
+                  merged[idx] = { ...merged[idx], likes: maxLikes };
+                  changed = true;
+                }
+              } else {
+                merged.push(cc);
+                changed = true;
+              }
+            }
+            return changed ? merged : prev;
+          });
+        })
+        .catch((err) => console.warn('Polling comments notice:', err));
     };
 
     pollApproved();
@@ -475,21 +635,101 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // 6. Action Handlers
+  // 6. Action Handlers (Views, Likes, Downloads, Contributions, Comments)
   const handleLike = (projectId: string) => {
+    let updatedLikes = 0;
     setProjects((prev) =>
-      prev.map((p) => (p.id === projectId ? { ...p, likes: p.likes + 1 } : p))
+      prev.map((p) => {
+        if (p.id === projectId) {
+          updatedLikes = (p.likes || 0) + 1;
+          return { ...p, likes: updatedLikes };
+        }
+        return p;
+      })
     );
-    const p = projects.find((x) => x.id === projectId);
-    if (p) markStatsDirty(projectId, p.views, p.likes + 1);
+    markStatsDirty(projectId, { likes: updatedLikes });
   };
 
   const handleVisit = (projectId: string) => {
+    let updatedViews = 0;
     setProjects((prev) =>
-      prev.map((p) => (p.id === projectId ? { ...p, views: p.views + 1 } : p))
+      prev.map((p) => {
+        if (p.id === projectId) {
+          updatedViews = (p.views || 0) + 1;
+          return { ...p, views: updatedViews };
+        }
+        return p;
+      })
     );
-    const p = projects.find((x) => x.id === projectId);
-    if (p) markStatsDirty(projectId, p.views + 1, p.likes);
+    markStatsDirty(projectId, { views: updatedViews });
+  };
+
+  const handleDownload = (projectId: string, _type?: 'qr' | 'doc' | 'offline') => {
+    let updatedDownloads = 0;
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id === projectId) {
+          updatedDownloads = (p.downloads || 0) + 1;
+          return { ...p, downloads: updatedDownloads };
+        }
+        return p;
+      })
+    );
+    markStatsDirty(projectId, { downloads: updatedDownloads });
+  };
+
+  const handleContribute = (projectId: string) => {
+    let updatedContributions = 0;
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id === projectId) {
+          updatedContributions = (p.contributions || 0) + 1;
+          return { ...p, contributions: updatedContributions };
+        }
+        return p;
+      })
+    );
+    markStatsDirty(projectId, { contributions: updatedContributions });
+  };
+
+  const handleOpenDiscussion = (p: WebProject) => {
+    const fresh = projects.find((x) => x.id === p.id) || p;
+    setSelectedDiscussionProject(fresh);
+  };
+
+  const handleAddComment = (commentData: Omit<ProjectComment, 'id' | 'createdAt' | 'likes'>) => {
+    const newComment: ProjectComment = {
+      ...commentData,
+      id: `comm-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      createdAt: new Date().toISOString(),
+      likes: 0,
+    };
+    setComments((prev) => [newComment, ...prev]);
+
+    // Tăng commentCount trên project
+    let updatedCommentCount = 0;
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id === commentData.projectId) {
+          updatedCommentCount = (p.commentCount || 0) + 1;
+          return { ...p, commentCount: updatedCommentCount };
+        }
+        return p;
+      })
+    );
+    markStatsDirty(commentData.projectId, { commentCount: updatedCommentCount });
+
+    // Đẩy comment lên Google Sheets trong nền (non-blocking)
+    const scriptUrl = getStoredScriptUrl();
+    if (scriptUrl && isAutoSyncEnabled()) {
+      pushCommentToSheet(scriptUrl, newComment);
+    }
+  };
+
+  const handleLikeComment = (commentId: string) => {
+    setComments((prev) =>
+      prev.map((c) => (c.id === commentId ? { ...c, likes: (c.likes || 0) + 1 } : c))
+    );
   };
 
   const handleSubmitNewProject = (
@@ -748,6 +988,8 @@ const handleUpdateProject = (updated: WebProject) => {
         isAdmin={isAdmin}
         onOpenAdmin={() => setIsAdminOpen(true)}
         onOpenSubmit={handleOpenSubmitNew}
+        onOpenGuide={handleOpenGuide}
+        showGuide={showGuide}
         pendingCount={pendingCount}
         isCloudSyncing={isCloudSyncing}
       />
@@ -876,6 +1118,7 @@ const handleUpdateProject = (updated: WebProject) => {
                           lang={lang}
                           isAdmin={isAdmin}
                           onOpenQR={(p) => setSelectedQRProject(p)}
+                          onOpenDiscussion={handleOpenDiscussion}
                           onEditProject={handleOpenEditProject}
                           onDeleteRequest={(p) => setProjectToDelete(p)}
                           onLike={handleLike}
@@ -892,6 +1135,7 @@ const handleUpdateProject = (updated: WebProject) => {
                           lang={lang}
                           isAdmin={isAdmin}
                           onOpenQR={(p) => setSelectedQRProject(p)}
+                          onOpenDiscussion={handleOpenDiscussion}
                           onEditProject={handleOpenEditProject}
                           onDeleteRequest={(p) => setProjectToDelete(p)}
                           onLike={handleLike}
@@ -1002,6 +1246,8 @@ const handleUpdateProject = (updated: WebProject) => {
         onClose={() => setSelectedQRProject(null)}
         lang={lang}
         isAdmin={isAdmin}
+        onDownload={(p) => handleDownload(p.id, 'qr')}
+        onVisit={(p) => handleVisit(p.id)}
       />
 
       {/* Website Submission Modal (cũng dùng cho Admin chỉnh sửa bài) */}
@@ -1022,6 +1268,7 @@ const handleUpdateProject = (updated: WebProject) => {
         isAdmin={isAdmin}
         setIsAdmin={handleSetIsAdmin}
         projects={projects}
+        comments={comments}
         onApprove={handleApprove}
         onReject={handleReject}
         onDeleteRequest={(p) => setProjectToDelete(p)}
@@ -1034,6 +1281,28 @@ const handleUpdateProject = (updated: WebProject) => {
         communityOnly={communityOnly}
         onCommunityOnlyChange={handleCommunityOnlyChange}
         lang={lang}
+      />
+
+      {/* Discussion & Experience Exchange Hub Modal */}
+      <DiscussionHubModal
+        project={
+          selectedDiscussionProject
+            ? projects.find((p) => p.id === selectedDiscussionProject.id) || selectedDiscussionProject
+            : null
+        }
+        isOpen={!!selectedDiscussionProject}
+        onClose={() => setSelectedDiscussionProject(null)}
+        comments={comments.filter(
+          (c) => selectedDiscussionProject && c.projectId === selectedDiscussionProject.id
+        )}
+        onAddComment={handleAddComment}
+        onLikeComment={handleLikeComment}
+        onLikeProject={handleLike}
+        onVisitProject={handleVisit}
+        onDownloadResource={handleDownload}
+        onContributeResource={handleContribute}
+        lang={lang}
+        isAdmin={isAdmin}
       />
 
       {/* Delete Confirmation Modal (Admin safety requirement) */}

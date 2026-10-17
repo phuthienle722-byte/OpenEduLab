@@ -33,7 +33,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   const [countrySearch, setCountrySearch] = useState('');
   const [countryOpen, setCountryOpen] = useState(false);
   const countryRef = useRef<HTMLDivElement>(null);
-  const [category, setCategory] = useState<CategoryId>('toan');
+  const [category, setCategory] = useState<CategoryId>('math');
   const [educationLevel, setEducationLevel] = useState<EducationLevelId>('general');
   const [authorName, setAuthorName] = useState('');
   const [authorContact, setAuthorContact] = useState('');
@@ -48,7 +48,8 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
       setTitle(editingProject.title || '');
       setDescription(editingProject.description || '');
       setCountry((editingProject.country as CountryCode) || 'VN');
-      setCategory((editingProject.category as CategoryId) || 'toan');
+      const cat = (editingProject.category as CategoryId) || 'math';
+      setCategory(cat === 'toan' ? 'math' : cat);
       setEducationLevel((editingProject.educationLevel as EducationLevelId) || 'general');
       setAuthorName(editingProject.authorName || '');
       setAuthorContact(editingProject.authorContact || '');
@@ -59,7 +60,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
       setTitle('');
       setDescription('');
       setCountry('VN');
-      setCategory('toan');
+      setCategory('math');
       setEducationLevel('general');
       setAuthorName('');
       setAuthorContact('');

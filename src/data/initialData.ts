@@ -2,6 +2,31 @@ import { WebProject } from '../types';
 
 export const INITIAL_PROJECTS: WebProject[] = [
   // =========================================================================
+  // MÔ PHỎNG DẠY HỌC THCS (BÀI CỘNG ĐỒNG ĐÃ DUYỆT SẴN TRÊN HỆ THỐNG)
+  // =========================================================================
+  {
+    id: 'proj-1741697206385',
+    title: 'Đồng hồ bấm giây - THCS Vật Lý',
+    url: 'https://donghobamgiay.netlify.app',
+    description: 'Đồng hồ bấm giây kỹ thuật số trực tuyến dành cho các bài học thực hành KHTN 7 (đo tốc độ chuyển động), KHTN 6 và thể dục THCS. Hỗ trợ hiển thị lớn trên máy chiếu lớp học và điện thoại thông minh.',
+    country: 'VN',
+    category: 'khtn',
+    educationLevel: 'secondary',
+    status: 'approved',
+    isFamous: false,
+    isUserSubmission: true,
+    createdAt: '2026-03-11T12:00:00.000Z',
+    authorName: 'Lê Thanh Liêm',
+    authorContact: 'ltliem89@gmail.com',
+    tags: ['KHTN', 'Vật lý 7', 'Thực hành', 'Đo tốc độ', 'Đồng hồ'],
+    views: 1420,
+    likes: 128,
+    downloads: 64,
+    contributions: 12,
+    commentCount: 3,
+    previewImage: 'https://images.unsplash.com/photo-1508962914676-134849a727f0?w=800&auto=format&fit=crop&q=80',
+  },
+  // =========================================================================
   // CÁC NỀN TẢNG MÔ PHỎNG DẠY HỌC NỔI TIẾNG QUỐC TẾ (PhET, GeoGebra, Desmos...)
   // Khi người dùng bấm vào nút "⭐ Nổi tiếng" thì mới hiển thị.
   // Mặc định trang chủ hiển thị mục "Bài đăng tải" - chỉ gồm các bài admin duyệt.

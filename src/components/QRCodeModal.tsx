@@ -11,6 +11,8 @@ interface QRCodeModalProps {
   onClose: () => void;
   lang: Language;
   isAdmin: boolean;
+  onDownload?: (projectId: string) => void;
+  onVisit?: (projectId: string, url: string) => void;
 }
 
 export const QRCodeModal: React.FC<QRCodeModalProps> = ({
@@ -19,6 +21,8 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
   onClose,
   lang,
   isAdmin,
+  onDownload,
+  onVisit,
 }) => {
   const [qrSrc, setQrSrc] = useState<string>('');
   const [copied, setCopied] = useState(false);
@@ -51,6 +55,9 @@ const accessUrl = isAdmin ? project.url : (project.goLink || getGoUrl(window.loc
 
   const handleDownload = () => {
     if (!qrSrc) return;
+    if (onDownload && project) {
+      onDownload(project.id);
+    }
     const link = document.createElement('a');
     link.href = qrSrc;
     link.download = `QR-${project.title.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
@@ -141,6 +148,11 @@ const accessUrl = isAdmin ? project.url : (project.goLink || getGoUrl(window.loc
               href={accessUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => {
+                if (onVisit && project) {
+                  onVisit(project.id, project.url);
+                }
+              }}
               className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 shadow-sm transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5" />

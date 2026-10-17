@@ -8,6 +8,7 @@ import {
   Share2,
   Trash2,
   User,
+  MessageSquare,
 } from 'lucide-react';
 import { WebProject, Language } from '../types';
 import { translations } from '../translations';
@@ -22,6 +23,7 @@ interface TimelineLayerCardProps {
   lang: Language;
   isAdmin: boolean;
   onOpenQR: (project: WebProject) => void;
+  onOpenDiscussion?: (project: WebProject) => void;
   onDeleteRequest: (project: WebProject) => void;
   onLike: (projectId: string) => void;
   onVisit: (projectId: string, url: string) => void;
@@ -33,6 +35,7 @@ export const TimelineLayerCard: React.FC<TimelineLayerCardProps> = ({
   lang,
   isAdmin,
   onOpenQR,
+  onOpenDiscussion,
   onDeleteRequest,
   onLike,
   onVisit,
@@ -142,6 +145,22 @@ export const TimelineLayerCard: React.FC<TimelineLayerCardProps> = ({
 
           {/* Action Row */}
           <div className="flex items-center space-x-2">
+            {onOpenDiscussion && (
+              <button
+                onClick={() => onOpenDiscussion(project)}
+                className="px-3 py-2 rounded-xl bg-[#0785F9] hover:bg-[#006FE6] text-white text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
+                title="Khu vực bình luận & trao đổi kinh nghiệm"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Bình luận</span>
+                {(project.commentCount ?? 0) > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-white text-[10px] font-bold">
+                    {project.commentCount}
+                  </span>
+                )}
+              </button>
+            )}
+
             <button
               onClick={handleLike}
               className={`px-3 py-2 rounded-xl border text-xs font-semibold flex items-center space-x-1.5 transition-colors ${
@@ -164,10 +183,11 @@ export const TimelineLayerCard: React.FC<TimelineLayerCardProps> = ({
 
             <button
               onClick={handleVisit}
-              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors"
+              className="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center space-x-1.5 transition-colors"
+              title="Xem nhanh mô phỏng"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              <span>{t.visitWebsite}</span>
+              <span>Xem nhanh</span>
             </button>
 
             {isAdmin && (

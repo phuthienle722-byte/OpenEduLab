@@ -1,10 +1,11 @@
-import { WebProject } from '../types';
+import { WebProject, ProjectComment } from '../types';
 import { SEED_FOR_SHEET } from '../data/seedForSheet';
 import { getGoUrl } from '../utils/goLink';
 
 export const STORAGE_KEY_APPSCRIPT_URL = 'webhub_google_appscript_url';
 export const STORAGE_KEY_LAST_SYNC = 'webhub_google_last_sync';
 export const STORAGE_KEY_AUTO_SYNC = 'webhub_google_auto_sync';
+export const STORAGE_KEY_COMMENTS = 'webhub_comments_data_v1';
 
 /**
  * Mặc định Web App URL của Google Apps Script "WebHub Sync API".
@@ -223,6 +224,9 @@ export async function fetchProjectsFromSheet(scriptUrl: string): Promise<SyncRes
             : (item.tags ? String(item.tags).split(',').map((t: string) => t.trim()) : []),
           views: Number(item.views) || 0,
           likes: Number(item.likes) || 0,
+          downloads: Number(item.downloads) || 0,
+          contributions: Number(item.contributions) || 0,
+          commentCount: Number(item.commentCount) || 0,
           isFamous: isFamous,
           isUserSubmission: Boolean(
             item.isUserSubmission === true ||
@@ -459,6 +463,9 @@ export async function fetchSubmissionsFromSheet(scriptUrl: string): Promise<Sync
           : (item.tags ? String(item.tags).split(',').map((t: string) => t.trim()) : []),
         views: Number(item.views) || 0,
         likes: Number(item.likes) || 0,
+        downloads: Number(item.downloads) || 0,
+        contributions: Number(item.contributions) || 0,
+        commentCount: Number(item.commentCount) || 0,
         isFamous: isFamous,
         isUserSubmission: isUserSubmission,
       };
@@ -492,12 +499,19 @@ export async function deleteSubmissionsFromSheet(scriptUrl: string, projectIds: 
 }
 
 /**
- * Cập nhật số liệu thống kê (Views / Likes) của bài ĐÃ DUYỆT lên Google Sheets.
- * Gửi theo batch: items = [{ projectId, views, likes }, ...] để hạn chế số lượt POST.
+ * Cập nhật số liệu thống kê (Views / Likes / Downloads / Contributions / Comments)
+ * của bài ĐÃ DUYỆT lên Google Sheets. Gửi theo batch để hạn chế số lượt POST.
  */
 export async function updateStatsInSheet(
   scriptUrl: string,
-  items: { projectId: string; views: number; likes: number }[]
+  items: {
+    projectId: string;
+    views: number;
+    likes: number;
+    downloads?: number;
+    contributions?: number;
+    commentCount?: number;
+  }[]
 ): Promise<void> {
   const url = cleanScriptUrl(scriptUrl);
   if (!url || url.includes('docs.google.com/spreadsheets') || items.length === 0) return;
@@ -511,6 +525,57 @@ export async function updateStatsInSheet(
     });
   } catch (e) {
     console.warn('Silent fail updating stats to Google Sheet', e);
+  }
+}
+
+/**
+ * Gửi một bình luận mới lên Google Sheets (lưu vào tab WebHub_Comments).
+ */
+export async function pushCommentToSheet(
+  scriptUrl: string,
+  comment: ProjectComment
+): Promise<void> {
+  const url = cleanScriptUrl(scriptUrl);
+  if (!url || url.includes('docs.google.com/spreadsheets')) return;
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'addComment', comment }),
+    });
+  } catch (e) {
+    console.warn('Silent fail pushing comment to Google Sheet', e);
+  }
+}
+
+/**
+ * Tải danh sách bình luận từ Google Sheets (?action=getComments).
+ */
+export async function fetchCommentsFromSheet(
+  scriptUrl: string,
+  projectId?: string
+): Promise<{ success: boolean; data?: ProjectComment[] }> {
+  const url = cleanScriptUrl(scriptUrl);
+  if (!url || url.includes('docs.google.com/spreadsheets')) {
+    return { success: false, data: [] };
+  }
+
+  try {
+    const fetchUrl = projectId
+      ? `${url}?action=getComments&projectId=${encodeURIComponent(projectId)}`
+      : `${url}?action=getComments`;
+    const response = await fetch(fetchUrl);
+    if (!response.ok) return { success: false, data: [] };
+    const result = await response.json();
+    if (result && Array.isArray(result.data)) {
+      return { success: true, data: result.data };
+    }
+    return { success: true, data: [] };
+  } catch (e) {
+    console.warn('Silent fail fetching comments from Google Sheet', e);
+    return { success: false, data: [] };
   }
 }
 

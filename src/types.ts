@@ -11,8 +11,10 @@ export type CategoryId =
   | 'history'           // Lịch sử
   | 'geography'         // Địa lý
   | 'natural_sciences'  // Khoa học tự nhiên (KHTN)
+  | 'khtn'              // KHTN alias
   | 'stem'              // STEM & Thí nghiệm ảo
-  | 'general';          // Môn học khác
+  | 'general'          // Môn học khác
+  | 'toan';             // Hỗ trợ tương thích ngược cho dữ liệu cũ
 
 export type EducationLevelId =
   | 'all'
@@ -39,9 +41,36 @@ export interface WebProject {
   tags: string[];
   views: number;
   likes: number;
+  downloads?: number; // Số lượt tải về tài liệu / giáo án / QR
+  contributions?: number; // Số lượt đóng góp tài nguyên / bài tập
+  commentCount?: number; // Số lượng bình luận
   goLink?: string; // Link /go/<mã-hóa> dùng cho người dùng thường (ẩn URL gốc)
   isFamous?: boolean; // Website mô phỏng nổi tiếng (PhET, GeoGebra, NetSim...)
   isUserSubmission?: boolean; // Bài do NGƯỜI DÙNG đăng lên, admin đã duyệt → thuộc tab "Bài đăng tải"
+}
+
+export type CommentRole = 'teacher' | 'student' | 'creator' | 'guest';
+export type CommentCategory = 'experience' | 'feedback' | 'question';
+
+export interface ProjectComment {
+  id: string;
+  projectId: string;
+  authorName: string;
+  authorRole: CommentRole;
+  category: CommentCategory;
+  content: string;
+  rating?: number; // 1 - 5 sao
+  createdAt: string; // ISO string
+  likes: number;
+}
+
+export interface ProjectStatsDirty {
+  projectId: string;
+  views: number;
+  likes: number;
+  downloads: number;
+  contributions: number;
+  commentCount: number;
 }
 
 export const LANGUAGE_CODES = [
