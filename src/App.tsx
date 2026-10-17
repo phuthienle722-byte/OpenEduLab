@@ -29,6 +29,7 @@ import { SubmitModal } from './components/SubmitModal';
 import { AdminModal } from './components/AdminModal';
 import { DeleteConfirmModal } from './components/DeleteConfirmModal';
 import { DiscussionHubModal } from './components/DiscussionHubModal';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Globe, Plus, Sparkles } from 'lucide-react';
 import {
   getStoredScriptUrl,
@@ -166,8 +167,19 @@ const sanitizeAndMigrateProjects = (loadedList: WebProject[]): WebProject[] => {
       const isUserSubmission =
         p.isUserSubmission === true ||
         (p.status === 'approved' && !isFamousActual);
+      const safeTags = Array.isArray(p.tags)
+        ? p.tags.map(String).map((t) => t.trim()).filter(Boolean)
+        : typeof p.tags === 'string'
+        ? (p.tags as string).split(',').map((t) => t.trim()).filter(Boolean)
+        : [];
       return {
         ...p,
+        tags: safeTags,
+        views: Number(p.views) || 0,
+        likes: Number(p.likes) || 0,
+        downloads: Number(p.downloads) || 0,
+        contributions: Number(p.contributions) || 0,
+        commentCount: Number(p.commentCount) || 0,
         isFamous: isFamousActual,
         isUserSubmission,
       };
@@ -191,17 +203,26 @@ const sanitizeAndMigrateProjects = (loadedList: WebProject[]): WebProject[] => {
 const mergeCloudProject = (
   local: WebProject,
   cloud: WebProject
-): WebProject => ({
-  ...cloud,
-  views: Math.max(local.views || 0, cloud.views || 0),
-  likes: Math.max(local.likes || 0, cloud.likes || 0),
-  downloads: Math.max(local.downloads || 0, cloud.downloads || 0),
-  contributions: Math.max(local.contributions || 0, cloud.contributions || 0),
-  commentCount: Math.max(local.commentCount || 0, cloud.commentCount || 0),
-  isFamous: local.isFamous === true || cloud.isFamous === true,
-  isUserSubmission:
-    local.isUserSubmission === true || cloud.isUserSubmission === true,
-});
+): WebProject => {
+  const cloudTags = Array.isArray(cloud.tags) && cloud.tags.length > 0
+    ? cloud.tags
+    : typeof cloud.tags === 'string'
+    ? (cloud.tags as string).split(',').map((t) => t.trim()).filter(Boolean)
+    : [];
+  const localTags = Array.isArray(local.tags) ? local.tags : [];
+  return {
+    ...cloud,
+    tags: cloudTags.length > 0 ? cloudTags : localTags,
+    views: Math.max(local.views || 0, cloud.views || 0),
+    likes: Math.max(local.likes || 0, cloud.likes || 0),
+    downloads: Math.max(local.downloads || 0, cloud.downloads || 0),
+    contributions: Math.max(local.contributions || 0, cloud.contributions || 0),
+    commentCount: Math.max(local.commentCount || 0, cloud.commentCount || 0),
+    isFamous: local.isFamous === true || cloud.isFamous === true,
+    isUserSubmission:
+      local.isUserSubmission === true || cloud.isUserSubmission === true,
+  };
+};
 
 export default function App() {
   // 1. Language state
@@ -1284,26 +1305,32 @@ const handleUpdateProject = (updated: WebProject) => {
       />
 
       {/* Discussion & Experience Exchange Hub Modal */}
-      <DiscussionHubModal
-        project={
-          selectedDiscussionProject
-            ? projects.find((p) => p.id === selectedDiscussionProject.id) || selectedDiscussionProject
-            : null
-        }
-        isOpen={!!selectedDiscussionProject}
-        onClose={() => setSelectedDiscussionProject(null)}
-        comments={comments.filter(
-          (c) => selectedDiscussionProject && c.projectId === selectedDiscussionProject.id
-        )}
-        onAddComment={handleAddComment}
-        onLikeComment={handleLikeComment}
-        onLikeProject={handleLike}
-        onVisitProject={handleVisit}
-        onDownloadResource={handleDownload}
-        onContributeResource={handleContribute}
-        lang={lang}
-        isAdmin={isAdmin}
-      />
+      <ErrorBoundary
+        fallbackTitle="Không thể hiển thị khu vực bình luận"
+        onReset={() => setSelectedDiscussionProject(null)}
+      >
+        <DiscussionHubModal
+          project={
+            selectedDiscussionProject
+              ? projects.find((p) => p.id === selectedDiscussionProject.id) || selectedDiscussionProject
+              : null
+          }
+          isOpen={!!selectedDiscussionProject}
+          onClose={() => setSelectedDiscussionProject(null)}
+          comments={comments.filter(
+            (c) => selectedDiscussionProject && c.projectId === selectedDiscussionProject.id
+          )}
+          onAddComment={handleAddComment}
+          onLikeComment={handleLikeComment}
+          onLikeProject={handleLike}
+          onVisitProject={handleVisit}
+          onDownloadResource={handleDownload}
+          onContributeResource={handleContribute}
+          onOpenQR={(p) => setSelectedQRProject(p)}
+          lang={lang}
+          isAdmin={isAdmin}
+        />
+      </ErrorBoundary>
 
       {/* Delete Confirmation Modal (Admin safety requirement) */}
       <DeleteConfirmModal

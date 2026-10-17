@@ -116,7 +116,7 @@ export const TimelineLayerCard: React.FC<TimelineLayerCardProps> = ({
           </p>
 
           {/* Tags */}
-          {project.tags.length > 0 && (
+          {Array.isArray(project.tags) && project.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-3">
               {project.tags.map((tag, idx) => (
                 <span

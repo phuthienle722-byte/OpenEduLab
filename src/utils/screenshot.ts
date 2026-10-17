@@ -47,8 +47,10 @@ export function getWebsiteScreenshotUrl(rawUrl: string, customThumbnail?: string
  * True nếu URL là ảnh xem trước do mshots sinh ra theo một URL gốc.
  * Những URL này chứa URL thật của mô phỏng bên trong — không nên dùng công khai.
  */
-export function isMshotsTimingThumbnail(rawUrl: string): boolean {
+export function isMshotsTimingThumbnail(rawUrl?: string): boolean {
   if (!rawUrl) return false;
+  // Bỏ qua ngay lập tức đối với data URL (Base64) để tránh duyệt chuỗi hàng trăm KB
+  if (rawUrl.startsWith('data:image/')) return false;
   const lower = rawUrl.trim().toLowerCase();
   return lower.includes('s0.wp.com/mshots') || lower.includes('mshots/v1/');
 }

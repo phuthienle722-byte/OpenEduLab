@@ -36,8 +36,13 @@ export const BrowserMockupFrame: React.FC<BrowserMockupFrameProps> = ({
   const screenshotUrl = getWebsiteScreenshotUrl(displayUrl || url, safePreview);
 
   React.useEffect(() => {
-    setImageLoaded(false);
-    setImageError(false);
+    if (screenshotUrl && screenshotUrl.startsWith('data:image/')) {
+      setImageLoaded(true);
+      setImageError(false);
+    } else {
+      setImageLoaded(false);
+      setImageError(false);
+    }
   }, [screenshotUrl]);
 
   const aspectClass =

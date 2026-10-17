@@ -18,6 +18,7 @@ import {
   GraduationCap,
   CheckCircle2,
   Share2,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   WebProject,
@@ -45,7 +46,7 @@ interface DiscussionHubModalProps {
   onVisitProject: (projectId: string, url: string) => void;
   onDownloadResource: (projectId: string, type: 'qr' | 'guide' | 'data') => void;
   onContributeResource: (projectId: string) => void;
-  onOpenQR: (project: WebProject) => void;
+  onOpenQR?: (project: WebProject) => void;
   lang: Language;
   isAdmin: boolean;
 }
@@ -54,7 +55,7 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
   project,
   isOpen,
   onClose,
-  comments,
+  comments = [],
   onAddComment,
   onLikeComment,
   onLikeProject,
@@ -65,14 +66,18 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
   lang,
   isAdmin,
 }) => {
-  const t = translations[lang];
+  const t = translations[lang] || translations.vi;
 
   // Comment filter & form state
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<
     'ALL' | CommentCategory
   >('ALL');
   const [authorName, setAuthorName] = useState(() => {
-    return localStorage.getItem('openedulab_user_name') || '';
+    try {
+      return localStorage.getItem('openedulab_user_name') || '';
+    } catch {
+      return '';
+    }
   });
   const [authorRole, setAuthorRole] = useState<CommentRole>('teacher');
   const [commentCategory, setCommentCategory] =
@@ -84,36 +89,83 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
   const [isAISummaryExpanded, setIsAISummaryExpanded] = useState(true);
   const [hasContributed, setHasContributed] = useState(false);
 
-  // Filter comments for this project
+  // An toàn lọc bình luận của mô phỏng này
   const projectComments = useMemo(() => {
-    if (!project) return [];
-    return comments.filter((c) => c.projectId === project.id);
+    if (!project || !project.id) return [];
+    const list = Array.isArray(comments) ? comments : [];
+    return list.filter((c) => c && c.projectId === project.id);
   }, [comments, project]);
 
   const displayedComments = useMemo(() => {
     if (activeCategoryFilter === 'ALL') return projectComments;
-    return projectComments.filter((c) => c.category === activeCategoryFilter);
+    return projectComments.filter((c) => c && c.category === activeCategoryFilter);
   }, [projectComments, activeCategoryFilter]);
+
+  // Xử lý an toàn danh sách Tags: chấp nhận cả Array lẫn chuỗi phân tách bằng dấu phẩy
+  const safeTags = useMemo(() => {
+    if (!project || !project.tags) return [];
+    if (Array.isArray(project.tags)) {
+      return project.tags.map(String).map((t) => t.trim()).filter(Boolean);
+    }
+    if (typeof project.tags === 'string') {
+      return (project.tags as string)
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
+    }
+    return [];
+  }, [project]);
+
+  // Tên quốc gia hiển thị an toàn
+  const countryName = useMemo(() => {
+    if (!project) return 'Việt Nam';
+    const code = project.country || 'VN';
+    return (
+      (t.countryNames && t.countryNames[code]) ||
+      countryDisplayName(code, t.countryNames) ||
+      'Việt Nam'
+    );
+  }, [project, t]);
+
+  // Link bảo vệ / điều hướng an toàn
+  const goUrl = useMemo(() => {
+    if (!project) return '';
+    try {
+      return (
+        project.goLink ||
+        getGoUrl(window.location, project.url, {
+          title: project.title,
+          authorName: project.authorName,
+          authorEmail: project.authorContact,
+        })
+      );
+    } catch {
+      return project.url || '';
+    }
+  }, [project]);
+
+  const displayUrl = isAdmin ? (project?.url || goUrl) : goUrl;
 
   if (!isOpen || !project) return null;
 
-  const goUrl =
-    project.goLink ||
-    getGoUrl(window.location, project.url, {
-      title: project.title,
-      authorName: project.authorName,
-      authorEmail: project.authorContact,
-    });
-  const displayUrl = isAdmin ? project.url : goUrl;
-
   const handleLaunchSimulation = () => {
-    onVisitProject(project.id, project.url);
-    window.open(displayUrl, '_blank', 'noopener,noreferrer');
+    try {
+      onVisitProject(project.id, project.url);
+      window.open(displayUrl || project.url, '_blank', 'noopener,noreferrer');
+    } catch (e) {
+      console.warn('Failed to launch simulation', e);
+    }
   };
 
   const handleDownloadQR = () => {
-    onDownloadResource(project.id, 'qr');
-    onOpenQR(project);
+    try {
+      onDownloadResource(project.id, 'qr');
+      if (typeof onOpenQR === 'function') {
+        onOpenQR(project);
+      }
+    } catch (e) {
+      console.warn('Failed to open QR modal', e);
+    }
   };
 
   const handleContribute = () => {
@@ -127,7 +179,11 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
     if (!content.trim() || !authorName.trim()) return;
 
     setIsSubmitting(true);
-    localStorage.setItem('openedulab_user_name', authorName.trim());
+    try {
+      localStorage.setItem('openedulab_user_name', authorName.trim());
+    } catch {
+      // ignore
+    }
 
     onAddComment({
       projectId: project.id,
@@ -154,13 +210,13 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
       };
     }
 
-    const expComments = projectComments.filter((c) => c.category === 'experience');
-    const feedbackComments = projectComments.filter((c) => c.category === 'feedback');
+    const expComments = projectComments.filter((c) => c && c.category === 'experience');
+    const feedbackComments = projectComments.filter((c) => c && c.category === 'feedback');
 
     return {
       strengths:
         expComments.length > 0
-          ? `${expComments.length} giáo viên đánh giá mô phỏng giúp học sinh hiểu bản chất hiện tượng nhanh chóng.`
+          ? `${expComments.length} thầy cô/học sinh đánh giá mô phỏng giúp hiểu nhanh bản chất hiện tượng.`
           : 'Được cộng đồng đánh giá cao về tính tương tác và trực quan sinh động.',
       considerations:
         feedbackComments.length > 0
@@ -193,11 +249,11 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                   Khu vực Trao đổi Kinh nghiệm & Bình luận
                 </span>
                 <span className="text-[10px] font-semibold text-[#58779B]">
-                  {t.countryNames[project.country] || countryDisplayName(project.country, t.countryNames)}
+                  {countryName}
                 </span>
               </div>
               <h3 className="font-bold text-[#0B3B78] text-sm sm:text-base truncate">
-                {project.title}
+                {project.title || 'Mô phỏng học tập'}
               </h3>
             </div>
           </div>
@@ -229,11 +285,11 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                 lang={lang}
               />
               <div className="mt-2.5 flex items-center justify-between text-xs text-[#58779B]">
-                <span className="flex items-center space-x-1 font-medium">
-                  <User className="w-3.5 h-3.5 text-[#0785F9]" />
-                  <span>{project.authorName}</span>
+                <span className="flex items-center space-x-1 font-medium truncate max-w-[180px]">
+                  <User className="w-3.5 h-3.5 text-[#0785F9] shrink-0" />
+                  <span className="truncate">{project.authorName || 'Thành viên'}</span>
                 </span>
-                <span className="text-[11px] font-mono">
+                <span className="text-[11px] font-mono shrink-0">
                   {formatTimeAgo(project.createdAt, lang)}
                 </span>
               </div>
@@ -243,13 +299,14 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
             <div className="md:col-span-7 flex flex-col justify-between space-y-3">
               <div>
                 <p className="text-xs text-[#23466F] leading-relaxed line-clamp-3">
-                  {project.description || 'Mô phỏng học tập tương tác giúp người học khám phá hiện tượng khoa học và thực hành thí nghiệm số.'}
+                  {project.description ||
+                    'Mô phỏng học tập tương tác giúp người học khám phá hiện tượng khoa học và thực hành thí nghiệm số.'}
                 </p>
 
-                {/* Tags */}
-                {project.tags && project.tags.length > 0 && (
+                {/* Safe Tags */}
+                {safeTags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {project.tags.map((tag, idx) => (
+                    {safeTags.map((tag, idx) => (
                       <span
                         key={idx}
                         className="px-2 py-0.5 rounded-md bg-white border border-[#E2EDF8] text-[#58779B] text-[10px] font-medium"
@@ -266,7 +323,9 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                 {/* 1. Views */}
                 <div className="p-2 rounded-xl bg-white border border-[#E2EDF8] text-center shadow-2xs">
                   <Eye className="w-3.5 h-3.5 text-[#0785F9] mx-auto mb-1" />
-                  <div className="text-xs font-bold text-[#0B3B78]">{project.views}</div>
+                  <div className="text-xs font-bold text-[#0B3B78]">
+                    {project.views || 0}
+                  </div>
                   <div className="text-[9px] text-[#58779B]">Truy cập</div>
                 </div>
 
@@ -277,7 +336,9 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                   title="Thả tim ủng hộ"
                 >
                   <Heart className="w-3.5 h-3.5 text-[#FF3B4E] mx-auto mb-1 group-hover:scale-110 transition-transform fill-[#FF3B4E]" />
-                  <div className="text-xs font-bold text-[#FF3B4E]">{project.likes}</div>
+                  <div className="text-xs font-bold text-[#FF3B4E]">
+                    {project.likes || 0}
+                  </div>
                   <div className="text-[9px] text-[#58779B]">Yêu thích</div>
                 </button>
 
@@ -533,7 +594,9 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                     >
                       <Star
                         className={`w-4 h-4 ${
-                          star <= rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'
+                          star <= rating
+                            ? 'fill-amber-400 text-amber-400'
+                            : 'text-slate-300'
                         }`}
                       />
                     </button>
@@ -594,6 +657,11 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                 </div>
               ) : (
                 displayedComments.map((c) => {
+                  if (!c) return null;
+                  const safeAuthor = (c.authorName || 'Thành viên').trim();
+                  const initialLetter =
+                    safeAuthor.length > 0 ? safeAuthor.charAt(0).toUpperCase() : 'U';
+
                   const roleLabel =
                     c.authorRole === 'teacher'
                       ? '👩‍🏫 Giáo viên'
@@ -617,20 +685,25 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                       ? 'bg-amber-50 text-amber-700 border-amber-200'
                       : 'bg-purple-50 text-purple-700 border-purple-200';
 
+                  const safeRating = Math.min(
+                    5,
+                    Math.max(1, Math.round(Number(c.rating) || 5))
+                  );
+
                   return (
                     <div
-                      key={c.id}
+                      key={c.id || Math.random().toString()}
                       className="p-3.5 rounded-2xl bg-white border border-[#E2EDF8] shadow-xs space-y-2 hover:border-[#0785F9]/30 transition-colors"
                     >
                       <div className="flex items-center justify-between flex-wrap gap-2">
                         <div className="flex items-center space-x-2">
-                          <div className="w-7 h-7 rounded-full bg-[#E2F1FF] text-[#0785F9] font-bold text-xs flex items-center justify-center">
-                            {c.authorName.charAt(0).toUpperCase()}
+                          <div className="w-7 h-7 rounded-full bg-[#E2F1FF] text-[#0785F9] font-bold text-xs flex items-center justify-center shrink-0">
+                            {initialLetter}
                           </div>
                           <div>
                             <div className="flex items-center space-x-1.5">
                               <span className="font-bold text-xs text-[#0B3B78]">
-                                {c.authorName}
+                                {safeAuthor}
                               </span>
                               <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-slate-100 text-slate-600 font-medium">
                                 {roleLabel}
@@ -643,9 +716,9 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                         </div>
 
                         <div className="flex items-center space-x-2">
-                          {c.rating && (
+                          {c.rating != null && (
                             <div className="flex items-center text-amber-400">
-                              {Array.from({ length: c.rating }).map((_, i) => (
+                              {Array.from({ length: safeRating }).map((_, i) => (
                                 <Star
                                   key={i}
                                   className="w-3 h-3 fill-amber-400"
