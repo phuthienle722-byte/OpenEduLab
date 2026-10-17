@@ -1305,32 +1305,32 @@ const handleUpdateProject = (updated: WebProject) => {
       />
 
       {/* Discussion & Experience Exchange Hub Modal */}
-      <ErrorBoundary
-        fallbackTitle="Không thể hiển thị khu vực bình luận"
-        onReset={() => setSelectedDiscussionProject(null)}
-      >
-        <DiscussionHubModal
-          project={
-            selectedDiscussionProject
-              ? projects.find((p) => p.id === selectedDiscussionProject.id) || selectedDiscussionProject
-              : null
-          }
-          isOpen={!!selectedDiscussionProject}
-          onClose={() => setSelectedDiscussionProject(null)}
-          comments={comments.filter(
-            (c) => selectedDiscussionProject && c.projectId === selectedDiscussionProject.id
-          )}
-          onAddComment={handleAddComment}
-          onLikeComment={handleLikeComment}
-          onLikeProject={handleLike}
-          onVisitProject={handleVisit}
-          onDownloadResource={handleDownload}
-          onContributeResource={handleContribute}
-          onOpenQR={(p) => setSelectedQRProject(p)}
-          lang={lang}
-          isAdmin={isAdmin}
-        />
-      </ErrorBoundary>
+      {selectedDiscussionProject && (
+        <ErrorBoundary
+          fallbackTitle="Không thể hiển thị khu vực bình luận"
+          onReset={() => setSelectedDiscussionProject(null)}
+        >
+          <DiscussionHubModal
+            project={
+              projects.find((p) => p.id === selectedDiscussionProject.id) || selectedDiscussionProject
+            }
+            isOpen={true}
+            onClose={() => setSelectedDiscussionProject(null)}
+            comments={comments.filter(
+              (c) => c && c.projectId === selectedDiscussionProject.id
+            )}
+            onAddComment={handleAddComment}
+            onLikeComment={handleLikeComment}
+            onLikeProject={handleLike}
+            onVisitProject={handleVisit}
+            onDownloadResource={handleDownload}
+            onContributeResource={handleContribute}
+            onOpenQR={(p) => setSelectedQRProject(p)}
+            lang={lang}
+            isAdmin={isAdmin}
+          />
+        </ErrorBoundary>
+      )}
 
       {/* Delete Confirmation Modal (Admin safety requirement) */}
       <DeleteConfirmModal

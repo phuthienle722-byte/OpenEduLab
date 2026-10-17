@@ -146,6 +146,32 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
 
   const displayUrl = isAdmin ? (project?.url || goUrl) : goUrl;
 
+  // AI Insights Generation based on existing comments (Hook must be declared before any conditional return!)
+  const aiInsightSummary = useMemo(() => {
+    if (projectComments.length === 0) {
+      return {
+        strengths: 'Mô phỏng trực quan, dễ thao tác và bám sát chương trình GDPT.',
+        considerations: 'Nên chuẩn bị phiếu học tập có câu hỏi định hướng trước khi cho học sinh tương tác.',
+        tips: 'Thích hợp dùng cho phần Khởi động hoặc Khám phá kiến thức mới.',
+      };
+    }
+
+    const expComments = projectComments.filter((c) => c && c.category === 'experience');
+    const feedbackComments = projectComments.filter((c) => c && c.category === 'feedback');
+
+    return {
+      strengths:
+        expComments.length > 0
+          ? `${expComments.length} thầy cô/học sinh đánh giá mô phỏng giúp hiểu nhanh bản chất hiện tượng.`
+          : 'Được cộng đồng đánh giá cao về tính tương tác và trực quan sinh động.',
+      considerations:
+        feedbackComments.length > 0
+          ? 'Một số phản hồi đề xuất tối ưu phím bấm trên màn hình điện thoại và bổ sung thêm bài tập mẫu.'
+          : 'Nên kiểm tra đường truyền mạng trong phòng máy trước giờ thực hành.',
+      tips: 'Tích hợp kết hợp với bảng phụ hoặc phiếu học tập nhóm để đạt hiệu quả sư phạm tối đa.',
+    };
+  }, [projectComments]);
+
   if (!isOpen || !project) return null;
 
   const handleLaunchSimulation = () => {
@@ -199,32 +225,6 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
     setSubmitSuccessMsg(true);
     setTimeout(() => setSubmitSuccessMsg(false), 3000);
   };
-
-  // AI Insights Generation based on existing comments
-  const aiInsightSummary = useMemo(() => {
-    if (projectComments.length === 0) {
-      return {
-        strengths: 'Mô phỏng trực quan, dễ thao tác và bám sát chương trình GDPT.',
-        considerations: 'Nên chuẩn bị phiếu học tập có câu hỏi định hướng trước khi cho học sinh tương tác.',
-        tips: 'Thích hợp dùng cho phần Khởi động hoặc Khám phá kiến thức mới.',
-      };
-    }
-
-    const expComments = projectComments.filter((c) => c && c.category === 'experience');
-    const feedbackComments = projectComments.filter((c) => c && c.category === 'feedback');
-
-    return {
-      strengths:
-        expComments.length > 0
-          ? `${expComments.length} thầy cô/học sinh đánh giá mô phỏng giúp hiểu nhanh bản chất hiện tượng.`
-          : 'Được cộng đồng đánh giá cao về tính tương tác và trực quan sinh động.',
-      considerations:
-        feedbackComments.length > 0
-          ? 'Một số phản hồi đề xuất tối ưu phím bấm trên màn hình điện thoại và bổ sung thêm bài tập mẫu.'
-          : 'Nên kiểm tra đường truyền mạng trong phòng máy trước giờ thực hành.',
-      tips: 'Tích hợp kết hợp với bảng phụ hoặc phiếu học tập nhóm để đạt hiệu quả sư phạm tối đa.',
-    };
-  }, [projectComments]);
 
   return (
     <div
