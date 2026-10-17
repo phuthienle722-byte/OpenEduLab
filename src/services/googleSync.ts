@@ -175,9 +175,10 @@ export async function fetchProjectsFromSheet(scriptUrl: string): Promise<SyncRes
   }
 
   try {
-    const fetchUrl = url.includes('?') ? `${url}&action=getProjects` : `${url}?action=getProjects`;
+    const fetchUrl = url.includes('?') ? `${url}&action=getProjects&_t=${Date.now()}` : `${url}?action=getProjects&_t=${Date.now()}`;
     const response = await fetch(fetchUrl, {
       method: 'GET',
+      cache: 'no-store',
       headers: {
         'Accept': 'application/json',
       },
@@ -414,9 +415,10 @@ export async function fetchSubmissionsFromSheet(scriptUrl: string): Promise<Sync
   }
 
   try {
-    const fetchUrl = url.includes('?') ? `${url}&action=getSubmissions` : `${url}?action=getSubmissions`;
+    const fetchUrl = url.includes('?') ? `${url}&action=getSubmissions&_t=${Date.now()}` : `${url}?action=getSubmissions&_t=${Date.now()}`;
     const response = await fetch(fetchUrl, {
       method: 'GET',
+      cache: 'no-store',
       headers: { 'Accept': 'application/json' },
     });
     if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
@@ -564,9 +566,15 @@ export async function fetchCommentsFromSheet(
 
   try {
     const fetchUrl = projectId
-      ? `${url}?action=getComments&projectId=${encodeURIComponent(projectId)}`
-      : `${url}?action=getComments`;
-    const response = await fetch(fetchUrl);
+      ? `${url}?action=getComments&projectId=${encodeURIComponent(projectId)}&_t=${Date.now()}`
+      : `${url}?action=getComments&_t=${Date.now()}`;
+    const response = await fetch(fetchUrl, {
+      method: 'GET',
+      cache: 'no-store',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
     if (!response.ok) return { success: false, data: [] };
     const result = await response.json();
     if (result && Array.isArray(result.data)) {

@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   Share2,
   AlertTriangle,
+  RefreshCw,
 } from 'lucide-react';
 import {
   WebProject,
@@ -49,6 +50,8 @@ interface DiscussionHubModalProps {
   onOpenQR?: (project: WebProject) => void;
   lang: Language;
   isAdmin: boolean;
+  onRefreshComments?: () => void;
+  isRefreshing?: boolean;
 }
 
 export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
@@ -65,6 +68,8 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
   onOpenQR,
   lang,
   isAdmin,
+  onRefreshComments,
+  isRefreshing = false,
 }) => {
   const t = translations[lang] || translations.vi;
 
@@ -89,16 +94,29 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
   const [isAISummaryExpanded, setIsAISummaryExpanded] = useState(true);
   const [hasContributed, setHasContributed] = useState(false);
 
-  // An toàn lọc bình luận của mô phỏng này
+  // An toàn lọc bình luận của mô phỏng này và sắp xếp mới nhất lên đầu
   const projectComments = useMemo(() => {
     if (!project || !project.id) return [];
     const list = Array.isArray(comments) ? comments : [];
-    return list.filter((c) => c && c.projectId === project.id);
+    return list
+      .filter((c) => c && c.projectId === project.id)
+      .sort((a, b) => {
+        const timeA = new Date(a.createdAt || 0).getTime();
+        const timeB = new Date(b.createdAt || 0).getTime();
+        return timeB - timeA;
+      });
   }, [comments, project]);
 
   const displayedComments = useMemo(() => {
-    if (activeCategoryFilter === 'ALL') return projectComments;
-    return projectComments.filter((c) => c && c.category === activeCategoryFilter);
+    let filtered = projectComments;
+    if (activeCategoryFilter !== 'ALL') {
+      filtered = projectComments.filter((c) => c && c.category === activeCategoryFilter);
+    }
+    return [...filtered].sort((a, b) => {
+      const timeA = new Date(a.createdAt || 0).getTime();
+      const timeB = new Date(b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
   }, [projectComments, activeCategoryFilter]);
 
   // Xử lý an toàn danh sách Tags: chấp nhận cả Array lẫn chuỗi phân tách bằng dấu phẩy
@@ -258,14 +276,36 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
             </div>
           </div>
 
-          <button
-            id="hub-close-btn"
-            onClick={onClose}
-            className="p-1.5 rounded-xl text-[#58779B] hover:text-[#0B3B78] hover:bg-slate-100 transition-colors cursor-pointer shrink-0 ml-2"
-            title="Đóng"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-1.5 shrink-0 ml-2">
+            {onRefreshComments && (
+              <button
+                id="hub-refresh-comments-btn"
+                type="button"
+                onClick={onRefreshComments}
+                disabled={isRefreshing}
+                className={`p-1.5 rounded-xl text-[#58779B] hover:text-[#0785F9] hover:bg-[#E2F1FF] transition-colors cursor-pointer flex items-center space-x-1 text-xs font-medium ${
+                  isRefreshing ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
+                title="Làm mới bình luận từ máy chủ đám mây"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#0785F9]' : ''}`}
+                />
+                <span className="hidden sm:inline text-[11px]">
+                  {isRefreshing ? 'Đang tải...' : 'Làm mới'}
+                </span>
+              </button>
+            )}
+            <button
+              id="hub-close-btn"
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-xl text-[#58779B] hover:text-[#0B3B78] hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Đóng"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Scrollable Body */}
@@ -512,8 +552,14 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                 </button>
               </div>
 
-              <span className="text-[11px] text-[#58779B]">
-                {displayedComments.length} bình luận & đánh giá
+              <span className="text-[11px] text-[#58779B] flex items-center space-x-1.5">
+                {isRefreshing && (
+                  <span className="inline-flex items-center text-[#0785F9] font-medium mr-1">
+                    <RefreshCw className="w-3 h-3 animate-spin mr-1" />
+                    Đang đồng bộ...
+                  </span>
+                )}
+                <span>{displayedComments.length} bình luận & đánh giá</span>
               </span>
             </div>
 

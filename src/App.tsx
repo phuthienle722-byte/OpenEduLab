@@ -63,7 +63,7 @@ const DEFAULT_SEED_COMMENTS: ProjectComment[] = [
     category: 'experience',
     content: 'Mô phỏng tán sắc ánh sáng qua lăng kính rất trực quan! Học sinh quan sát rõ góc lệch và dải màu cầu vồng khi thay đổi góc tới và chiết suất của lăng kính trong bài học KHTN 9.',
     rating: 5,
-    createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+    createdAt: '2026-03-01T08:00:00.000Z',
     likes: 12,
   },
   {
@@ -74,7 +74,7 @@ const DEFAULT_SEED_COMMENTS: ProjectComment[] = [
     category: 'feedback',
     content: 'Em thích nhất phần điều chỉnh bước sóng ánh sáng đơn sắc để quan sát tia khúc xạ đổi hướng. Trực quan và dễ hiểu hơn nhiều so với hình vẽ tĩnh trong SGK ạ!',
     rating: 5,
-    createdAt: new Date(Date.now() - 3600000 * 24 * 1.2).toISOString(),
+    createdAt: '2026-03-01T09:30:00.000Z',
     likes: 7,
   },
   {
@@ -85,7 +85,7 @@ const DEFAULT_SEED_COMMENTS: ProjectComment[] = [
     category: 'question',
     content: 'Tác giả có thể bổ sung tùy chọn hiển thị đường pháp tuyến và số đo góc tới $i_1$, góc ló $i_2$ trên hình vẽ để học sinh đối chiếu số liệu lý thuyết không thầy Liêm?',
     rating: 5,
-    createdAt: new Date(Date.now() - 3600000 * 6).toISOString(),
+    createdAt: '2026-03-01T11:15:00.000Z',
     likes: 4,
   },
   {
@@ -96,7 +96,7 @@ const DEFAULT_SEED_COMMENTS: ProjectComment[] = [
     category: 'experience',
     content: 'Đã ứng dụng trong tiết đo tốc độ chuyển động bài 8 KHTN 7. Học sinh thao tác bấm giờ trực tiếp trên điện thoại rất hào hứng, số liệu đo giữa các nhóm đồng đều!',
     rating: 5,
-    createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
+    createdAt: '2026-03-02T08:00:00.000Z',
     likes: 8,
   },
   {
@@ -107,7 +107,7 @@ const DEFAULT_SEED_COMMENTS: ProjectComment[] = [
     category: 'feedback',
     content: 'Giao diện đồng hồ số to rõ, dễ nhìn từ xa khi làm thí nghiệm. Nếu tác giả bổ sung thêm nút lưu lịch sử 5 lần bấm gần nhất (lap time) thì làm báo cáo nhóm sẽ tiện hơn rất nhiều ạ!',
     rating: 4,
-    createdAt: new Date(Date.now() - 3600000 * 24 * 1.5).toISOString(),
+    createdAt: '2026-03-02T09:30:00.000Z',
     likes: 5,
   },
   {
@@ -118,7 +118,7 @@ const DEFAULT_SEED_COMMENTS: ProjectComment[] = [
     category: 'question',
     content: 'Mô phỏng này có xuất bảng dữ liệu sang file Excel hoặc đồng bộ trực tiếp vào Google Sheets cho học sinh không thầy Liêm?',
     rating: 5,
-    createdAt: new Date(Date.now() - 3600000 * 8).toISOString(),
+    createdAt: '2026-03-02T11:00:00.000Z',
     likes: 3,
   },
 ];
@@ -319,7 +319,15 @@ export default function App() {
       const saved = localStorage.getItem(STORAGE_KEY_COMMENTS);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const seedMap = new Map(DEFAULT_SEED_COMMENTS.map((s) => [s.id, s.createdAt]));
+          return parsed.map((c: ProjectComment) => {
+            if (c && c.id && seedMap.has(c.id)) {
+              return { ...c, createdAt: seedMap.get(c.id)! };
+            }
+            return c;
+          });
+        }
       }
     } catch (e) {
       console.warn('Failed to load comments from localStorage', e);
@@ -401,6 +409,7 @@ export default function App() {
 
   // Trạng thái đồng bộ dữ liệu đám mây (background non-blocking sync)
   const [isCloudSyncing, setIsCloudSyncing] = useState<boolean>(false);
+  const [isCommentsSyncing, setIsCommentsSyncing] = useState<boolean>(false);
 
   // 4. View Mode & Filter State
   const [viewMode, setViewMode] = useState<ViewMode>('expanded');
@@ -496,6 +505,61 @@ export default function App() {
       });
   }, []);
 
+  /**
+   * Kéo bình luận mới nhất từ Google Sheets và hợp nhất vào state.
+   * Đồng thời cập nhật số lượng commentCount trên card mô phỏng nếu có bình luận mới.
+   */
+  const syncCommentsFromCloud = useCallback((targetProjectId?: string) => {
+    const scriptUrl = getStoredScriptUrl();
+    if (!scriptUrl || !isAutoSyncEnabled()) return Promise.resolve();
+
+    setIsCommentsSyncing(true);
+    return fetchCommentsFromSheet(scriptUrl, targetProjectId)
+      .then((result) => {
+        if (!result.success || !result.data || !Array.isArray(result.data)) return;
+        const cloudComments = result.data as ProjectComment[];
+        setComments((prev) => {
+          const merged = [...prev];
+          let changed = false;
+          for (const cc of cloudComments) {
+            const idx = merged.findIndex((c) => c.id === cc.id);
+            if (idx >= 0) {
+              const maxLikes = Math.max(merged[idx].likes || 0, cc.likes || 0);
+              if (
+                merged[idx].likes !== maxLikes ||
+                merged[idx].content !== cc.content
+              ) {
+                merged[idx] = { ...merged[idx], ...cc, likes: maxLikes };
+                changed = true;
+              }
+            } else {
+              merged.push(cc);
+              changed = true;
+            }
+          }
+          return changed ? merged : prev;
+        });
+
+        // Cập nhật commentCount trên từng project nếu đám mây có thêm bình luận
+        setProjects((prev) => {
+          let updated = false;
+          const nextProjects = prev.map((proj) => {
+            const count = cloudComments.filter((c) => c && c.projectId === proj.id).length;
+            if (count > (proj.commentCount || 0)) {
+              updated = true;
+              return { ...proj, commentCount: count };
+            }
+            return proj;
+          });
+          return updated ? nextProjects : prev;
+        });
+      })
+      .catch((err) => console.warn('Background comments sync notice:', err))
+      .finally(() => {
+        setIsCommentsSyncing(false);
+      });
+  }, []);
+
   // Background non-blocking auto-sync from Google Sheets on initial load
   useEffect(() => {
     const scriptUrl = getStoredScriptUrl();
@@ -541,36 +605,13 @@ export default function App() {
         });
       // Äá»“ng thá»i kĂ©o danh sĂ¡ch bĂ i chá» duyá»‡t tá»« Ä‘Ă¡m mĂ¢y vá»
       const syncPendingPromise = syncPendingFromCloud();
-      const syncCommentsPromise = fetchCommentsFromSheet(scriptUrl)
-        .then((result) => {
-          if (!result.success || !result.data || !Array.isArray(result.data)) return;
-          setComments((prev) => {
-            const cloudComments = result.data as ProjectComment[];
-            const merged = [...prev];
-            let changed = false;
-            for (const cc of cloudComments) {
-              const idx = merged.findIndex((c) => c.id === cc.id);
-              if (idx >= 0) {
-                const maxLikes = Math.max(merged[idx].likes || 0, cc.likes || 0);
-                if (merged[idx].likes !== maxLikes) {
-                  merged[idx] = { ...merged[idx], likes: maxLikes };
-                  changed = true;
-                }
-              } else {
-                merged.push(cc);
-                changed = true;
-              }
-            }
-            return changed ? merged : prev;
-          });
-        })
-        .catch((err) => console.warn('Background comments sync notice:', err));
+      const syncCommentsPromise = syncCommentsFromCloud();
 
       Promise.allSettled([syncApprovedPromise, syncPendingPromise, syncCommentsPromise]).finally(() => {
         setIsCloudSyncing(false);
       });
     }
-  }, [syncPendingFromCloud]);
+  }, [syncPendingFromCloud, syncCommentsFromCloud]);
 
   // Äá»‹nh ká»³ (má»—i 45 giĂ¢y) táº£i láº¡i dá»¯ liá»‡u ÄĂƒ DUYá»†T tá»« Google Sheets.
   // Nhá» váº­y khi admin duyá»‡t bĂ i á»Ÿ báº¥t ká»³ thiáº¿t bá»‹ nĂ o, cĂ¡c thiáº¿t bá»‹ khĂ¡c
@@ -624,37 +665,14 @@ export default function App() {
           console.warn('Polling approved sync notice:', err);
         });
 
-      // Kéo bình luận định kỳ
-      fetchCommentsFromSheet(scriptUrl)
-        .then((result) => {
-          if (!result.success || !result.data || !Array.isArray(result.data)) return;
-          setComments((prev) => {
-            const cloudComments = result.data as ProjectComment[];
-            const merged = [...prev];
-            let changed = false;
-            for (const cc of cloudComments) {
-              const idx = merged.findIndex((c) => c.id === cc.id);
-              if (idx >= 0) {
-                const maxLikes = Math.max(merged[idx].likes || 0, cc.likes || 0);
-                if (merged[idx].likes !== maxLikes) {
-                  merged[idx] = { ...merged[idx], likes: maxLikes };
-                  changed = true;
-                }
-              } else {
-                merged.push(cc);
-                changed = true;
-              }
-            }
-            return changed ? merged : prev;
-          });
-        })
-        .catch((err) => console.warn('Polling comments notice:', err));
+      // Kéo bình luận định kỳ từ đám mây
+      syncCommentsFromCloud();
     };
 
     pollApproved();
-    const interval = setInterval(pollApproved, 45000);
+    const interval = setInterval(pollApproved, 20000);
     return () => clearInterval(interval);
-  }, []);
+  }, [syncCommentsFromCloud]);
 
   // 6. Action Handlers (Views, Likes, Downloads, Contributions, Comments)
   const handleLike = (projectId: string) => {
@@ -716,6 +734,8 @@ export default function App() {
   const handleOpenDiscussion = (p: WebProject) => {
     const fresh = projects.find((x) => x.id === p.id) || p;
     setSelectedDiscussionProject(fresh);
+    // Kéo ngay lập tức bình luận mới nhất từ Google Sheets ngay khi mở modal
+    syncCommentsFromCloud(p.id);
   };
 
   const handleAddComment = (commentData: Omit<ProjectComment, 'id' | 'createdAt' | 'likes'>) => {
@@ -740,10 +760,12 @@ export default function App() {
     );
     markStatsDirty(commentData.projectId, { commentCount: updatedCommentCount });
 
-    // Đẩy comment lên Google Sheets trong nền (non-blocking)
+    // Đẩy comment lên Google Sheets trong nền (non-blocking) và tự động đồng bộ lại
     const scriptUrl = getStoredScriptUrl();
     if (scriptUrl && isAutoSyncEnabled()) {
-      pushCommentToSheet(scriptUrl, newComment);
+      pushCommentToSheet(scriptUrl, newComment).then(() => {
+        syncCommentsFromCloud(commentData.projectId);
+      });
     }
   };
 
@@ -1328,6 +1350,8 @@ const handleUpdateProject = (updated: WebProject) => {
             onOpenQR={(p) => setSelectedQRProject(p)}
             lang={lang}
             isAdmin={isAdmin}
+            onRefreshComments={() => syncCommentsFromCloud(selectedDiscussionProject.id)}
+            isRefreshing={isCommentsSyncing}
           />
         </ErrorBoundary>
       )}
