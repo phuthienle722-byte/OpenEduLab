@@ -43,7 +43,10 @@ import {
   updateStatsInSheet,
   fetchCommentsFromSheet,
   pushCommentToSheet,
+  deleteCommentFromSheet,
+  updateCommentInSheet,
   STORAGE_KEY_COMMENTS,
+  STORAGE_KEY_DELETED_COMMENTS,
 } from './services/googleSync';
 import {
   isCommunityApprovedOnly,
@@ -53,6 +56,26 @@ import {
 const STORAGE_KEY_PROJECTS = 'webhub_projects_data_v3';
 const STORAGE_KEY_LANG = 'webhub_language_preference';
 const STORAGE_KEY_ADMIN = 'webhub_admin_session';
+
+const getDeletedCommentIds = (): Set<string> => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_DELETED_COMMENTS);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr);
+    }
+  } catch {}
+  return new Set();
+};
+
+const addDeletedCommentId = (id: string | string[]) => {
+  try {
+    const current = getDeletedCommentIds();
+    const ids = Array.isArray(id) ? id : [id];
+    ids.forEach((i) => current.add(i));
+    localStorage.setItem(STORAGE_KEY_DELETED_COMMENTS, JSON.stringify(Array.from(current)));
+  } catch {}
+};
 
 const DEFAULT_SEED_COMMENTS: ProjectComment[] = [
   {
@@ -316,19 +339,23 @@ export default function App() {
   // 3b. Comments State (Local-first with persistent storage + Google Sheets sync)
   const [comments, setComments] = useState<ProjectComment[]>(() => {
     try {
+      const deletedIds = getDeletedCommentIds();
       const saved = localStorage.getItem(STORAGE_KEY_COMMENTS);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
           const seedMap = new Map(DEFAULT_SEED_COMMENTS.map((s) => [s.id, s.createdAt]));
-          return parsed.map((c: ProjectComment) => {
-            if (c && c.id && seedMap.has(c.id)) {
-              return { ...c, createdAt: seedMap.get(c.id)! };
-            }
-            return c;
-          });
+          return parsed
+            .filter((c: ProjectComment) => c && c.id && !deletedIds.has(c.id))
+            .map((c: ProjectComment) => {
+              if (c && c.id && seedMap.has(c.id)) {
+                return { ...c, createdAt: seedMap.get(c.id)! };
+              }
+              return c;
+            });
         }
       }
+      return DEFAULT_SEED_COMMENTS.filter((c) => !deletedIds.has(c.id));
     } catch (e) {
       console.warn('Failed to load comments from localStorage', e);
     }
@@ -517,9 +544,12 @@ export default function App() {
     return fetchCommentsFromSheet(scriptUrl, targetProjectId)
       .then((result) => {
         if (!result.success || !result.data || !Array.isArray(result.data)) return;
-        const cloudComments = result.data as ProjectComment[];
+        const deletedIds = getDeletedCommentIds();
+        const cloudComments = (result.data as ProjectComment[]).filter(
+          (c) => c && c.id && !deletedIds.has(c.id)
+        );
         setComments((prev) => {
-          const merged = [...prev];
+          const merged = prev.filter((c) => !deletedIds.has(c.id));
           let changed = false;
           for (const cc of cloudComments) {
             const idx = merged.findIndex((c) => c.id === cc.id);
@@ -527,7 +557,11 @@ export default function App() {
               const maxLikes = Math.max(merged[idx].likes || 0, cc.likes || 0);
               if (
                 merged[idx].likes !== maxLikes ||
-                merged[idx].content !== cc.content
+                merged[idx].content !== cc.content ||
+                merged[idx].authorName !== cc.authorName ||
+                merged[idx].authorRole !== cc.authorRole ||
+                merged[idx].category !== cc.category ||
+                merged[idx].rating !== cc.rating
               ) {
                 merged[idx] = { ...merged[idx], ...cc, likes: maxLikes };
                 changed = true;
@@ -773,6 +807,75 @@ export default function App() {
     setComments((prev) =>
       prev.map((c) => (c.id === commentId ? { ...c, likes: (c.likes || 0) + 1 } : c))
     );
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    // 1. Tìm comment để biết thuộc project nào nhằm giảm commentCount
+    const target = comments.find((c) => c.id === commentId);
+    const projectId = target?.projectId;
+
+    // 2. Ghi nhận vào danh sách đã xóa để cloud sync không kéo lại
+    addDeletedCommentId(commentId);
+
+    // 3. Xóa khỏi state comments
+    setComments((prev) => prev.filter((c) => c.id !== commentId));
+
+    // 4. Giảm commentCount trên project tương ứng
+    if (projectId) {
+      let nextCount = 0;
+      setProjects((prev) =>
+        prev.map((p) => {
+          if (p.id === projectId) {
+            nextCount = Math.max(0, (p.commentCount || 1) - 1);
+            return { ...p, commentCount: nextCount };
+          }
+          return p;
+        })
+      );
+      markStatsDirty(projectId, { commentCount: nextCount });
+    }
+
+    // 5. Gửi lệnh xóa lên Google Sheets nếu đã liên kết
+    const scriptUrl = getStoredScriptUrl();
+    if (scriptUrl && isAutoSyncEnabled()) {
+      deleteCommentFromSheet(scriptUrl, commentId);
+    }
+  };
+
+  const handleDeleteAllCommentsForProject = (projectId: string) => {
+    const commentsForProject = comments.filter((c) => c.projectId === projectId);
+    const ids = commentsForProject.map((c) => c.id);
+    if (ids.length === 0) return;
+
+    // Ghi nhận vào danh sách đã xóa
+    addDeletedCommentId(ids);
+
+    // Xóa toàn bộ khỏi state
+    setComments((prev) => prev.filter((c) => c.projectId !== projectId));
+
+    // Đưa commentCount về 0
+    setProjects((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, commentCount: 0 } : p))
+    );
+    markStatsDirty(projectId, { commentCount: 0 });
+
+    // Gửi lệnh xóa lên Google Sheets
+    const scriptUrl = getStoredScriptUrl();
+    if (scriptUrl && isAutoSyncEnabled()) {
+      deleteCommentFromSheet(scriptUrl, ids);
+    }
+  };
+
+  const handleUpdateComment = (updatedComment: ProjectComment) => {
+    setComments((prev) =>
+      prev.map((c) => (c.id === updatedComment.id ? { ...c, ...updatedComment } : c))
+    );
+
+    // Gửi cập nhật lên Google Sheets
+    const scriptUrl = getStoredScriptUrl();
+    if (scriptUrl && isAutoSyncEnabled()) {
+      updateCommentInSheet(scriptUrl, updatedComment);
+    }
   };
 
   const handleSubmitNewProject = (
@@ -1324,6 +1427,8 @@ const handleUpdateProject = (updated: WebProject) => {
         communityOnly={communityOnly}
         onCommunityOnlyChange={handleCommunityOnlyChange}
         lang={lang}
+        onDeleteComment={handleDeleteComment}
+        onUpdateComment={handleUpdateComment}
       />
 
       {/* Discussion & Experience Exchange Hub Modal */}
@@ -1352,6 +1457,9 @@ const handleUpdateProject = (updated: WebProject) => {
             isAdmin={isAdmin}
             onRefreshComments={() => syncCommentsFromCloud(selectedDiscussionProject.id)}
             isRefreshing={isCommentsSyncing}
+            onDeleteComment={handleDeleteComment}
+            onDeleteAllProjectComments={handleDeleteAllCommentsForProject}
+            onUpdateComment={handleUpdateComment}
           />
         </ErrorBoundary>
       )}

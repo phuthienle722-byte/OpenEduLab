@@ -6,6 +6,7 @@ export const STORAGE_KEY_APPSCRIPT_URL = 'webhub_google_appscript_url';
 export const STORAGE_KEY_LAST_SYNC = 'webhub_google_last_sync';
 export const STORAGE_KEY_AUTO_SYNC = 'webhub_google_auto_sync';
 export const STORAGE_KEY_COMMENTS = 'webhub_comments_data_v1';
+export const STORAGE_KEY_DELETED_COMMENTS = 'webhub_deleted_comment_ids';
 
 /**
  * Mặc định Web App URL của Google Apps Script "WebHub Sync API".
@@ -588,6 +589,51 @@ export async function fetchCommentsFromSheet(
 }
 
 /**
+ * Xóa một hoặc nhiều bình luận khỏi Google Sheets (tab WebHub_Comments).
+ */
+export async function deleteCommentFromSheet(
+  scriptUrl: string,
+  commentId: string | string[]
+): Promise<void> {
+  const url = cleanScriptUrl(scriptUrl);
+  if (!url || url.includes('docs.google.com/spreadsheets')) return;
+
+  try {
+    const ids = Array.isArray(commentId) ? commentId : [commentId];
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'deleteComment', commentId: ids }),
+    });
+  } catch (e) {
+    console.warn('Silent fail deleting comment from Google Sheet', e);
+  }
+}
+
+/**
+ * Cập nhật nội dung một bình luận trên Google Sheets (tab WebHub_Comments).
+ */
+export async function updateCommentInSheet(
+  scriptUrl: string,
+  comment: ProjectComment
+): Promise<void> {
+  const url = cleanScriptUrl(scriptUrl);
+  if (!url || url.includes('docs.google.com/spreadsheets')) return;
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'updateComment', comment }),
+    });
+  } catch (e) {
+    console.warn('Silent fail updating comment in Google Sheet', e);
+  }
+}
+
+/**
  * Complete Google Apps Script template code that the user can copy and paste into Google Sheets
  */
 export const GOOGLE_APPS_SCRIPT_CODE = `/**
@@ -615,6 +661,84 @@ export const GOOGLE_APPS_SCRIPT_CODE = `/**
 
 const MAIN_SHEET = "WebHub_Projects";
 const SUBMISSION_SHEET = "WebHub_Submissions";
+const COMMENT_SHEET = "WebHub_Comments";
+
+const COMMENT_HEADERS = [
+  "ID",
+  "ProjectID",
+  "AuthorName",
+  "AuthorRole",
+  "Category",
+  "Content",
+  "Rating",
+  "CreatedAt",
+  "Likes"
+];
+
+function ensureCommentSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(COMMENT_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(COMMENT_SHEET);
+    sheet.appendRow(COMMENT_HEADERS);
+    const headerRange = sheet.getRange(1, 1, 1, COMMENT_HEADERS.length);
+    headerRange.setFontWeight("bold");
+    headerRange.setBackground("#059669"); // Emerald 600
+    headerRange.setFontColor("#FFFFFF");
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 150); // ID
+    sheet.setColumnWidth(2, 140); // ProjectID
+    sheet.setColumnWidth(3, 160); // AuthorName
+    sheet.setColumnWidth(4, 110); // AuthorRole
+    sheet.setColumnWidth(5, 120); // Category
+    sheet.setColumnWidth(6, 320); // Content
+    sheet.setColumnWidth(7, 80);  // Rating
+    sheet.setColumnWidth(8, 170); // CreatedAt
+    sheet.setColumnWidth(9, 80);  // Likes
+  }
+  return sheet;
+}
+
+function commentToRow(c) {
+  return [
+    c.id || ("comm-" + new Date().getTime()),
+    c.projectId || "",
+    c.authorName || "Thành viên",
+    c.authorRole || "teacher",
+    c.category || "experience",
+    c.content || "",
+    Number(c.rating) || 5,
+    c.createdAt || new Date().toISOString(),
+    Number(c.likes) || 0
+  ];
+}
+
+function parseCommentRows(sheet) {
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return { rows: [] };
+  const headers = data[0].map(function (h) { return String(h).trim().toLowerCase(); });
+  const col = function (name, defaultIdx) {
+    const idx = headers.indexOf(name.toLowerCase());
+    return idx >= 0 ? idx : defaultIdx;
+  };
+  const comments = [];
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (!row[col("id", 0)] && !row[col("content", 5)]) continue;
+    comments.push({
+      id: String(row[col("id", 0)] || ("comm-" + i)),
+      projectId: String(row[col("projectid", 1)] || ""),
+      authorName: String(row[col("authorname", 2)] || "Thành viên"),
+      authorRole: String(row[col("authorrole", 3)] || "teacher"),
+      category: String(row[col("category", 4)] || "experience"),
+      content: String(row[col("content", 5)] || ""),
+      rating: Number(row[col("rating", 6)]) || 5,
+      createdAt: row[col("createdat", 7)] ? (row[col("createdat", 7)] instanceof Date ? row[col("createdat", 7)].toISOString() : String(row[col("createdat", 7)])) : new Date().toISOString(),
+      likes: Number(row[col("likes", 8)]) || 0
+    });
+  }
+  return { rows: comments };
+}
 
 const HEADERS = [
   "ID",
@@ -782,15 +906,25 @@ function seedFamousData() {
   return SEED_FOR_SHEET.length;
 }
 
-// Đọc dữ liệu theo GET - hỗ trợ 2 loại:
+// Đọc dữ liệu theo GET - hỗ trợ 3 loại:
 //   ?action=getProjects    -> dữ liệu ĐÃ DUYỆT trên MAIN_SHEET (mặc định, dùng cho đồng bộ chính)
 //   ?action=getSubmissions -> dự án MỚI trên SUBMISSION_SHEET (quản lý bài chờ duyệt)
+//   ?action=getComments    -> bình luận trên COMMENT_SHEET (quản lý trao đổi, góp ý)
 function doGet(e) {
   try {
     const action = (e && e.parameter && e.parameter.action) || "getProjects";
     if (action === "getSubmissions") {
       const result = parseRows(ensureSheet(SUBMISSION_SHEET));
       return createJsonResponse({ status: "success", total: result.rows.length, data: result.rows });
+    }
+    if (action === "getComments") {
+      const cSheet = ensureCommentSheet();
+      const result = parseCommentRows(cSheet);
+      let rows = result.rows;
+      if (e && e.parameter && e.parameter.projectId) {
+        rows = rows.filter(function (c) { return String(c.projectId) === String(e.parameter.projectId); });
+      }
+      return createJsonResponse({ status: "success", total: rows.length, data: rows });
     }
     const result = parseRows(ensureSheet(MAIN_SHEET));
     return createJsonResponse({ status: "success", total: result.rows.length, data: result.rows });
@@ -936,6 +1070,41 @@ function doPost(e) {
         }
       }
       return createJsonResponse({ status: "success", message: "Đã cập nhật GoLink cho " + updated + " mô phỏng", updated: updated });
+    }
+
+    // 9. Thêm bình luận mới vào tab WebHub_Comments
+    if (payload.action === "addComment" && payload.comment) {
+      const cSheet = ensureCommentSheet();
+      cSheet.appendRow(commentToRow(payload.comment));
+      return createJsonResponse({ status: "success", message: "Đã ghi nhận bình luận mới vào tab WebHub_Comments" });
+    }
+
+    // 10. Xóa bình luận khỏi tab WebHub_Comments (theo ID hoặc danh sách ID)
+    if (payload.action === "deleteComment") {
+      const cSheet = ensureCommentSheet();
+      const ids = Array.isArray(payload.commentId)
+        ? payload.commentId
+        : (payload.commentId ? [payload.commentId] : (payload.ids ? payload.ids : []));
+      const removed = deleteRowsById(cSheet, ids);
+      return createJsonResponse({ status: "success", message: "Đã xóa " + removed.length + " bình luận", removed: removed });
+    }
+
+    // 11. Chỉnh sửa / cập nhật nội dung bình luận trong tab WebHub_Comments
+    if ((payload.action === "updateComment" || payload.action === "editComment") && payload.comment) {
+      const cSheet = ensureCommentSheet();
+      const c = payload.comment;
+      const data = cSheet.getDataRange().getValues();
+      let found = -1;
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(c.id)) { found = i; break; }
+      }
+      const row = commentToRow(c);
+      if (found >= 0) {
+        cSheet.getRange(found + 1, 1, 1, row.length).setValues([row]);
+      } else {
+        cSheet.appendRow(row);
+      }
+      return createJsonResponse({ status: "success", message: "Đã cập nhật bình luận" });
     }
 
     return createJsonResponse({ status: "ignored", message: "Không có hành động phù hợp" });

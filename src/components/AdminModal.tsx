@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   AlertCircle,
+  AlertTriangle,
   Check,
   CheckCircle2,
   Clock,
@@ -33,7 +34,7 @@ import {
   Eye,
   Zap,
 } from 'lucide-react';
-import { WebProject, Language, ProjectComment } from '../types';
+import { WebProject, Language, ProjectComment, CommentRole, CommentCategory } from '../types';
 import { translations } from '../translations';
 import { countryDisplayName } from '../data/countries';
 import { SubmitModal } from './SubmitModal';
@@ -58,6 +59,8 @@ interface AdminModalProps {
   communityOnly: boolean;
   onCommunityOnlyChange: (val: boolean) => void;
   lang: Language;
+  onDeleteComment?: (commentId: string) => void;
+  onUpdateComment?: (comment: ProjectComment) => void;
 }
 
 export const AdminModal: React.FC<AdminModalProps> = ({
@@ -79,6 +82,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   communityOnly,
   onCommunityOnlyChange,
   lang,
+  onDeleteComment,
+  onUpdateComment,
 }) => {
   const t = translations[lang];
 
@@ -91,7 +96,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   // Tabs
   const [activeTab, setActiveTab] = useState<
-    'pending' | 'all' | 'backup' | 'ai_insights'
+    'pending' | 'all' | 'comments' | 'backup' | 'ai_insights'
   >('pending');
 
   const [editingProject, setEditingProject] = useState<WebProject | null>(null);
@@ -101,10 +106,39 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     text: string;
   } | null>(null);
 
+  // Comments Tab State
+  const [commentSearch, setCommentSearch] = useState('');
+  const [commentCategoryFilter, setCommentCategoryFilter] = useState<'ALL' | string>('ALL');
+  const [editingComment, setEditingComment] = useState<ProjectComment | null>(null);
+  const [commentToDelete, setCommentToDelete] = useState<ProjectComment | null>(null);
+
   // AI Tab State
   const [selectedFeedbackId, setSelectedFeedbackId] = useState<string>('');
   const [generatedFeedback, setGeneratedFeedback] = useState<string>('');
   const [copiedFeedback, setCopiedFeedback] = useState(false);
+
+  const filteredAdminComments = useMemo(() => {
+    let list = Array.isArray(comments) ? comments : [];
+    if (commentCategoryFilter !== 'ALL') {
+      list = list.filter((c) => c && c.category === commentCategoryFilter);
+    }
+    if (commentSearch.trim()) {
+      const q = commentSearch.toLowerCase().trim();
+      list = list.filter((c) => {
+        if (!c) return false;
+        const authorMatch = (c.authorName || '').toLowerCase().includes(q);
+        const contentMatch = (c.content || '').toLowerCase().includes(q);
+        const proj = projects.find((p) => p.id === c.projectId);
+        const projMatch = proj ? (proj.title || '').toLowerCase().includes(q) : false;
+        return authorMatch || contentMatch || projMatch;
+      });
+    }
+    return [...list].sort((a, b) => {
+      const tA = new Date(a.createdAt || 0).getTime();
+      const tB = new Date(b.createdAt || 0).getTime();
+      return tB - tA;
+    });
+  }, [comments, commentCategoryFilter, commentSearch, projects]);
 
   useEffect(() => {
     if (isOpen) {
@@ -341,6 +375,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   <span>{t.amTabApproved} ({approvedList.length})</span>
                 </button>
 
+                {/* Tab 3: Comments Management */}
+                <button
+                  id="tab-comments-btn"
+                  onClick={() => setActiveTab('comments')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors ${
+                    activeTab === 'comments'
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-200/60'
+                  }`}
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Bình luận ({comments.length})</span>
+                </button>
+
                 {/* Tab 3: Backup & JSON */}
                 <button
                   id="tab-backup-btn"
@@ -553,7 +601,179 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 </div>
               )}
 
-              {/* TAB 3: BACKUP & EXPORT/IMPORT JSON */}
+              {/* TAB 3: COMMENTS MANAGEMENT & MODERATION */}
+              {activeTab === 'comments' && (
+                <div className="space-y-4">
+                  {/* Top info and filter bar */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div className="flex-1 relative">
+                      <input
+                        type="text"
+                        value={commentSearch}
+                        onChange={(e) => setCommentSearch(e.target.value)}
+                        placeholder="Tìm theo người gửi, nội dung hoặc tên mô phỏng..."
+                        className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                      />
+                      {commentSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setCommentSearch('')}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center space-x-2 shrink-0">
+                      <select
+                        value={commentCategoryFilter}
+                        onChange={(e) => setCommentCategoryFilter(e.target.value)}
+                        className="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs text-slate-700 focus:outline-none focus:border-indigo-500 font-medium"
+                      >
+                        <option value="ALL">Tất cả chủ đề</option>
+                        <option value="experience">💡 Kinh nghiệm dạy học</option>
+                        <option value="feedback">🛠️ Góp ý kỹ thuật</option>
+                        <option value="question">❓ Hỏi đáp kiến thức</option>
+                      </select>
+
+                      <span className="text-[11px] font-semibold text-slate-500 shrink-0">
+                        {filteredAdminComments.length} bình luận
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Comments list */}
+                  {filteredAdminComments.length === 0 ? (
+                    <div className="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
+                      <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                      <p className="text-xs font-semibold text-slate-600">
+                        Không tìm thấy bình luận nào phù hợp
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Thử xóa bộ lọc hoặc tìm kiếm từ khóa khác
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {filteredAdminComments.map((comment) => {
+                        const proj = projects.find((p) => p.id === comment.projectId);
+                        const roleLabel =
+                          comment.authorRole === 'teacher'
+                            ? 'Giáo viên'
+                            : comment.authorRole === 'student'
+                            ? 'Học sinh'
+                            : comment.authorRole === 'creator'
+                            ? 'Tác giả'
+                            : 'Thành viên';
+                        const categoryLabel =
+                          comment.category === 'experience'
+                            ? 'Kinh nghiệm'
+                            : comment.category === 'feedback'
+                            ? 'Góp ý'
+                            : 'Hỏi đáp';
+                        const badgeColor =
+                          comment.category === 'experience'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : comment.category === 'feedback'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+
+                        return (
+                          <div
+                            key={comment.id}
+                            className="p-3.5 bg-white border border-slate-200 rounded-xl hover:border-indigo-200 transition-colors shadow-2xs space-y-2.5"
+                          >
+                            <div className="flex items-start justify-between gap-2 flex-wrap">
+                              <div className="flex items-center space-x-2">
+                                <div className="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 font-bold text-xs flex items-center justify-center shrink-0">
+                                  {(comment.authorName || 'U').charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <div className="flex items-center space-x-1.5 flex-wrap">
+                                    <span className="font-bold text-xs text-slate-900">
+                                      {comment.authorName || 'Người dùng ẩn danh'}
+                                    </span>
+                                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-medium">
+                                      {roleLabel}
+                                    </span>
+                                    <span
+                                      className={`text-[10px] px-1.5 py-0.2 rounded border font-semibold ${badgeColor}`}
+                                    >
+                                      {categoryLabel}
+                                    </span>
+                                  </div>
+                                  <div className="text-[10px] text-slate-400 mt-0.5">
+                                    {formatTimeAgo(comment.createdAt, lang)}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center space-x-1 text-amber-400">
+                                {Array.from({ length: Math.min(5, Math.max(1, comment.rating || 5)) }).map(
+                                  (_, idx) => (
+                                    <Star key={idx} className="w-3 h-3 fill-amber-400" />
+                                  )
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Project reference pill */}
+                            {proj && (
+                              <div className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200/80 text-[11px] text-slate-700 max-w-full truncate">
+                                <span className="text-[10px] font-bold text-slate-400 shrink-0">
+                                  Mô phỏng:
+                                </span>
+                                <span className="font-medium truncate">{proj.title}</span>
+                              </div>
+                            )}
+
+                            {/* Comment content */}
+                            <p className="text-xs text-slate-800 leading-relaxed bg-slate-50/70 p-2.5 rounded-lg border border-slate-100">
+                              {comment.content}
+                            </p>
+
+                            {/* Unobscured action footer */}
+                            <div className="pt-2 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2">
+                              <span className="text-[11px] text-slate-500 flex items-center space-x-1">
+                                <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500/20" />
+                                <span>{comment.likes || 0} lượt hữu ích</span>
+                              </span>
+
+                              <div className="flex items-center space-x-2">
+                                {onUpdateComment && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingComment(comment)}
+                                    className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer"
+                                    title="Chỉnh sửa bình luận"
+                                  >
+                                    <Pencil className="w-3 h-3 text-blue-600" />
+                                    <span>Sửa</span>
+                                  </button>
+                                )}
+                                {onDeleteComment && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setCommentToDelete(comment)}
+                                    className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer"
+                                    title="Xóa bình luận"
+                                  >
+                                    <Trash2 className="w-3 h-3 text-rose-600" />
+                                    <span>Xóa</span>
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 4: BACKUP & EXPORT/IMPORT JSON */}
               {activeTab === 'backup' && (
                 <div className="space-y-4">
                   <div className="p-4 bg-indigo-50/60 border border-indigo-100 rounded-xl">
@@ -825,6 +1045,218 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           lang={lang}
           isAdmin={isAdmin}
         />
+      )}
+
+      {/* Modal Chỉnh Sửa Bình Luận (Admin) */}
+      {editingComment && (
+        <div
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in"
+          onClick={() => setEditingComment(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]"
+          >
+            <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center space-x-2">
+                <Pencil className="w-4 h-4 text-indigo-600" />
+                <h4 className="font-bold text-sm text-slate-900">
+                  Chỉnh sửa bình luận (Admin)
+                </h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingComment(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3.5 overflow-y-auto">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Người gửi
+                </label>
+                <input
+                  type="text"
+                  value={editingComment.authorName}
+                  onChange={(e) =>
+                    setEditingComment({ ...editingComment, authorName: e.target.value })
+                  }
+                  className="w-full px-3 py-1.5 rounded-xl border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Vai trò
+                  </label>
+                  <select
+                    value={editingComment.authorRole || 'teacher'}
+                    onChange={(e) =>
+                      setEditingComment({
+                        ...editingComment,
+                        authorRole: e.target.value as CommentRole,
+                      })
+                    }
+                    className="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value="teacher">👩‍🏫 Giáo viên / Giảng viên</option>
+                    <option value="student">👨‍🎓 Học sinh / Sinh viên</option>
+                    <option value="creator">✍️ Tác giả / Người sáng tạo</option>
+                    <option value="guest">🌐 Khách / Thành viên</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Chủ đề
+                  </label>
+                  <select
+                    value={editingComment.category || 'experience'}
+                    onChange={(e) =>
+                      setEditingComment({
+                        ...editingComment,
+                        category: e.target.value as CommentCategory,
+                      })
+                    }
+                    className="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value="experience">💡 Kinh nghiệm dạy học</option>
+                    <option value="feedback">🛠️ Góp ý kỹ thuật</option>
+                    <option value="question">❓ Hỏi đáp kiến thức</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Đánh giá sao
+                </label>
+                <div className="flex items-center space-x-1.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      type="button"
+                      key={star}
+                      onClick={() =>
+                        setEditingComment({ ...editingComment, rating: star })
+                      }
+                      className="p-1 text-amber-400 hover:scale-110 transition-transform cursor-pointer"
+                    >
+                      <Star
+                        className={`w-5 h-5 ${
+                          star <= (editingComment.rating || 5)
+                            ? 'fill-amber-400 text-amber-400'
+                            : 'text-slate-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                  <span className="text-xs text-slate-600 font-mono ml-2">
+                    {editingComment.rating || 5}/5 sao
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Nội dung bình luận
+                </label>
+                <textarea
+                  rows={4}
+                  value={editingComment.content}
+                  onChange={(e) =>
+                    setEditingComment({ ...editingComment, content: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none leading-relaxed"
+                />
+              </div>
+            </div>
+
+            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-end space-x-2 bg-slate-50">
+              <button
+                type="button"
+                onClick={() => setEditingComment(null)}
+                className="px-3.5 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onUpdateComment && editingComment) {
+                    onUpdateComment(editingComment);
+                  }
+                  setEditingComment(null);
+                }}
+                className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>Lưu thay đổi</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Xác Nhận Xóa Bình Luận (Admin) */}
+      {commentToDelete && (
+        <div
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in"
+          onClick={() => setCommentToDelete(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden p-5 space-y-4"
+          >
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="font-bold text-sm text-slate-900">
+                  Xác nhận xóa bình luận
+                </h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Bạn có chắc chắn muốn xóa vĩnh viễn bình luận này của{' '}
+                  <strong className="text-slate-700">
+                    {commentToDelete.authorName || 'Người dùng'}
+                  </strong>
+                  ? Thao tác này không thể hoàn tác.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 italic leading-relaxed line-clamp-3">
+              "{commentToDelete.content}"
+            </div>
+
+            <div className="flex items-center justify-end space-x-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setCommentToDelete(null)}
+                className="px-3.5 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onDeleteComment && commentToDelete) {
+                    onDeleteComment(commentToDelete.id);
+                  }
+                  setCommentToDelete(null);
+                }}
+                className="px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Xác nhận xóa</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

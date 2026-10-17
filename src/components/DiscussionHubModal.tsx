@@ -20,6 +20,9 @@ import {
   Share2,
   AlertTriangle,
   RefreshCw,
+  Pencil,
+  Trash2,
+  Check,
 } from 'lucide-react';
 import {
   WebProject,
@@ -52,6 +55,9 @@ interface DiscussionHubModalProps {
   isAdmin: boolean;
   onRefreshComments?: () => void;
   isRefreshing?: boolean;
+  onDeleteComment?: (commentId: string) => void;
+  onDeleteAllProjectComments?: (projectId: string) => void;
+  onUpdateComment?: (comment: ProjectComment) => void;
 }
 
 export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
@@ -70,6 +76,9 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
   isAdmin,
   onRefreshComments,
   isRefreshing = false,
+  onDeleteComment,
+  onDeleteAllProjectComments,
+  onUpdateComment,
 }) => {
   const t = translations[lang] || translations.vi;
 
@@ -93,6 +102,46 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
   const [submitSuccessMsg, setSubmitSuccessMsg] = useState(false);
   const [isAISummaryExpanded, setIsAISummaryExpanded] = useState(true);
   const [hasContributed, setHasContributed] = useState(false);
+
+  // Quản lý chỉnh sửa bình luận (Admin)
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editAuthorName, setEditAuthorName] = useState('');
+  const [editAuthorRole, setEditAuthorRole] = useState<CommentRole>('teacher');
+  const [editCategory, setEditCategory] = useState<CommentCategory>('experience');
+  const [editRating, setEditRating] = useState<number>(5);
+  const [editContent, setEditContent] = useState('');
+
+  // Quản lý xác nhận xóa bình luận (Admin)
+  const [commentToDelete, setCommentToDelete] = useState<ProjectComment | null>(null);
+  const [isDeletingAllForProject, setIsDeletingAllForProject] = useState(false);
+
+  const handleStartEdit = (c: ProjectComment) => {
+    setEditingCommentId(c.id);
+    setEditAuthorName(c.authorName || '');
+    setEditAuthorRole(c.authorRole || 'teacher');
+    setEditCategory(c.category || 'experience');
+    setEditRating(c.rating || 5);
+    setEditContent(c.content || '');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+  };
+
+  const handleSaveEdit = (c: ProjectComment) => {
+    if (!editContent.trim()) return;
+    if (onUpdateComment) {
+      onUpdateComment({
+        ...c,
+        authorName: editAuthorName.trim() || 'Thành viên',
+        authorRole: editAuthorRole,
+        category: editCategory,
+        rating: editRating,
+        content: editContent.trim(),
+      });
+    }
+    setEditingCommentId(null);
+  };
 
   // An toàn lọc bình luận của mô phỏng này và sắp xếp mới nhất lên đầu
   const projectComments = useMemo(() => {
@@ -552,15 +601,29 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                 </button>
               </div>
 
-              <span className="text-[11px] text-[#58779B] flex items-center space-x-1.5">
-                {isRefreshing && (
-                  <span className="inline-flex items-center text-[#0785F9] font-medium mr-1">
-                    <RefreshCw className="w-3 h-3 animate-spin mr-1" />
-                    Đang đồng bộ...
-                  </span>
+              <div className="flex items-center space-x-2 flex-wrap gap-y-1">
+                {isAdmin && projectComments.length > 0 && onDeleteAllProjectComments && (
+                  <button
+                    type="button"
+                    onClick={() => setIsDeletingAllForProject(true)}
+                    className="px-2.5 py-1 text-xs text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg font-semibold border border-rose-200 flex items-center space-x-1 cursor-pointer transition-colors"
+                    title="Xóa toàn bộ bình luận của mô phỏng này"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                    <span>Xóa tất cả ({projectComments.length})</span>
+                  </button>
                 )}
-                <span>{displayedComments.length} bình luận & đánh giá</span>
-              </span>
+
+                <span className="text-[11px] text-[#58779B] flex items-center space-x-1.5">
+                  {isRefreshing && (
+                    <span className="inline-flex items-center text-[#0785F9] font-medium mr-1">
+                      <RefreshCw className="w-3 h-3 animate-spin mr-1" />
+                      Đang đồng bộ...
+                    </span>
+                  )}
+                  <span>{displayedComments.length} bình luận & đánh giá</span>
+                </span>
+              </div>
             </div>
 
             {/* New Comment Form */}
@@ -736,6 +799,134 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                     Math.max(1, Math.round(Number(c.rating) || 5))
                   );
 
+                  const isEditingThis = editingCommentId === c.id;
+
+                  if (isEditingThis) {
+                    return (
+                      <div
+                        key={c.id || Math.random().toString()}
+                        className="p-4 rounded-2xl bg-indigo-50/60 border-2 border-indigo-400 shadow-sm space-y-3 animate-fade-in"
+                      >
+                        <div className="flex items-center justify-between text-xs font-bold text-indigo-900 border-b border-indigo-200/60 pb-2">
+                          <span className="flex items-center space-x-1.5">
+                            <Pencil className="w-4 h-4 text-indigo-600" />
+                            <span>Chỉnh sửa bình luận (Quyền Quản trị viên)</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handleCancelEdit}
+                            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-indigo-100/60 transition-colors"
+                            title="Hủy chỉnh sửa"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                              Tên tác giả bình luận
+                            </label>
+                            <input
+                              type="text"
+                              value={editAuthorName}
+                              onChange={(e) => setEditAuthorName(e.target.value)}
+                              className="w-full px-3 py-1.5 rounded-xl border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                              Vai trò
+                            </label>
+                            <select
+                              value={editAuthorRole}
+                              onChange={(e) => setEditAuthorRole(e.target.value as CommentRole)}
+                              className="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:border-indigo-500"
+                            >
+                              <option value="teacher">👩‍🏫 Giáo viên / Giảng viên</option>
+                              <option value="student">👨‍🎓 Học sinh / Sinh viên</option>
+                              <option value="creator">✍️ Tác giả / Người sáng tạo</option>
+                              <option value="guest">🌐 Khách / Thành viên</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                              Chủ đề
+                            </label>
+                            <select
+                              value={editCategory}
+                              onChange={(e) => setEditCategory(e.target.value as CommentCategory)}
+                              className="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:border-indigo-500"
+                            >
+                              <option value="experience">💡 Kinh nghiệm dạy học</option>
+                              <option value="feedback">🛠️ Góp ý kỹ thuật & tính năng</option>
+                              <option value="question">❓ Hỏi đáp kiến thức</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <span className="text-[11px] font-semibold text-slate-700">
+                            Đánh giá sao:
+                          </span>
+                          <div className="flex items-center space-x-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                type="button"
+                                key={star}
+                                onClick={() => setEditRating(star)}
+                                className="p-0.5 text-amber-400 hover:scale-110 transition-transform cursor-pointer"
+                              >
+                                <Star
+                                  className={`w-4 h-4 ${
+                                    star <= editRating
+                                      ? 'fill-amber-400 text-amber-400'
+                                      : 'text-slate-300'
+                                  }`}
+                                />
+                              </button>
+                            ))}
+                          </div>
+                          <span className="text-[11px] text-slate-600 font-mono ml-1">
+                            {editRating}/5 sao
+                          </span>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                            Nội dung bình luận
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-end space-x-2 pt-1 border-t border-indigo-200/60">
+                          <button
+                            type="button"
+                            onClick={handleCancelEdit}
+                            className="px-3.5 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                          >
+                            Hủy bỏ
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveEdit(c)}
+                            className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Lưu thay đổi</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
                   return (
                     <div
                       key={c.id || Math.random().toString()}
@@ -784,14 +975,45 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
                         {c.content}
                       </p>
 
-                      <div className="pl-9 pt-1 flex items-center justify-between">
+                      {/* Balanced, unobscured action footer */}
+                      <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2 pl-9">
                         <button
                           onClick={() => onLikeComment(c.id)}
-                          className="flex items-center space-x-1 text-[11px] text-[#58779B] hover:text-[#FF3B4E] transition-colors cursor-pointer"
+                          className="flex items-center space-x-1 text-xs text-[#58779B] hover:text-[#FF3B4E] transition-colors cursor-pointer py-1"
                         >
-                          <Heart className="w-3 h-3" />
+                          <Heart className="w-3.5 h-3.5" />
                           <span>Hữu ích ({c.likes || 0})</span>
                         </button>
+
+                        {isAdmin && (
+                          <div className="flex items-center space-x-2 ml-auto">
+                            <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
+                              Admin
+                            </span>
+                            {onUpdateComment && (
+                              <button
+                                type="button"
+                                onClick={() => handleStartEdit(c)}
+                                className="px-3 py-1 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer"
+                                title="Chỉnh sửa nội dung bình luận này"
+                              >
+                                <Pencil className="w-3 h-3 text-blue-600" />
+                                <span>Sửa</span>
+                              </button>
+                            )}
+                            {onDeleteComment && (
+                              <button
+                                type="button"
+                                onClick={() => setCommentToDelete(c)}
+                                className="px-3 py-1 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer"
+                                title="Xóa bình luận này khỏi hệ thống"
+                              >
+                                <Trash2 className="w-3 h-3 text-rose-600" />
+                                <span>Xóa</span>
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -800,6 +1022,113 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Modal xác nhận xóa 1 bình luận */}
+        {commentToDelete && (
+          <div
+            className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in"
+            onClick={() => setCommentToDelete(null)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl border border-rose-100 p-5 w-full max-w-md space-y-4"
+            >
+              <div className="flex items-center space-x-2.5 text-rose-600">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 flex items-center justify-center shrink-0">
+                  <Trash2 className="w-4 h-4 text-rose-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-slate-900">Xác nhận xóa bình luận</h4>
+                  <p className="text-[11px] text-slate-500">
+                    Bình luận sẽ bị gỡ vĩnh viễn khỏi website và đồng bộ lên đám mây
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-1">
+                <div className="font-semibold text-slate-900">
+                  {commentToDelete.authorName} • {formatTimeAgo(commentToDelete.createdAt, lang)}
+                </div>
+                <p className="italic text-slate-600 line-clamp-3">"{commentToDelete.content}"</p>
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setCommentToDelete(null)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onDeleteComment && commentToDelete) {
+                      onDeleteComment(commentToDelete.id);
+                    }
+                    setCommentToDelete(null);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Xác nhận xóa</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal xác nhận xóa TẤT CẢ bình luận của mô phỏng */}
+        {isDeletingAllForProject && (
+          <div
+            className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in"
+            onClick={() => setIsDeletingAllForProject(false)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl border border-rose-200 p-5 w-full max-w-md space-y-4"
+            >
+              <div className="flex items-center space-x-2.5 text-rose-600">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-rose-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-slate-900">Xóa tất cả bình luận?</h4>
+                  <p className="text-[11px] text-slate-500">
+                    Thao tác này sẽ xóa toàn bộ {projectComments.length} bình luận của mô phỏng này
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Bạn có chắc chắn muốn xóa toàn bộ bình luận của mô phỏng <strong>"{project.title}"</strong> không? Hành động này không thể hoàn tác.
+              </p>
+
+              <div className="flex items-center justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDeletingAllForProject(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onDeleteAllProjectComments && project) {
+                      onDeleteAllProjectComments(project.id);
+                    }
+                    setIsDeletingAllForProject(false);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Xác nhận xóa hết</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
