@@ -656,7 +656,7 @@ export default function App() {
       const versionCheck = await checkCloudVersion(scriptUrl);
 
       // Nếu Apps Script đã hỗ trợ version check và dữ liệu chưa hề thay đổi:
-      if (versionCheck.success && versionCheck.cloudToken && !versionCheck.changed) {
+      if (versionCheck.success && versionCheck.syncToken && !versionCheck.changed) {
         // Hoàn toàn không có gì thay đổi, kết thúc ngay lập tức không tốn tài nguyên
         return;
       }
@@ -664,7 +664,7 @@ export default function App() {
       setIsCloudSyncing(true);
 
       // Nếu có sự thay đổi hoặc client chưa có token, tải delta
-      if (versionCheck.success && versionCheck.cloudToken && versionCheck.changed) {
+      if (versionCheck.success && versionCheck.syncToken && versionCheck.changed) {
         const delta = await fetchDeltaFromSheet(scriptUrl, localToken);
         if (delta.success) {
           // 1. Loại bỏ các ID đã bị xóa trên cloud
@@ -733,7 +733,7 @@ export default function App() {
             });
           }
 
-          setLocalSyncToken(versionCheck.cloudToken);
+          setLocalSyncToken(versionCheck.syncToken);
           return;
         }
       }
