@@ -94,6 +94,7 @@ export const BrowserMockupFrame: React.FC<BrowserMockupFrameProps> = ({
               </div>
             )}
             <img
+              key={screenshotUrl}
               src={screenshotUrl}
               alt={title}
               onLoad={() => setImageLoaded(true)}

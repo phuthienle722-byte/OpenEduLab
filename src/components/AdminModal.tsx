@@ -179,6 +179,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const handleUpdateProject = (updated: WebProject) => {
     if (onUpdateProject) onUpdateProject(updated);
     setEditingProject(null);
+    setPendingSyncMsg({
+      type: 'success',
+      text: `Đã lưu thay đổi cho mô phỏng "${updated.title}" thành công!`,
+    });
+    setTimeout(() => setPendingSyncMsg(null), 4000);
   };
 
   // Tải bài chờ duyệt (pending) từ Google Sheets về (cross-device visibility)
@@ -482,6 +487,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                           key={item.id}
                           className="p-4 bg-amber-50/40 border border-amber-200/70 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4"
                         >
+                          {/* Avatar thumbnail preview */}
+                          <div className="w-16 h-11 rounded-lg bg-white overflow-hidden shrink-0 border border-amber-200/80 flex items-center justify-center self-start md:self-center shadow-2xs">
+                            {item.previewImage ? (
+                              <img
+                                key={item.previewImage}
+                                src={item.previewImage}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Globe className="w-5 h-5 text-amber-500" />
+                            )}
+                          </div>
+
                           <div className="space-y-1.5 flex-1 min-w-0">
                             <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                               <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold">
@@ -561,6 +580,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       key={item.id}
                       className="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 hover:border-indigo-200 transition-colors"
                     >
+                      {/* Avatar thumbnail preview */}
+                      <div className="w-12 h-9 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200 flex items-center justify-center shadow-2xs">
+                        {item.previewImage ? (
+                          <img
+                            key={item.previewImage}
+                            src={item.previewImage}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Globe className="w-4 h-4 text-slate-400" />
+                        )}
+                      </div>
+
                       <div className="overflow-hidden flex-1 min-w-0">
                         <div className="flex items-center space-x-2">
                           <span className="font-bold text-slate-900 text-xs truncate">{item.title}</span>

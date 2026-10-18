@@ -53,7 +53,7 @@ import {
   setCommunityApprovedOnly,
 } from './config';
 
-const STORAGE_KEY_PROJECTS = 'webhub_projects_data_v3';
+const STORAGE_KEY_PROJECTS = 'webhub_projects_data_v4';
 const STORAGE_KEY_LANG = 'webhub_language_preference';
 const STORAGE_KEY_ADMIN = 'webhub_admin_session';
 
@@ -233,9 +233,30 @@ const mergeCloudProject = (
     ? (cloud.tags as string).split(',').map((t) => t.trim()).filter(Boolean)
     : [];
   const localTags = Array.isArray(local.tags) ? local.tags : [];
+
+  const localTime = local.updatedAt ? new Date(local.updatedAt).getTime() : 0;
+  const cloudTime = cloud.updatedAt ? new Date(cloud.updatedAt).getTime() : 0;
+  const isLocalNewer = localTime > 0 && localTime >= cloudTime;
+
+  // Ảnh đại diện: nếu local vừa chỉnh sửa hoặc cloud trống ảnh, luôn bảo toàn ảnh local
+  const bestPreviewImage = (isLocalNewer && local.previewImage)
+    ? local.previewImage
+    : ((cloud.previewImage && cloud.previewImage.trim()) || local.previewImage);
+
+  const base = isLocalNewer ? local : cloud;
+
   return {
-    ...cloud,
-    tags: cloudTags.length > 0 ? cloudTags : localTags,
+    ...base,
+    title: isLocalNewer ? local.title : (cloud.title || local.title),
+    url: isLocalNewer ? local.url : (cloud.url || local.url),
+    description: isLocalNewer ? local.description : (cloud.description || local.description),
+    country: isLocalNewer ? local.country : (cloud.country || local.country),
+    category: isLocalNewer ? local.category : (cloud.category || local.category),
+    educationLevel: isLocalNewer ? local.educationLevel : (cloud.educationLevel || local.educationLevel),
+    authorName: isLocalNewer ? local.authorName : (cloud.authorName || local.authorName),
+    authorContact: isLocalNewer ? local.authorContact : (cloud.authorContact || local.authorContact),
+    previewImage: bestPreviewImage,
+    tags: isLocalNewer ? (localTags.length > 0 ? localTags : cloudTags) : (cloudTags.length > 0 ? cloudTags : localTags),
     views: Math.max(local.views || 0, cloud.views || 0),
     likes: Math.max(local.likes || 0, cloud.likes || 0),
     downloads: Math.max(local.downloads || 0, cloud.downloads || 0),
@@ -244,6 +265,8 @@ const mergeCloudProject = (
     isFamous: local.isFamous === true || cloud.isFamous === true,
     isUserSubmission:
       local.isUserSubmission === true || cloud.isUserSubmission === true,
+    status: isLocalNewer ? local.status : (cloud.status || local.status),
+    updatedAt: isLocalNewer ? local.updatedAt : (cloud.updatedAt || local.updatedAt),
   };
 };
 
@@ -285,41 +308,43 @@ export default function App() {
   // 3. Projects State (Loaded from localStorage with clean migration across all versions or Initial Seed)
   const [projects, setProjects] = useState<WebProject[]>(() => {
     try {
-      const storageKeys = [
-        'webhub_projects_data_v4',
+      const savedPrimary = localStorage.getItem(STORAGE_KEY_PROJECTS);
+      if (savedPrimary) {
+        try {
+          const parsed = JSON.parse(savedPrimary);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return sanitizeAndMigrateProjects(parsed);
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      // Migration từ các phiên bản lưu cũ nếu chưa có v4
+      const fallbackKeys = [
         'webhub_projects_data_v3',
         'webhub_projects_data_v2',
         'webhub_projects_data_v1',
         'webhub_projects_data',
       ];
-      const mergedList: WebProject[] = [];
-      for (const key of storageKeys) {
+      for (const key of fallbackKeys) {
         const saved = localStorage.getItem(key);
         if (saved) {
           try {
             const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed)) {
-              for (const item of parsed) {
-                if (
-                  item &&
-                  item.id &&
-                  !mergedList.some(
-                    (existing) => existing.id === item.id || existing.url === item.url
-                  )
-                ) {
-                  // Giữ nguyên trạng thái (approved / pending / rejected) khi tải lại
-                  mergedList.push({ ...item });
-                }
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              const sanitized = sanitizeAndMigrateProjects(parsed);
+              try {
+                localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(sanitized));
+              } catch {
+                // ignore
               }
+              return sanitized;
             }
           } catch {
-            // ignore JSON error
+            // ignore
           }
         }
-      }
-
-      if (mergedList.length > 0) {
-        return sanitizeAndMigrateProjects(mergedList);
       }
     } catch {
       // Fallback
@@ -927,9 +952,9 @@ export default function App() {
         ...project,
         status: 'approved',
         isUserSubmission: true,
+      }).then(() => {
+        syncPendingFromCloud();
       });
-      // Sau khi duyá»‡t, kĂ©o láº¡i danh sĂ¡ch chá» duyá»‡t tá»« Ä‘Ă¡m mĂ¢y
-      syncPendingFromCloud();
     }
   };
 
@@ -943,9 +968,9 @@ export default function App() {
     if (!project) return;
     const scriptUrl = getStoredScriptUrl();
     if (scriptUrl && isAutoSyncEnabled()) {
-      upsertProjectToSheet(scriptUrl, { ...project, status: 'rejected' });
-      // Sau khi tá»« chá»‘i, kĂ©o láº¡i danh sĂ¡ch chá» duyá»‡t tá»« Ä‘Ă¡m mĂ¢y
-      syncPendingFromCloud();
+      upsertProjectToSheet(scriptUrl, { ...project, status: 'rejected' }).then(() => {
+        syncPendingFromCloud();
+      });
     }
   };
 
@@ -960,30 +985,63 @@ export default function App() {
     }
   };
 
-const handleUpdateProject = (updated: WebProject) => {
-    // Chỉnh sửa KHÔNG thay đổi trạng thái duyệt & không làm mất các cờ/quyền:
-    // giữ nguyên status (approve/reject/pending), id, ngày tạo, thống kê,
-    // isFamous và isUserSubmission từ bản ghi hiện có.
-    const existing = projects.find((p) => p.id === updated.id);
+  const handleUpdateProject = (updated: WebProject) => {
+    const existing = projects.find(
+      (p) => String(p.id).trim() === String(updated.id).trim()
+    );
+    const urlOrTitleChanged = Boolean(
+      existing && (existing.url !== updated.url || existing.title !== updated.title)
+    );
+    const updatedWithGoLink = ensureGoLink(updated, urlOrTitleChanged);
+
+    const nowIso = new Date().toISOString();
     const merged: WebProject = existing
       ? {
-          ...updated,
-          id: existing.id,
-          createdAt: existing.createdAt || updated.createdAt,
-          status: existing.status || updated.status,
-          views: Math.max(existing.views, updated.views),
-          likes: Math.max(existing.likes, updated.likes),
-          isFamous: existing.isFamous === true ? true : updated.isFamous === true,
+          ...existing,
+          ...updatedWithGoLink,
+          title: updatedWithGoLink.title,
+          url: updatedWithGoLink.url,
+          description: updatedWithGoLink.description,
+          country: updatedWithGoLink.country,
+          category: updatedWithGoLink.category,
+          educationLevel: updatedWithGoLink.educationLevel,
+          authorName: updatedWithGoLink.authorName,
+          authorContact: updatedWithGoLink.authorContact,
+          previewImage:
+            updatedWithGoLink.previewImage !== undefined
+              ? updatedWithGoLink.previewImage
+              : existing.previewImage,
+          tags: updatedWithGoLink.tags,
+          goLink: updatedWithGoLink.goLink || existing.goLink,
+          views: Math.max(existing.views || 0, updatedWithGoLink.views || 0),
+          likes: Math.max(existing.likes || 0, updatedWithGoLink.likes || 0),
+          downloads: Math.max(existing.downloads || 0, updatedWithGoLink.downloads || 0),
+          contributions: Math.max(existing.contributions || 0, updatedWithGoLink.contributions || 0),
+          commentCount: Math.max(existing.commentCount || 0, updatedWithGoLink.commentCount || 0),
+          isFamous: existing.isFamous === true ? true : updatedWithGoLink.isFamous === true,
           isUserSubmission:
             existing.isUserSubmission === true
               ? true
-              : updated.isUserSubmission === true,
+              : updatedWithGoLink.isUserSubmission === true,
+          updatedAt: nowIso,
         }
-      : updated;
+      : { ...updatedWithGoLink, updatedAt: nowIso };
 
-    setProjects((prev) =>
-      prev.map((p) => (p.id === merged.id ? merged : p))
-    );
+    setProjects((prev) => {
+      const nextList = prev.map((p) =>
+        String(p.id).trim() === String(merged.id).trim() ? merged : p
+      );
+      try {
+        localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(nextList));
+      } catch (e) {
+        console.warn('LocalStorage save error:', e);
+      }
+      return nextList;
+    });
+
+    // Tự động đóng modal chỉnh sửa nếu đang mở ở trang chủ
+    setIsSubmitOpen(false);
+    setEditingProject(null);
 
     const scriptUrl = getStoredScriptUrl();
     if (scriptUrl && isAutoSyncEnabled()) {
@@ -1298,88 +1356,104 @@ const handleUpdateProject = (updated: WebProject) => {
       </main>
 
       {/* Footer */}
-      <footer className="w-full bg-white border-t border-slate-200/80 mt-12">
-        <div className="max-w-7xl mx-auto px-4 py-10">
-          {/* THÔNG TIN TÁC GIẢ */}
-          <div className="mb-8">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 mb-5">
-              {t.footerAuthorInfo ?? 'Author Information'}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[13px]">
-              <div className="space-y-1.5 text-slate-600">
-                <p>
-                  <span className="font-semibold text-slate-800">
-                    {t.footerAuthorDev ?? 'Author & Development'}:
-                  </span>
-                  <span className="ml-1.5">Lê Thanh Liêm</span>
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-800">
-                    {t.footerField ?? 'Field'}:
-                  </span>
-                  <span className="ml-1.5">
-                    {t.footerFieldValue ?? 'Education · STEM · Technology · AI'}
-                  </span>
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-800">
-                    {t.footerLocation ?? 'Location'}:
-                  </span>
-                  <span className="ml-1.5">
-                    {t.footerLocationValue ?? 'Cần Thơ City, Vietnam'}
-                  </span>
-                </p>
-              </div>
+      <footer className="w-full mt-12 bg-gradient-to-br from-violet-600 via-indigo-600 to-cyan-500">
+        {/* Decorative wave top */}
+        <div className="w-full overflow-hidden leading-[0]">
+          <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" className="w-full h-10 rotate-180 fill-slate-50">
+            <path d="M0,20 C360,40 1080,0 1440,20 L1440,40 L0,40 Z" />
+          </svg>
+        </div>
 
-              <div className="space-y-1.5 text-slate-600">
-                <p className="font-semibold text-slate-800">
-                  {t.footerContact ?? 'Contact'}:
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-800">
-                    {t.footerEmail ?? 'Email'}:
-                  </span>
-                  <a
-                    href="mailto:ltliem89@gmail.com"
-                    className="ml-1.5 text-indigo-600 hover:underline"
-                  >
-                    ltliem89@gmail.com
-                  </a>
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-800">
-                    {t.footerWorkEmail ?? 'Work Email'}:
-                  </span>
-                  <a
-                    href="mailto:liemlt2@fe.edu.vn"
-                    className="ml-1.5 text-indigo-600 hover:underline"
-                  >
-                    liemlt2@fe.edu.vn
-                  </a>
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-800">
-                    {t.footerPhone ?? 'Phone / Zalo / LINE'}:
-                  </span>
-                  <a
-                    href="tel:0978152896"
-                    className="ml-1.5 text-indigo-600 hover:underline"
-                  >
-                    0978152896
-                  </a>
-                </p>
+        <div className="max-w-5xl mx-auto px-4 pb-10 pt-2">
+          {/* Tiêu đề phần tác giả */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-5 py-2 mb-3">
+              <span className="text-yellow-300 text-lg">✦</span>
+              <span className="text-white font-bold text-sm uppercase tracking-widest">Nhóm Thiết Kế &amp; Phát Triển</span>
+              <span className="text-yellow-300 text-lg">✦</span>
+            </div>
+            <h2 className="text-white/90 text-xs tracking-wider uppercase">
+              Trường PTDTNT THCS Him Lam · Xã Thạnh Xuân · TP. Cần Thơ
+            </h2>
+          </div>
+
+          {/* Cards tác giả */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+            {/* Tác giả 1 */}
+            <div className="group relative bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-5 hover:bg-white/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+              <div className="absolute -top-3 left-5">
+                <span className="bg-gradient-to-r from-pink-400 to-rose-500 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
+                  🌸 Tác giả
+                </span>
+              </div>
+              <div className="flex items-start gap-4 mt-2">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-300 to-rose-400 flex items-center justify-center text-white font-extrabold text-xl shadow-md">
+                  G
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-bold text-base leading-tight">Phan Bùi Giang Ngân</p>
+                  <p className="text-pink-200 text-xs font-semibold mt-0.5">Lớp 9A3</p>
+                  <div className="mt-2.5 flex items-center gap-1.5">
+                    <span className="text-green-300 text-sm">📱</span>
+                    <span className="text-white/70 text-xs">Zalo:</span>
+                    <a
+                      href="tel:0793067027"
+                      className="text-yellow-300 hover:text-yellow-100 font-bold text-sm transition-colors"
+                    >
+                      0793067027
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tác giả 2 */}
+            <div className="group relative bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-5 hover:bg-white/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+              <div className="absolute -top-3 left-5">
+                <span className="bg-gradient-to-r from-cyan-400 to-teal-500 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
+                  🌊 Tác giả
+                </span>
+              </div>
+              <div className="flex items-start gap-4 mt-2">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-cyan-300 to-teal-400 flex items-center justify-center text-white font-extrabold text-xl shadow-md">
+                  V
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-bold text-base leading-tight">Trịnh Nguyễn Tường Vy</p>
+                  <p className="text-cyan-200 text-xs font-semibold mt-0.5">Lớp 9A13</p>
+                  <div className="mt-2.5 flex items-center gap-1.5">
+                    <span className="text-green-300 text-sm">📱</span>
+                    <span className="text-white/70 text-xs">Zalo:</span>
+                    <a
+                      href="tel:0907324280"
+                      className="text-yellow-300 hover:text-yellow-100 font-bold text-sm transition-colors"
+                    >
+                      0907324280
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Bản quyền */}
-          <div className="pt-6 border-t border-slate-100">
-            <p className="text-[13px] font-semibold text-slate-800">
-              © {new Date().getFullYear()} Lê Thanh Liêm. All rights reserved.
+          {/* Thông tin trường */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl px-5 py-4 text-center mb-7 border border-white/20">
+            <p className="text-white/95 text-sm font-semibold">
+              🏫 Trường PTDTNT THCS Him Lam
             </p>
-            <p className="mt-2 text-xs leading-6 text-slate-500">
+            <p className="text-white/70 text-xs mt-1">
+              Xã Thạnh Xuân · Thành phố Cần Thơ · Việt Nam 🇻🇳
+            </p>
+          </div>
+
+          {/* Dải phân cách & bản quyền */}
+          <div className="border-t border-white/20 pt-5 text-center">
+            <p className="text-white/90 text-xs font-semibold tracking-wide">
+              © {new Date().getFullYear()} OpenEduLab · Phan Bùi Giang Ngân &amp; Trịnh Nguyễn Tường Vy
+            </p>
+            <p className="mt-1.5 text-white/50 text-[11px] leading-5">
               {t.footerCopyrightNote ??
-                'The design, content and development of this website belong to the author, except for third-party components, libraries, resources or content used under their respective licenses.'}
+                'Thiết kế, nội dung và phát triển của website thuộc về tác giả, ngoại trừ các thành phần, thư viện, tài nguyên hoặc nội dung của bên thứ ba được sử dụng theo giấy phép tương ứng.'}
             </p>
           </div>
         </div>
@@ -1399,7 +1473,7 @@ const handleUpdateProject = (updated: WebProject) => {
       {/* Website Submission Modal (cũng dùng cho Admin chỉnh sửa bài) */}
       <SubmitModal
         isOpen={isSubmitOpen}
-        onClose={() => setIsSubmitOpen(false)}
+        onClose={() => { setIsSubmitOpen(false); setEditingProject(null); }}
         onSubmit={handleSubmitNewProject}
         editingProject={editingProject}
         onUpdate={handleUpdateProject}

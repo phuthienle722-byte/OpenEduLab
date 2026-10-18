@@ -35,6 +35,7 @@ export interface WebProject {
   educationLevel: EducationLevelId;
   status: 'approved' | 'pending' | 'rejected';
   createdAt: string; // ISO string
+  updatedAt?: string; // ISO string khi admin chỉnh sửa
   previewImage?: string;
   authorName: string;
   authorContact?: string;
