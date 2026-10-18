@@ -92,13 +92,12 @@ export const CompactListItem: React.FC<CompactListItemProps> = ({
         <button
           onClick={() => onOpenDiscussion(project)}
           className="px-2 py-1.5 rounded-lg bg-[#E2F1FF] text-[#0785F9] hover:bg-[#0785F9] hover:text-white transition-colors cursor-pointer text-xs font-bold flex items-center space-x-1"
-          title="Khu vực bình luận & trao đổi kinh nghiệm"
+          title="Bình luận & trao đổi kinh nghiệm"
         >
           <MessageSquare className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Bình luận</span>
-          {(project.commentCount ?? 0) > 0 && (
-            <span className="text-[10px] ml-0.5">({project.commentCount})</span>
-          )}
+          <span className="text-[10px] font-bold">
+            {project.commentCount || 0}
+          </span>
         </button>
 
         <button

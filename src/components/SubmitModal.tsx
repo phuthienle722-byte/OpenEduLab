@@ -10,7 +10,7 @@ interface SubmitModalProps {
   onClose: () => void;
   onSubmit: (projectData: Omit<WebProject, 'id' | 'createdAt' | 'views' | 'likes'>) => void;
   editingProject?: WebProject | null;
-  onUpdate?: (project: WebProject) => void;
+  onUpdate?: (project: WebProject, originalId?: string) => void;
   lang: Language;
   isAdmin: boolean;
 }
@@ -114,19 +114,24 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
       : [category, country];
 
     if (editingProject && onUpdate) {
-      onUpdate({
-        ...editingProject,
-        url: normalizedUrl,
-        title: title.trim(),
-        description: description.trim() || t.smDefaultDesc,
-        country,
-        category,
-        educationLevel,
-        authorName: authorName.trim() || t.smDefaultAuthor,
-        authorContact: authorContact.trim(),
-        previewImage: customThumbnail.trim() || undefined,
-        tags,
-      });
+      onUpdate(
+        {
+          ...editingProject,
+          url: normalizedUrl,
+          title: title.trim(),
+          description: description.trim() || t.smDefaultDesc,
+          country,
+          category,
+          educationLevel,
+          authorName: authorName.trim() || t.smDefaultAuthor,
+          authorContact: authorContact.trim(),
+          previewImage: customThumbnail.trim() || undefined,
+          tags,
+        },
+        editingProject.id
+      );
+      onClose();
+      return;
     } else {
       onSubmit({
         url: normalizedUrl,

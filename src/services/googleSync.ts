@@ -190,9 +190,11 @@ export async function fetchProjectsFromSheet(scriptUrl: string): Promise<SyncRes
     }
 
     const result = await response.json();
-    const rawList: any[] = result && Array.isArray(result.data) 
-      ? result.data 
-      : (Array.isArray(result) ? result : []);
+    const rawList: any[] = result && Array.isArray(result.rows)
+      ? result.rows
+      : (result && Array.isArray(result.data)
+        ? result.data
+        : (Array.isArray(result) ? result : []));
 
     if (rawList.length > 0) {
       const normalizedProjects: WebProject[] = rawList.map((item: any, idx: number) => {
@@ -426,7 +428,11 @@ export async function fetchSubmissionsFromSheet(scriptUrl: string): Promise<Sync
     if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
 
     const result = await response.json();
-    const rawList: any[] = result && Array.isArray(result.data) ? result.data : [];
+    const rawList: any[] = result && Array.isArray(result.rows)
+      ? result.rows
+      : (result && Array.isArray(result.data)
+        ? result.data
+        : (Array.isArray(result) ? result : []));
     const isSubmissionStatus = (s: any) =>
       s === 'approved' || s === 'pending' || s === 'rejected';
     const projects: WebProject[] = rawList.map((item: any, idx: number) => {
@@ -580,10 +586,12 @@ export async function fetchCommentsFromSheet(
     });
     if (!response.ok) return { success: false, data: [] };
     const result = await response.json();
-    if (result && Array.isArray(result.data)) {
-      return { success: true, data: result.data };
-    }
-    return { success: true, data: [] };
+    const rawList: any[] = result && Array.isArray(result.rows)
+      ? result.rows
+      : (result && Array.isArray(result.data)
+        ? result.data
+        : (Array.isArray(result) ? result : []));
+    return { success: true, data: rawList };
   } catch (e) {
     console.warn('Silent fail fetching comments from Google Sheet', e);
     return { success: false, data: [] };
@@ -966,15 +974,15 @@ function doGet(e) {
       });
 
       const combined = pendingFromMain.concat(pendingFromSub);
-      return createJsonResponse({ status: "success", total: combined.length, data: combined });
+      return createJsonResponse({ status: "success", total: combined.length, data: combined, rows: combined });
     }
     if (action === "getComments") {
       const pid = e && e.parameter && e.parameter.projectId ? String(e.parameter.projectId) : undefined;
       const result = parseComments(ensureCommentsSheet(), pid);
-      return createJsonResponse({ status: "success", total: result.rows.length, data: result.rows });
+      return createJsonResponse({ status: "success", total: result.rows.length, data: result.rows, rows: result.rows });
     }
     const result = parseRows(ensureSheet(MAIN_SHEET));
-    return createJsonResponse({ status: "success", total: result.rows.length, data: result.rows });
+    return createJsonResponse({ status: "success", total: result.rows.length, data: result.rows, rows: result.rows });
   } catch (error) {
     return createJsonResponse({ status: "error", message: error.toString() });
   }

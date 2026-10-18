@@ -222,30 +222,28 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
         {/* Bottom Interactive Action Row */}
         <div className="pt-1 flex items-center justify-between gap-1.5">
-          {/* Primary Action: Bình luận & Trao đổi kinh nghiệm */}
-          <button
-            id={`discuss-btn-${project.id}`}
-            onClick={() => onOpenDiscussion(project)}
-            className="flex-1 py-2 px-2.5 rounded-xl bg-[#0785F9] hover:bg-[#006FE6] text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition-all cursor-pointer"
-            title="Mở khu vực bình luận & trao đổi kinh nghiệm"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span className="truncate">Bình luận</span>
-            {(project.commentCount ?? 0) > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-white/25 text-white text-[10px] font-bold">
-                {project.commentCount}
-              </span>
-            )}
-          </button>
-
-          {/* Quick Launch Simulation Button */}
+          {/* Quick Launch Simulation Button (Primary Action) */}
           <button
             id={`visit-btn-${project.id}`}
             onClick={handleVisit}
-            className="p-2 rounded-xl border border-[#E2EDF8] text-[#0785F9] hover:bg-[#E2F1FF] hover:border-[#0785F9]/30 text-xs transition-colors cursor-pointer"
+            className="flex-1 py-2 px-2.5 rounded-xl bg-[#0785F9] hover:bg-[#006FE6] text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition-all cursor-pointer truncate"
             title="Trải nghiệm nhanh mô phỏng"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">{lang === 'vi' ? 'Trải nghiệm' : 'Launch'}</span>
+          </button>
+
+          {/* Discussion Button: Biểu tượng + Số lượng bình luận */}
+          <button
+            id={`discuss-btn-${project.id}`}
+            onClick={() => onOpenDiscussion(project)}
+            className="py-2 px-2.5 rounded-xl border border-[#E2EDF8] text-[#0785F9] hover:bg-[#E2F1FF] hover:border-[#0785F9]/30 text-xs font-bold flex items-center justify-center space-x-1 transition-all cursor-pointer shrink-0"
+            title="Bình luận & trao đổi kinh nghiệm"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold">
+              {project.commentCount || 0}
+            </span>
           </button>
 
           {/* Secondary Action: QR Code Button */}

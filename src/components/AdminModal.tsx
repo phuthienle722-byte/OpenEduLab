@@ -50,7 +50,7 @@ interface AdminModalProps {
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
   onDeleteRequest: (project: WebProject) => void;
-  onUpdateProject?: (project: WebProject) => void;
+  onUpdateProject?: (project: WebProject, originalId?: string) => void;
   onExportData: () => void;
   onImportData: (data: WebProject[]) => void;
   onResetData: () => void;
@@ -176,12 +176,12 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     onClose();
   };
 
-  const handleUpdateProject = (updated: WebProject) => {
-    if (onUpdateProject) onUpdateProject(updated);
+  const handleUpdateProject = (updated: WebProject, originalId?: string) => {
+    if (onUpdateProject) onUpdateProject(updated, originalId);
     setEditingProject(null);
     setPendingSyncMsg({
       type: 'success',
-      text: `Đã lưu thay đổi cho mô phỏng "${updated.title}" thành công!`,
+      text: `Đã cập nhật mô phỏng "${updated.title}" thành công!`,
     });
     setTimeout(() => setPendingSyncMsg(null), 4000);
   };

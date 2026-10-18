@@ -729,9 +729,23 @@ export default function App() {
     };
 
     pollApproved();
-    const interval = setInterval(pollApproved, 20000);
-    return () => clearInterval(interval);
-  }, [syncCommentsFromCloud]);
+    const interval = setInterval(pollApproved, 12000);
+
+    const handleFocusSync = () => {
+      if (document.visibilityState === 'visible') {
+        pollApproved();
+        syncPendingFromCloud();
+      }
+    };
+    window.addEventListener('focus', handleFocusSync);
+    document.addEventListener('visibilitychange', handleFocusSync);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocusSync);
+      document.removeEventListener('visibilitychange', handleFocusSync);
+    };
+  }, [syncCommentsFromCloud, syncPendingFromCloud]);
 
   // 6. Action Handlers (Views, Likes, Downloads, Contributions, Comments)
   const handleLike = (projectId: string) => {
@@ -985,52 +999,53 @@ export default function App() {
     }
   };
 
-  const handleUpdateProject = (updated: WebProject) => {
-    const existing = projects.find(
-      (p) => String(p.id).trim() === String(updated.id).trim()
-    );
-    const urlOrTitleChanged = Boolean(
-      existing && (existing.url !== updated.url || existing.title !== updated.title)
-    );
-    const updatedWithGoLink = ensureGoLink(updated, urlOrTitleChanged);
-
+  const handleUpdateProject = (updated: WebProject, originalId?: string) => {
+    const oldId = String(originalId || updated.id).trim();
+    const newId = `proj-${Date.now()}`;
     const nowIso = new Date().toISOString();
-    const merged: WebProject = existing
-      ? {
-          ...existing,
-          ...updatedWithGoLink,
-          title: updatedWithGoLink.title,
-          url: updatedWithGoLink.url,
-          description: updatedWithGoLink.description,
-          country: updatedWithGoLink.country,
-          category: updatedWithGoLink.category,
-          educationLevel: updatedWithGoLink.educationLevel,
-          authorName: updatedWithGoLink.authorName,
-          authorContact: updatedWithGoLink.authorContact,
-          previewImage:
-            updatedWithGoLink.previewImage !== undefined
-              ? updatedWithGoLink.previewImage
-              : existing.previewImage,
-          tags: updatedWithGoLink.tags,
-          goLink: updatedWithGoLink.goLink || existing.goLink,
-          views: Math.max(existing.views || 0, updatedWithGoLink.views || 0),
-          likes: Math.max(existing.likes || 0, updatedWithGoLink.likes || 0),
-          downloads: Math.max(existing.downloads || 0, updatedWithGoLink.downloads || 0),
-          contributions: Math.max(existing.contributions || 0, updatedWithGoLink.contributions || 0),
-          commentCount: Math.max(existing.commentCount || 0, updatedWithGoLink.commentCount || 0),
-          isFamous: existing.isFamous === true ? true : updatedWithGoLink.isFamous === true,
-          isUserSubmission:
-            existing.isUserSubmission === true
-              ? true
-              : updatedWithGoLink.isUserSubmission === true,
-          updatedAt: nowIso,
-        }
-      : { ...updatedWithGoLink, updatedAt: nowIso };
 
+    const existing = projects.find(
+      (p) => String(p.id).trim() === oldId
+    );
+
+    const newProject: WebProject = {
+      ...existing,
+      ...updated,
+      id: newId,
+      title: updated.title.trim(),
+      url: updated.url.trim(),
+      description: updated.description.trim(),
+      country: updated.country,
+      category: updated.category,
+      educationLevel: updated.educationLevel,
+      authorName: updated.authorName.trim(),
+      authorContact: updated.authorContact?.trim(),
+      previewImage:
+        updated.previewImage !== undefined
+          ? updated.previewImage
+          : existing?.previewImage,
+      tags: updated.tags,
+      views: Math.max(existing?.views || 0, updated.views || 0),
+      likes: Math.max(existing?.likes || 0, updated.likes || 0),
+      downloads: Math.max(existing?.downloads || 0, updated.downloads || 0),
+      contributions: Math.max(existing?.contributions || 0, updated.contributions || 0),
+      commentCount: Math.max(existing?.commentCount || 0, updated.commentCount || 0),
+      isFamous: existing?.isFamous === true ? true : updated.isFamous === true,
+      isUserSubmission:
+        existing?.isUserSubmission === true ? true : updated.isUserSubmission === true,
+      status: 'approved',
+      createdAt: existing?.createdAt || nowIso,
+      updatedAt: nowIso,
+    };
+
+    const newProjectWithGoLink = ensureGoLink(newProject, true);
+
+    // 1. Cập nhật state projects: Xóa id cũ, đưa mô phỏng mới với newId vào danh sách
     setProjects((prev) => {
-      const nextList = prev.map((p) =>
-        String(p.id).trim() === String(merged.id).trim() ? merged : p
+      const filtered = prev.filter(
+        (p) => String(p.id).trim() !== oldId
       );
+      const nextList = [newProjectWithGoLink, ...filtered];
       try {
         localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(nextList));
       } catch (e) {
@@ -1039,13 +1054,28 @@ export default function App() {
       return nextList;
     });
 
-    // Tự động đóng modal chỉnh sửa nếu đang mở ở trang chủ
+    // 2. Chuyển bình luận thuộc về ID cũ sang ID mới để bảo toàn trao đổi
+    setComments((prev) => {
+      const updatedComments = prev.map((c) =>
+        String(c.projectId).trim() === oldId
+          ? { ...c, projectId: newId }
+          : c
+      );
+      try {
+        localStorage.setItem(STORAGE_KEY_COMMENTS, JSON.stringify(updatedComments));
+      } catch {}
+      return updatedComments;
+    });
+
+    // 3. Tự động đóng modal chỉnh sửa
     setIsSubmitOpen(false);
     setEditingProject(null);
 
+    // 4. Đồng bộ Google Sheets: Xóa hàng mang ID cũ & thêm mới hàng mang ID mới vào WebHub_Projects
     const scriptUrl = getStoredScriptUrl();
     if (scriptUrl && isAutoSyncEnabled()) {
-      upsertProjectToSheet(scriptUrl, merged);
+      deleteSubmissionsFromSheet(scriptUrl, [oldId]);
+      upsertProjectToSheet(scriptUrl, newProjectWithGoLink);
     }
   };
 

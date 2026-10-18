@@ -148,16 +148,13 @@ export const TimelineLayerCard: React.FC<TimelineLayerCardProps> = ({
             {onOpenDiscussion && (
               <button
                 onClick={() => onOpenDiscussion(project)}
-                className="px-3 py-2 rounded-xl bg-[#0785F9] hover:bg-[#006FE6] text-white text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
-                title="Khu vực bình luận & trao đổi kinh nghiệm"
+                className="px-2.5 py-2 rounded-xl bg-[#E2F1FF] hover:bg-[#0785F9] text-[#0785F9] hover:text-white text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer"
+                title="Bình luận & trao đổi kinh nghiệm"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
-                <span>Bình luận</span>
-                {(project.commentCount ?? 0) > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-white text-[10px] font-bold">
-                    {project.commentCount}
-                  </span>
-                )}
+                <span className="text-[11px] font-bold">
+                  {project.commentCount || 0}
+                </span>
               </button>
             )}
 
