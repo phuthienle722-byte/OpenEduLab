@@ -55,6 +55,8 @@ import {
 import {
   isCommunityApprovedOnly,
   setCommunityApprovedOnly,
+  isFooterAuthorsVisible,
+  setFooterAuthorsVisible,
 } from './config';
 
 const STORAGE_KEY_PROJECTS = 'webhub_projects_data_v4';
@@ -308,6 +310,11 @@ export default function App() {
     setCommunityApprovedOnly(val);
     setCommunityOnly(val);
   };
+
+  // Biến kiểm soát hiển thị thông tin tác giả cuối trang (tạm ẩn)
+  const [showFooterAuthors, setShowFooterAuthors] = useState<boolean>(() =>
+    isFooterAuthorsVisible()
+  );
 
   // 3. Projects State (Loaded from localStorage with clean migration across all versions or Initial Seed)
   const [projects, setProjects] = useState<WebProject[]>(() => {
@@ -1453,76 +1460,81 @@ export default function App() {
         </div>
 
         <div className="max-w-5xl mx-auto px-4 pb-10 pt-2">
-          {/* Tiêu đề phần tác giả */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-5 py-2 mb-3">
-              <span className="text-yellow-300 text-lg">✦</span>
-              <span className="text-white font-bold text-sm uppercase tracking-widest">Nhóm Thiết Kế &amp; Phát Triển</span>
-              <span className="text-yellow-300 text-lg">✦</span>
-            </div>
-            <h2 className="text-white/90 text-xs tracking-wider uppercase">
-              Trường PTDTNT THCS Him Lam · Xã Thạnh Xuân · TP. Cần Thơ
-            </h2>
-          </div>
-
-          {/* Cards tác giả */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
-            {/* Tác giả 1 */}
-            <div className="group relative bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-5 hover:bg-white/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-              <div className="absolute -top-3 left-5">
-                <span className="bg-gradient-to-r from-pink-400 to-rose-500 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
-                  🌸 Tác giả
-                </span>
-              </div>
-              <div className="flex items-start gap-4 mt-2">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-300 to-rose-400 flex items-center justify-center text-white font-extrabold text-xl shadow-md">
-                  G
+          {/* Tiêu đề & Cards tác giả (Có thể bật/tắt qua SHOW_FOOTER_AUTHORS_DEFAULT) */}
+          {showFooterAuthors && (
+            <>
+              {/* Tiêu đề phần tác giả */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-5 py-2 mb-3">
+                  <span className="text-yellow-300 text-lg">✦</span>
+                  <span className="text-white font-bold text-sm uppercase tracking-widest">Nhóm Thiết Kế &amp; Phát Triển</span>
+                  <span className="text-yellow-300 text-lg">✦</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-base leading-tight">Phan Bùi Giang Ngân</p>
-                  <p className="text-pink-200 text-xs font-semibold mt-0.5">Lớp 9A3</p>
-                  <div className="mt-2.5 flex items-center gap-1.5">
-                    <span className="text-green-300 text-sm">📱</span>
-                    <span className="text-white/70 text-xs">Zalo:</span>
-                    <a
-                      href="tel:0793067027"
-                      className="text-yellow-300 hover:text-yellow-100 font-bold text-sm transition-colors"
-                    >
-                      0793067027
-                    </a>
+                <h2 className="text-white/90 text-xs tracking-wider uppercase">
+                  Trường PTDTNT THCS Him Lam · Xã Thạnh Xuân · TP. Cần Thơ
+                </h2>
+              </div>
+
+              {/* Cards tác giả */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+                {/* Tác giả 1 */}
+                <div className="group relative bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-5 hover:bg-white/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                  <div className="absolute -top-3 left-5">
+                    <span className="bg-gradient-to-r from-pink-400 to-rose-500 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
+                      🌸 Tác giả
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-4 mt-2">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-300 to-rose-400 flex items-center justify-center text-white font-extrabold text-xl shadow-md">
+                      G
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-bold text-base leading-tight">Phan Bùi Giang Ngân</p>
+                      <p className="text-pink-200 text-xs font-semibold mt-0.5">Lớp 9A3</p>
+                      <div className="mt-2.5 flex items-center gap-1.5">
+                        <span className="text-green-300 text-sm">📱</span>
+                        <span className="text-white/70 text-xs">Zalo:</span>
+                        <a
+                          href="tel:0793067027"
+                          className="text-yellow-300 hover:text-yellow-100 font-bold text-sm transition-colors"
+                        >
+                          0793067027
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tác giả 2 */}
+                <div className="group relative bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-5 hover:bg-white/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                  <div className="absolute -top-3 left-5">
+                    <span className="bg-gradient-to-r from-cyan-400 to-teal-500 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
+                      🌊 Tác giả
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-4 mt-2">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-cyan-300 to-teal-400 flex items-center justify-center text-white font-extrabold text-xl shadow-md">
+                      V
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-bold text-base leading-tight">Trịnh Nguyễn Tường Vy</p>
+                      <p className="text-cyan-200 text-xs font-semibold mt-0.5">Lớp 9A13</p>
+                      <div className="mt-2.5 flex items-center gap-1.5">
+                        <span className="text-green-300 text-sm">📱</span>
+                        <span className="text-white/70 text-xs">Zalo:</span>
+                        <a
+                          href="tel:0907324280"
+                          className="text-yellow-300 hover:text-yellow-100 font-bold text-sm transition-colors"
+                        >
+                          0907324280
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Tác giả 2 */}
-            <div className="group relative bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-5 hover:bg-white/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-              <div className="absolute -top-3 left-5">
-                <span className="bg-gradient-to-r from-cyan-400 to-teal-500 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
-                  🌊 Tác giả
-                </span>
-              </div>
-              <div className="flex items-start gap-4 mt-2">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-cyan-300 to-teal-400 flex items-center justify-center text-white font-extrabold text-xl shadow-md">
-                  V
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-base leading-tight">Trịnh Nguyễn Tường Vy</p>
-                  <p className="text-cyan-200 text-xs font-semibold mt-0.5">Lớp 9A13</p>
-                  <div className="mt-2.5 flex items-center gap-1.5">
-                    <span className="text-green-300 text-sm">📱</span>
-                    <span className="text-white/70 text-xs">Zalo:</span>
-                    <a
-                      href="tel:0907324280"
-                      className="text-yellow-300 hover:text-yellow-100 font-bold text-sm transition-colors"
-                    >
-                      0907324280
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
 
           {/* Thông tin trường */}
           <div className="bg-white/10 backdrop-blur-sm rounded-xl px-5 py-4 text-center mb-7 border border-white/20">
@@ -1537,7 +1549,7 @@ export default function App() {
           {/* Dải phân cách & bản quyền */}
           <div className="border-t border-white/20 pt-5 text-center">
             <p className="text-white/90 text-xs font-semibold tracking-wide">
-              © {new Date().getFullYear()} OpenEduLab · Phan Bùi Giang Ngân &amp; Trịnh Nguyễn Tường Vy
+              © {new Date().getFullYear()} OpenEduLab{showFooterAuthors ? ' · Phan Bùi Giang Ngân & Trịnh Nguyễn Tường Vy' : ''}
             </p>
             <p className="mt-1.5 text-white/50 text-[11px] leading-5">
               {t.footerCopyrightNote ??

@@ -36,3 +36,32 @@ export function setCommunityApprovedOnly(enabled: boolean): void {
     // ignore
   }
 }
+
+/**
+ * ============================================================
+ * BIẾN KIỂM SOÁT HIỂN THỊ THÔNG TIN TÁC GIẢ CUỐI TRANG
+ * ============================================================
+ * - false (mặc định hiện tại): tạm ẩn 2 tên và thông tin tác giả ở chân trang footer.
+ * - true: hiển thị đầy đủ thông tin tác giả.
+ * Khi cần hiển thị lại chỉ cần đổi thành true hoặc gọi setFooterAuthorsVisible(true).
+ */
+export const SHOW_FOOTER_AUTHORS_DEFAULT = false;
+
+const STORAGE_KEY_FOOTER_AUTHORS = 'webhub_footer_authors_visible';
+
+export function isFooterAuthorsVisible(): boolean {
+  try {
+    const v = localStorage.getItem(STORAGE_KEY_FOOTER_AUTHORS);
+    return v === null ? SHOW_FOOTER_AUTHORS_DEFAULT : v === 'true';
+  } catch {
+    return SHOW_FOOTER_AUTHORS_DEFAULT;
+  }
+}
+
+export function setFooterAuthorsVisible(enabled: boolean): void {
+  try {
+    localStorage.setItem(STORAGE_KEY_FOOTER_AUTHORS, enabled ? 'true' : 'false');
+  } catch {
+    // ignore
+  }
+}
