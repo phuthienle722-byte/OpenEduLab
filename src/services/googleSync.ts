@@ -7,6 +7,7 @@ export const STORAGE_KEY_LAST_SYNC = 'webhub_google_last_sync';
 export const STORAGE_KEY_AUTO_SYNC = 'webhub_google_auto_sync';
 export const STORAGE_KEY_COMMENTS = 'webhub_comments_data_v1';
 export const STORAGE_KEY_DELETED_COMMENTS = 'webhub_deleted_comment_ids';
+export const STORAGE_KEY_SYNC_TOKEN = 'webhub_cloud_sync_token_v1';
 
 /**
  * Mặc định Web App URL của Google Apps Script "WebHub Sync API".
@@ -105,6 +106,207 @@ export function setLastSyncTime(): void {
     localStorage.setItem(STORAGE_KEY_LAST_SYNC, new Date().toISOString());
   } catch {
     // Ignore
+  }
+}
+
+/**
+ * Lấy mốc phiên bản dữ liệu lưu tại trình duyệt (syncToken)
+ */
+export function getLocalSyncToken(): number {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_SYNC_TOKEN);
+    if (raw) {
+      const num = Number(raw);
+      if (!isNaN(num) && num > 0) return num;
+    }
+  } catch {}
+  return 0;
+}
+
+/**
+ * Lưu mốc phiên bản dữ liệu mới vào trình duyệt
+ */
+export function setLocalSyncToken(token: number): void {
+  try {
+    if (token > 0) {
+      localStorage.setItem(STORAGE_KEY_SYNC_TOKEN, String(token));
+    }
+  } catch {}
+}
+
+/**
+ * Kiểm tra nhanh mốc phiên bản đám mây (siêu nhẹ ~100 bytes, < 150ms).
+ * Giúp trình duyệt biết ngay có dữ liệu mới không mà KHÔNG cần tải lại toàn bộ.
+ */
+export async function checkCloudVersion(scriptUrl: string): Promise<{
+  success: boolean;
+  syncToken: number;
+  changed: boolean;
+}> {
+  const url = cleanScriptUrl(scriptUrl);
+  const localToken = getLocalSyncToken();
+  if (!url || url.includes('docs.google.com/spreadsheets')) {
+    return { success: false, syncToken: localToken, changed: false };
+  }
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3500);
+
+    const checkUrl = url.includes('?')
+      ? `${url}&action=checkVersion&_t=${Date.now()}`
+      : `${url}?action=checkVersion&_t=${Date.now()}`;
+
+    const res = await fetch(checkUrl, {
+      method: 'GET',
+      cache: 'no-store',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+
+    if (!res.ok) return { success: false, syncToken: localToken, changed: false };
+    const data = await res.json();
+    const cloudToken = Number(data.syncToken || data.version || 0);
+
+    if (!cloudToken) {
+      return { success: true, syncToken: localToken, changed: false };
+    }
+
+    const isChanged = localToken !== cloudToken;
+    return {
+      success: true,
+      syncToken: cloudToken,
+      changed: isChanged,
+    };
+  } catch {
+    // Lỗi mạng hoặc timeout -> dùng 100% cache local, 0% khựng
+    return { success: false, syncToken: localToken, changed: false };
+  }
+}
+
+export interface DeltaSyncResponse {
+  success: boolean;
+  isFull: boolean;
+  syncToken: number;
+  projects: WebProject[];
+  deletedIds: string[];
+  comments: ProjectComment[];
+}
+
+/**
+ * Đồng bộ vi sai: Chỉ tải những mô phỏng mới/sửa và danh sách ID đã xóa.
+ * Không tải lại những thứ đã có sẵn trong trình duyệt.
+ */
+export async function fetchDeltaFromSheet(
+  scriptUrl: string,
+  sinceToken: number = 0
+): Promise<DeltaSyncResponse> {
+  const url = cleanScriptUrl(scriptUrl);
+  if (!url || url.includes('docs.google.com/spreadsheets')) {
+    return { success: false, isFull: false, syncToken: 0, projects: [], deletedIds: [], comments: [] };
+  }
+
+  try {
+    const fetchUrl = url.includes('?')
+      ? `${url}&action=getDelta&since=${sinceToken}&_t=${Date.now()}`
+      : `${url}?action=getDelta&since=${sinceToken}&_t=${Date.now()}`;
+
+    const response = await fetch(fetchUrl, {
+      method: 'GET',
+      cache: 'no-store',
+      headers: { Accept: 'application/json' },
+    });
+
+    if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+    const result = await response.json();
+
+    const isFull = result.isFull !== false;
+    const syncToken = Number(result.syncToken || result.version || Date.now());
+
+    const rawProjects = result.projects || result.rows || result.data || [];
+    const normalizedProjects: WebProject[] = Array.isArray(rawProjects)
+      ? rawProjects.map((item: any, idx: number) => {
+          const isFamous = Boolean(
+            item.isFamous === true ||
+            String(item.isFamous).toUpperCase() === 'TRUE' ||
+            String(item.isFamous).toUpperCase() === 'YES' ||
+            item.isFamous === 1 ||
+            String(item.isFamous) === '1' ||
+            String(item.id || '').startsWith('phet-') ||
+            String(item.id || '').startsWith('geogebra-') ||
+            String(item.id || '').startsWith('famous-')
+          );
+          return {
+            id: String(item.id || `proj-gs-${idx}-${Date.now()}`).trim(),
+            title: String(item.title || 'Mô phỏng không tên'),
+            url: String(item.url || ''),
+            description: String(item.description || ''),
+            country: (item.country || 'VN') as any,
+            category: (item.category || 'general') as any,
+            educationLevel: (item.educationLevel || 'all') as any,
+            status: (item.status === 'pending' || item.status === 'rejected') ? item.status : 'approved',
+            createdAt: item.createdAt || new Date().toISOString(),
+            updatedAt: item.updatedAt ? String(item.updatedAt) : undefined,
+            previewImage: item.previewImage || undefined,
+            authorName: String(item.authorName || (isFamous ? 'Nền tảng quốc tế' : 'Thành viên')),
+            authorContact: item.authorContact ? String(item.authorContact) : undefined,
+            goLink: item.goLink ? String(item.goLink) : undefined,
+            tags: Array.isArray(item.tags)
+              ? item.tags
+              : (item.tags ? String(item.tags).split(',').map((t: string) => t.trim()) : []),
+            views: Number(item.views) || 0,
+            likes: Number(item.likes) || 0,
+            downloads: Number(item.downloads) || 0,
+            contributions: Number(item.contributions) || 0,
+            commentCount: Number(item.commentCount) || 0,
+            isFamous: isFamous,
+            isUserSubmission: Boolean(
+              item.isUserSubmission === true ||
+              String(item.isUserSubmission).toUpperCase() === 'TRUE' ||
+              String(item.isUserSubmission).toUpperCase() === 'YES' ||
+              item.isUserSubmission === 1 ||
+              String(item.isUserSubmission) === '1'
+            ) || !isFamous,
+          };
+        }).map((p) => ensureGoLink(p))
+      : [];
+
+    const rawComments = result.comments || [];
+    const normalizedComments: ProjectComment[] = Array.isArray(rawComments)
+      ? rawComments.map((c: any) => ({
+          id: String(c.id).trim(),
+          projectId: String(c.projectId).trim(),
+          authorName: String(c.authorName || 'Thành viên'),
+          authorRole: c.authorRole || 'guest',
+          category: c.category || 'experience',
+          content: String(c.content || ''),
+          rating: Number(c.rating || 5),
+          createdAt: c.createdAt ? (c.createdAt instanceof Date ? c.createdAt.toISOString() : String(c.createdAt)) : new Date().toISOString(),
+          likes: Number(c.likes || 0),
+        }))
+      : [];
+
+    const deletedIds: string[] = Array.isArray(result.deletedIds)
+      ? result.deletedIds.map(String).map((id: string) => id.trim())
+      : [];
+
+    if (syncToken > 0) {
+      setLocalSyncToken(syncToken);
+    }
+    setLastSyncTime();
+
+    return {
+      success: true,
+      isFull,
+      syncToken,
+      projects: normalizedProjects,
+      deletedIds,
+      comments: normalizedComments,
+    };
+  } catch (err: any) {
+    console.warn('Delta sync error:', err);
+    return { success: false, isFull: false, syncToken: 0, projects: [], deletedIds: [], comments: [] };
   }
 }
 
@@ -952,13 +1154,107 @@ function seedFamousData() {
   return 0;
 }
 
+// Quản lý biến thông minh phiên bản dữ liệu (SYNC_TOKEN)
+function getSyncToken() {
+  try {
+    const p = PropertiesService.getScriptProperties().getProperty("SYNC_TOKEN");
+    if (p) return Number(p);
+  } catch (e) {}
+  return 1741699200000;
+}
+
+function bumpSyncToken() {
+  const now = Date.now();
+  try {
+    PropertiesService.getScriptProperties().setProperty("SYNC_TOKEN", String(now));
+  } catch (e) {}
+  return now;
+}
+
+function getDeletedProjectIds() {
+  try {
+    const raw = PropertiesService.getScriptProperties().getProperty("DELETED_IDS");
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return [];
+}
+
+function recordDeletedProjectIds(ids) {
+  try {
+    const current = getDeletedProjectIds();
+    const map = {};
+    current.forEach(function (id) { map[id] = true; });
+    ids.forEach(function (id) { map[String(id).trim()] = true; });
+    const nextList = Object.keys(map).slice(-100);
+    PropertiesService.getScriptProperties().setProperty("DELETED_IDS", JSON.stringify(nextList));
+  } catch (e) {}
+}
+
 // Đọc dữ liệu theo GET:
+//   ?action=checkVersion   -> Kiểm tra biến thông minh phiên bản (siêu nhẹ ~100 bytes, < 150ms)
+//   ?action=getDelta       -> Đồng bộ vi sai: chỉ tải các bài mới/sửa và danh sách ID đã xóa
 //   ?action=getProjects    -> Đọc toàn bộ danh sách từ WebHub_Projects (chính)
 //   ?action=getSubmissions -> Đọc các bài chờ duyệt (pending / rejected) từ WebHub_Projects + Submissions
 //   ?action=getComments    -> Đọc bình luận từ WebHub_Comments
 function doGet(e) {
   try {
     const action = (e && e.parameter && e.parameter.action) || "getProjects";
+
+    // 1. Kiểm tra nhanh phiên bản biến thông minh (siêu nhẹ, không tốn tài nguyên Sheet)
+    if (action === "checkVersion") {
+      const token = getSyncToken();
+      return createJsonResponse({
+        status: "success",
+        syncToken: token,
+        version: token,
+        updatedAt: new Date(token).toISOString()
+      });
+    }
+
+    // 2. Đồng bộ vi sai: chỉ tải các mục thay đổi kể từ mốc since
+    if (action === "getDelta") {
+      const since = Number(e.parameter.since || 0);
+      const token = getSyncToken();
+      const allProj = parseRows(ensureSheet(MAIN_SHEET)).rows;
+      const allComm = parseComments(ensureCommentsSheet()).rows;
+
+      if (!since || since <= 0) {
+        return createJsonResponse({
+          status: "success",
+          isFull: true,
+          syncToken: token,
+          projects: allProj,
+          rows: allProj,
+          data: allProj,
+          comments: allComm,
+          deletedIds: []
+        });
+      }
+
+      const deltaProjects = allProj.filter(function (p) {
+        const time = p.updatedAt ? new Date(p.updatedAt).getTime() : (p.createdAt ? new Date(p.createdAt).getTime() : 0);
+        return time > since;
+      });
+
+      const deltaComments = allComm.filter(function (c) {
+        const time = c.createdAt ? new Date(c.createdAt).getTime() : 0;
+        return time > since;
+      });
+
+      const deletedIds = getDeletedProjectIds();
+
+      return createJsonResponse({
+        status: "success",
+        isFull: false,
+        syncToken: token,
+        projects: deltaProjects,
+        rows: deltaProjects,
+        data: deltaProjects,
+        comments: deltaComments,
+        deletedIds: deletedIds
+      });
+    }
+
     if (action === "getSubmissions") {
       // 1. Lấy tất cả bài chờ duyệt hoặc từ chối từ WebHub_Projects
       const mainResult = parseRows(ensureSheet(MAIN_SHEET));
@@ -1004,6 +1300,7 @@ function doPost(e) {
       const sheet = ensureSheet(MAIN_SHEET);
       const approved = payload.projects.filter(function (p) { return String(p.status || "approved") === "approved"; });
       approved.forEach(function (p) { upsertRow(sheet, p); });
+      bumpSyncToken();
       return createJsonResponse({
         status: "success",
         message: "Đã đồng bộ toàn bộ " + approved.length + " mô phỏng đã duyệt lên tab WebHub_Projects thành công!"
@@ -1015,6 +1312,7 @@ function doPost(e) {
       const p = payload.project;
       upsertRow(ensureSheet(MAIN_SHEET), p);
       deleteRowsById(ensureSheet(SUBMISSION_SHEET), [String(p.id)]);
+      bumpSyncToken();
       return createJsonResponse({
         status: "success",
         message: "Đã nhận bài đăng mới trực tiếp vào tab WebHub_Projects thành công!"
@@ -1027,6 +1325,7 @@ function doPost(e) {
       const p = payload.project;
       upsertRow(ensureSheet(MAIN_SHEET), p);
       deleteRowsById(ensureSheet(SUBMISSION_SHEET), [String(p.id)]);
+      bumpSyncToken();
       return createJsonResponse({
         status: "success",
         message: "Đã đồng bộ thông tin mô phỏng vào tab WebHub_Projects thành công!"
@@ -1072,6 +1371,7 @@ function doPost(e) {
       }
 
       if (foundInMain) {
+        bumpSyncToken();
         return createJsonResponse({ status: "success", message: "Đã cập nhật trạng thái bài viết trên WebHub_Projects" });
       }
       return createJsonResponse({ status: "error", message: "Không tìm thấy bài viết" });
@@ -1086,6 +1386,7 @@ function doPost(e) {
           const currentVal = data[i][8];
           const newVal = !(currentVal === true || String(currentVal).toUpperCase() === "TRUE");
           sheet.getRange(i + 1, 9).setValue(newVal);
+          bumpSyncToken();
           return createJsonResponse({ status: "success", message: "Đã cập nhật phân loại nổi tiếng", isFamous: newVal });
         }
       }
@@ -1101,6 +1402,8 @@ function doPost(e) {
       }
       const removedSub = deleteRowsById(ensureSheet(SUBMISSION_SHEET), ids);
       const removedMain = deleteRowsById(ensureSheet(MAIN_SHEET), ids);
+      recordDeletedProjectIds(ids);
+      bumpSyncToken();
       return createJsonResponse({
         status: "success",
         message: "Đã xóa " + (removedSub.length + removedMain.length) + " dự án khỏi Google Sheets",
@@ -1127,6 +1430,9 @@ function doPost(e) {
           updated++;
         }
       }
+      if (updated > 0) {
+        bumpSyncToken();
+      }
       return createJsonResponse({ status: "success", message: "Đã cập nhật thống kê " + updated + " mô phỏng", updated: updated });
     }
 
@@ -1144,6 +1450,9 @@ function doPost(e) {
             break;
           }
         }
+      }
+      if (updated > 0) {
+        bumpSyncToken();
       }
       return createJsonResponse({ status: "success", message: "Đã cập nhật GoLink cho " + updated + " mô phỏng", updated: updated });
     }
@@ -1176,6 +1485,7 @@ function doPost(e) {
           }
         }
       }
+      bumpSyncToken();
       return createJsonResponse({ status: "success", message: "Đã ghi nhận bình luận mới vào tab WebHub_Comments" });
     }
 
@@ -1186,6 +1496,9 @@ function doPost(e) {
         ? payload.commentId
         : (payload.commentId ? [payload.commentId] : (payload.ids ? payload.ids : []));
       const removed = deleteRowsById(cSheet, ids);
+      if (removed.length > 0) {
+        bumpSyncToken();
+      }
       return createJsonResponse({ status: "success", message: "Đã xóa " + removed.length + " bình luận", removed: removed });
     }
 
@@ -1214,6 +1527,7 @@ function doPost(e) {
       } else {
         cSheet.appendRow(row);
       }
+      bumpSyncToken();
       return createJsonResponse({ status: "success", message: "Đã cập nhật bình luận" });
     }
 

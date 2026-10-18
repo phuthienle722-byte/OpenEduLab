@@ -47,6 +47,10 @@ import {
   updateCommentInSheet,
   STORAGE_KEY_COMMENTS,
   STORAGE_KEY_DELETED_COMMENTS,
+  checkCloudVersion,
+  fetchDeltaFromSheet,
+  getLocalSyncToken,
+  setLocalSyncToken,
 } from './services/googleSync';
 import {
   isCommunityApprovedOnly,
@@ -352,13 +356,22 @@ export default function App() {
     return INITIAL_PROJECTS;
   });
 
-  // Save projects to localStorage whenever changed
+  // Save projects to localStorage whenever changed (asynchronous / idle callback to avoid UI stutter)
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(projects));
-    } catch (e) {
-      console.error('Failed to save to localStorage', e);
-    }
+    const handle = (window.requestIdleCallback || ((cb: () => void) => window.setTimeout(cb, 50)))(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(projects));
+      } catch (e) {
+        console.error('Failed to save to localStorage', e);
+      }
+    });
+    return () => {
+      if (window.cancelIdleCallback && typeof handle === 'number') {
+        window.cancelIdleCallback(handle);
+      } else if (typeof handle === 'number') {
+        window.clearTimeout(handle);
+      }
+    };
   }, [projects]);
 
   // 3b. Comments State (Local-first with persistent storage + Google Sheets sync)
@@ -388,11 +401,20 @@ export default function App() {
   });
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY_COMMENTS, JSON.stringify(comments));
-    } catch (e) {
-      console.error('Failed to save comments to localStorage', e);
-    }
+    const handle = (window.requestIdleCallback || ((cb: () => void) => window.setTimeout(cb, 50)))(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY_COMMENTS, JSON.stringify(comments));
+      } catch (e) {
+        console.error('Failed to save comments to localStorage', e);
+      }
+    });
+    return () => {
+      if (window.cancelIdleCallback && typeof handle === 'number') {
+        window.cancelIdleCallback(handle);
+      } else if (typeof handle === 'number') {
+        window.clearTimeout(handle);
+      }
+    };
   }, [comments]);
 
   const [selectedDiscussionProject, setSelectedDiscussionProject] = useState<WebProject | null>(null);
@@ -619,122 +641,157 @@ export default function App() {
       });
   }, []);
 
-  // Background non-blocking auto-sync from Google Sheets on initial load
-  useEffect(() => {
+  /**
+   * Cơ chế Smart Versioning & Delta Sync:
+   * 1. Khi mở web hoặc định kỳ: chỉ gửi 1 request siêu nhẹ (checkVersion) ~100 bytes.
+   * 2. Nếu cloudToken trùng với localToken -> Dừng ngay, 0 tải lại, 60fps, không khựng.
+   * 3. Nếu cloudToken khác -> Tải Delta (các bài bị sửa/xóa/thêm mới) và cập nhật tức thì.
+   */
+  const runSmartSync = useCallback(async () => {
     const scriptUrl = getStoredScriptUrl();
-    if (scriptUrl && isAutoSyncEnabled()) {
+    if (!scriptUrl || !isAutoSyncEnabled()) return;
+
+    try {
+      const localToken = getLocalSyncToken();
+      const versionCheck = await checkCloudVersion(scriptUrl);
+
+      // Nếu Apps Script đã hỗ trợ version check và dữ liệu chưa hề thay đổi:
+      if (versionCheck.success && versionCheck.cloudToken && !versionCheck.changed) {
+        // Hoàn toàn không có gì thay đổi, kết thúc ngay lập tức không tốn tài nguyên
+        return;
+      }
+
       setIsCloudSyncing(true);
-      const syncApprovedPromise = fetchProjectsFromSheet(scriptUrl)
-        .then((result) => {
-          if (!result.success || !result.data || result.data.length === 0) return;
-          setProjects((prev) => {
-            const cloudApproved = result.data as WebProject[];
-            const merged = [...prev];
-            let changed = false;
-            for (const cp of cloudApproved) {
-              const idx = merged.findIndex((p) => p.id === cp.id);
-              if (idx >= 0) {
-                if (merged[idx].status !== 'approved') {
-                  merged[idx] = {
-                    ...mergeCloudProject(merged[idx], cp),
-                    status: 'approved',
+
+      // Nếu có sự thay đổi hoặc client chưa có token, tải delta
+      if (versionCheck.success && versionCheck.cloudToken && versionCheck.changed) {
+        const delta = await fetchDeltaFromSheet(scriptUrl, localToken);
+        if (delta.success) {
+          // 1. Loại bỏ các ID đã bị xóa trên cloud
+          if (delta.deletedIds && delta.deletedIds.length > 0) {
+            const delSet = new Set(delta.deletedIds.map(String));
+            setProjects((prev) => prev.filter((p) => !delSet.has(String(p.id))));
+          }
+
+          // 2. Cập nhật các projects có thay đổi
+          if (delta.projects && delta.projects.length > 0) {
+            setProjects((prev) => {
+              const merged = [...prev];
+              let changed = false;
+              for (let cp of delta.projects!) {
+                const dirty = statsDirtyRef.current.get(cp.id);
+                if (dirty) {
+                  cp = {
+                    ...cp,
+                    views: Math.max(cp.views || 0, dirty.views || 0),
+                    likes: Math.max(cp.likes || 0, dirty.likes || 0),
+                    downloads: Math.max(cp.downloads || 0, dirty.downloads || 0),
+                    contributions: Math.max(cp.contributions || 0, dirty.contributions || 0),
+                    commentCount: Math.max(cp.commentCount || 0, dirty.commentCount || 0),
                   };
-                  changed = true;
-                } else {
-                  // Há»£p nháº¥t giá»¯ cá» + sá»‘ liá»‡u cao hÆ¡n, khĂ´ng lĂ m máº¥t isUserSubmission
+                }
+                const idx = merged.findIndex((p) => p.id === cp.id);
+                if (idx >= 0) {
                   const mergedItem = {
                     ...mergeCloudProject(merged[idx], cp),
-                    status: 'approved',
+                    status: cp.status || merged[idx].status,
                   };
                   if (JSON.stringify(merged[idx]) !== JSON.stringify(mergedItem)) {
                     merged[idx] = mergedItem;
                     changed = true;
                   }
+                } else {
+                  merged.push(cp);
+                  changed = true;
                 }
-              } else {
-                merged.push({ ...cp, status: 'approved' });
+              }
+              return changed ? merged : prev;
+            });
+          }
+
+          // 3. Cập nhật comments mới từ delta
+          if (delta.comments && delta.comments.length > 0) {
+            const deletedIds = getDeletedCommentIds();
+            setComments((prev) => {
+              const merged = prev.filter((c) => !deletedIds.has(c.id));
+              let changed = false;
+              for (const cc of delta.comments!) {
+                if (deletedIds.has(cc.id)) continue;
+                const idx = merged.findIndex((c) => c.id === cc.id);
+                if (idx >= 0) {
+                  const maxLikes = Math.max(merged[idx].likes || 0, cc.likes || 0);
+                  if (merged[idx].likes !== maxLikes || merged[idx].content !== cc.content) {
+                    merged[idx] = { ...merged[idx], ...cc, likes: maxLikes };
+                    changed = true;
+                  }
+                } else {
+                  merged.push(cc);
+                  changed = true;
+                }
+              }
+              return changed ? merged : prev;
+            });
+          }
+
+          setLocalSyncToken(versionCheck.cloudToken);
+          return;
+        }
+      }
+
+      // Fallback an toàn (nếu Apps Script cũ chưa cập nhật action=checkVersion/getDelta):
+      const [approvedRes] = await Promise.allSettled([
+        fetchProjectsFromSheet(scriptUrl),
+        syncPendingFromCloud(),
+        syncCommentsFromCloud(),
+      ]);
+
+      if (approvedRes.status === 'fulfilled' && approvedRes.value && approvedRes.value.success && approvedRes.value.data) {
+        const cloudApproved = approvedRes.value.data as WebProject[];
+        setProjects((prev) => {
+          const merged = [...prev];
+          let changed = false;
+          for (const cp of cloudApproved) {
+            const idx = merged.findIndex((p) => p.id === cp.id);
+            if (idx >= 0) {
+              const mergedItem = {
+                ...mergeCloudProject(merged[idx], cp),
+                status: 'approved',
+              };
+              if (JSON.stringify(merged[idx]) !== JSON.stringify(mergedItem)) {
+                merged[idx] = mergedItem;
                 changed = true;
               }
+            } else {
+              merged.push({ ...cp, status: 'approved' });
+              changed = true;
             }
-            return changed ? merged : prev;
-          });
-        })
-        .catch((err) => {
-          console.warn('Background Google Sheets sync notice:', err);
+          }
+          return changed ? merged : prev;
         });
-      // Äá»“ng thá»i kĂ©o danh sĂ¡ch bĂ i chá» duyá»‡t tá»« Ä‘Ă¡m mĂ¢y vá»
-      const syncPendingPromise = syncPendingFromCloud();
-      const syncCommentsPromise = syncCommentsFromCloud();
-
-      Promise.allSettled([syncApprovedPromise, syncPendingPromise, syncCommentsPromise]).finally(() => {
-        setIsCloudSyncing(false);
-      });
+      }
+    } catch (err) {
+      console.warn('Smart sync notice:', err);
+    } finally {
+      setIsCloudSyncing(false);
     }
   }, [syncPendingFromCloud, syncCommentsFromCloud]);
 
-  // Äá»‹nh ká»³ (má»—i 45 giĂ¢y) táº£i láº¡i dá»¯ liá»‡u ÄĂƒ DUYá»†T tá»« Google Sheets.
-  // Nhá» váº­y khi admin duyá»‡t bĂ i á»Ÿ báº¥t ká»³ thiáº¿t bá»‹ nĂ o, cĂ¡c thiáº¿t bá»‹ khĂ¡c
-  // sáº½ tá»± Ä‘á»™ng cáº­p nháº­t vĂ  hiá»ƒn thá»‹ bĂ i ngay mĂ  khĂ´ng cáº§n reload trang.
+  // Initial load smart sync
+  useEffect(() => {
+    runSmartSync();
+  }, [runSmartSync]);
+
+  // Polling định kỳ và khi tab active trở lại (focus / visibilitychange)
   useEffect(() => {
     const scriptUrl = getStoredScriptUrl();
     if (!scriptUrl || !isAutoSyncEnabled()) return;
 
-    const pollApproved = () => {
-      fetchProjectsFromSheet(scriptUrl)
-        .then((result) => {
-          if (!result.success || !result.data) return;
-          setProjects((prev) => {
-            let cloudApproved = result.data as WebProject[];
-            let changed = false;
-            const merged = [...prev];
-
-            // GhĂ©p bĂ i Ä‘Ă£ duyá»‡t tá»« Ä‘Ă¡m mĂ¢y (giá»¯ láº¡i pending/rejected local)
-            for (let cp of cloudApproved) {
-              // Äá»«ng Ä‘á»ƒ dá»¯ liá»‡u Ä‘Ă¡m mĂ¢y ghi Ä‘Ă¨ Views/Likes local chÆ°a ká»‹p Ä‘á»“ng bá»™
-              const dirty = statsDirtyRef.current.get(cp.id);
-              if (dirty) {
-                cp = {
-                  ...cp,
-                  views: Math.max(cp.views || 0, dirty.views || 0),
-                  likes: Math.max(cp.likes || 0, dirty.likes || 0),
-                  downloads: Math.max(cp.downloads || 0, dirty.downloads || 0),
-                  contributions: Math.max(cp.contributions || 0, dirty.contributions || 0),
-                  commentCount: Math.max(cp.commentCount || 0, dirty.commentCount || 0),
-                };
-              }
-              const idx = merged.findIndex((p) => p.id === cp.id);
-              if (idx >= 0) {
-                const mergedItem = {
-                  ...mergeCloudProject(merged[idx], cp),
-                  status: 'approved',
-                };
-                if (JSON.stringify(merged[idx]) !== JSON.stringify(mergedItem)) {
-                  merged[idx] = mergedItem;
-                  changed = true;
-                }
-              } else {
-                merged.push({ ...cp, status: 'approved' });
-                changed = true;
-              }
-            }
-            return changed ? merged : prev;
-          });
-        })
-        .catch((err) => {
-          console.warn('Polling approved sync notice:', err);
-        });
-
-      // Kéo bình luận định kỳ từ đám mây
-      syncCommentsFromCloud();
-    };
-
-    pollApproved();
-    const interval = setInterval(pollApproved, 12000);
+    // Định kỳ 15 giây gửi 1 heartbeat checkVersion nhẹ ~100 bytes
+    const interval = setInterval(runSmartSync, 15000);
 
     const handleFocusSync = () => {
       if (document.visibilityState === 'visible') {
-        pollApproved();
-        syncPendingFromCloud();
+        runSmartSync();
       }
     };
     window.addEventListener('focus', handleFocusSync);
@@ -745,7 +802,8 @@ export default function App() {
       window.removeEventListener('focus', handleFocusSync);
       document.removeEventListener('visibilitychange', handleFocusSync);
     };
-  }, [syncCommentsFromCloud, syncPendingFromCloud]);
+  }, [runSmartSync]);
+
 
   // 6. Action Handlers (Views, Likes, Downloads, Contributions, Comments)
   const handleLike = (projectId: string) => {
