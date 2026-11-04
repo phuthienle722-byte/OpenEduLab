@@ -33,7 +33,7 @@ import {
 } from '../types';
 import { translations } from '../translations';
 import { BrowserMockupFrame } from './BrowserMockupFrame';
-import { getGoUrl } from '../utils/goLink';
+import { resolveGoUrl } from '../utils/goLink';
 import { formatTimeAgo } from '../utils/screenshot';
 import { countryDisplayName } from '../data/countries';
 
@@ -199,12 +199,7 @@ export const DiscussionHubModal: React.FC<DiscussionHubModalProps> = ({
     if (!project) return '';
     try {
       return (
-        project.goLink ||
-        getGoUrl(window.location, project.url, {
-          title: project.title,
-          authorName: project.authorName,
-          authorEmail: project.authorContact,
-        })
+        resolveGoUrl(project)
       );
     } catch {
       return project.url || '';

@@ -16,7 +16,8 @@ import { WebProject, Language, CategoryId } from '../types';
 import { translations } from '../translations';
 import { BrowserMockupFrame } from './BrowserMockupFrame';
 import { formatTimeAgo } from '../utils/screenshot';
-import { getGoUrl } from '../utils/goLink';
+import { resolveGoUrl } from '../utils/goLink';
+import { openManagedWindow } from '../utils/windowManager';
 import { countryDisplayName } from '../data/countries';
 
 interface ProjectCardProps {
@@ -63,13 +64,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   const t = translations[lang];
   const [isLiked, setIsLiked] = useState(false);
-  const goUrl =
-    project.goLink ||
-    getGoUrl(window.location, project.url, {
-      title: project.title,
-      authorName: project.authorName,
-      authorEmail: project.authorContact,
-    });
+  const goUrl = resolveGoUrl(project);
   const displayUrl = isAdmin ? undefined : goUrl;
 
   const handleLike = (e: React.MouseEvent) => {
@@ -80,7 +75,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
   const handleVisit = () => {
     onVisit(project.id, project.url);
-    window.open(displayUrl || project.url, '_blank', 'noopener,noreferrer');
+    openManagedWindow(displayUrl || project.url);
   };
 
   const handleShare = async (e: React.MouseEvent) => {
@@ -118,6 +113,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           onClick={handleVisit}
           aspectRatio="video"
           lang={lang}
+          isAdmin={isAdmin}
         />
 
         {/* Pill nhãn môn học nổi trên góc ảnh */}

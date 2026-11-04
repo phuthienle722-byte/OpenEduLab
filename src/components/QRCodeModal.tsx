@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Check, Copy, Download, ExternalLink, QrCode, Smartphone, X } from 'lucide-react';
 import { generateQrDataUrl } from '../utils/screenshot';
-import { getGoUrl } from '../utils/goLink';
+import { resolveGoUrl } from '../utils/goLink';
+import { openManagedWindow } from '../utils/windowManager';
 import { WebProject, Language } from '../types';
 import { translations } from '../translations';
 
@@ -30,7 +31,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
 
   useEffect(() => {
     if (project?.url && isOpen) {
-const accessUrl = isAdmin ? project.url : (project.goLink || getGoUrl(window.location, project.url, { title: project.title, authorName: project.authorName, authorEmail: project.authorContact }));
+const accessUrl = isAdmin ? project.url : resolveGoUrl(project);
       generateQrDataUrl(accessUrl).then((url) => {
         setQrSrc(url);
       });
@@ -40,7 +41,7 @@ const accessUrl = isAdmin ? project.url : (project.goLink || getGoUrl(window.loc
 
   if (!isOpen || !project) return null;
 
-  const accessUrl = isAdmin ? project.url : (project.goLink || getGoUrl(window.location, project.url, { title: project.title, authorName: project.authorName, authorEmail: project.authorContact }));
+  const accessUrl = isAdmin ? project.url : resolveGoUrl(project);
 
   const handleCopy = async () => {
     try {
@@ -143,21 +144,20 @@ const accessUrl = isAdmin ? project.url : (project.goLink || getGoUrl(window.loc
               <span>{t.downloadQR}</span>
             </button>
 
-            <a
+            <button
               id="qr-direct-visit-link"
-              href={accessUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              type="button"
               onClick={() => {
                 if (onVisit && project) {
                   onVisit(project.id, project.url);
                 }
+                openManagedWindow(accessUrl);
               }}
-              className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 shadow-sm transition-colors"
+              className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 shadow-sm transition-colors cursor-pointer"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span>{t.visitWebsite}</span>
-            </a>
+            </button>
           </div>
         </div>
       </div>
