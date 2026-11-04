@@ -77,3 +77,32 @@ export function getGoUrl(
   });
   return `${location.origin}/go/${encodeToCode(payload)}`;
 }
+
+/**
+ * Chuẩn hóa link che /go/<mã> theo origin hiện tại của trang web:
+ * - Nếu project đã có goLink chứa mã sau /go/<code>, giữ nguyên mã và đổi sang origin hiện tại.
+ * - Giải quyết dứt điểm lỗi link chứa domain preview cũ bị 404 (ví dụ: openedulab-q2wm.vercel.app bị xóa).
+ * - Nếu chưa có, tự động mã hóa URL và thông tin tác giả thành mã mới theo đúng origin hiện tại.
+ */
+export function resolveGoUrl(
+  project: { url: string; goLink?: string; title?: string; authorName?: string; authorContact?: string },
+  currentOrigin?: string
+): string {
+  const origin =
+    currentOrigin ||
+    (typeof window !== 'undefined' && window.location ? window.location.origin : '');
+
+  if (project.goLink && project.goLink.trim()) {
+    const raw = project.goLink.trim();
+    const match = raw.match(/\/go\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return origin ? `${origin}/go/${match[1]}` : `/go/${match[1]}`;
+    }
+  }
+
+  return getGoUrl({ origin: origin || '' }, project.url, {
+    title: project.title,
+    authorName: project.authorName,
+    authorEmail: project.authorContact,
+  });
+}

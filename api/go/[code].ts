@@ -61,6 +61,7 @@ function escapeHtml(value: string): string {
  * Đổi payload {u, t, a, e} từ mã trong link, trả về TRANG KHUNG trên domain của mình:
  * khung trình duyệt giả + thông tin tác giả (tên + email liên hệ) + iframe nạp mô
  * phỏng. URL gốc và cả link /go/<mã> đều không hiện ra giao diện.
+ * Tích hợp cơ chế "Thoát trang chính là thoát hết" (Sub-window Lifecycle).
  */
 export default function handler(req: IncomingMessage, res: ServerResponse) {
   const urlPath = (req.url || '').split('?')[0];
@@ -110,7 +111,7 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>${title}</title>
+<title>${title} — OpenEduLab</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
@@ -119,10 +120,10 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
     font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     color: #e2e8f0;
     display: flex; flex-direction: column; align-items: center;
-    padding: 20px; gap: 14px;
+    padding: 16px; gap: 12px;
   }
   .frame {
-    width: 100%; max-width: 1100px; flex: 1; min-height: 0;
+    width: 100%; max-width: 1240px; flex: 1; min-height: 0;
     background: #1e293b;
     border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 16px; overflow: hidden;
@@ -137,11 +138,11 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
   .brand { display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 12px; flex: none; }
   .brand-badge {
     width: 26px; height: 26px; border-radius: 8px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #0785F9, #38bdf8);
     display: flex; align-items: center; justify-content: center;
     font-size: 11px; font-weight: 800; color: #fff;
   }
-  .brand-label { white-space: nowrap; }
+  .brand-label { white-space: nowrap; color: #f8fafc; font-weight: 700; }
   .brand .dots { display: flex; gap: 5px; margin: 0 2px; }
   .brand .dot { width: 9px; height: 9px; border-radius: 50%; }
   .brand .dot.r { background: #f87171; }
@@ -160,7 +161,6 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
   .author-info .name { color: #e2e8f0; overflow: hidden; text-overflow: ellipsis; }
   .author-info .email { color: #818cf8; text-decoration: none; }
   .author-info .email:hover { text-decoration: underline; }
-  /* Email chỉ hiện khi đủ rộng; khi hẹp ẩn text, hiện nút ✉ bấm mở popup */
   .author-info .email.inline { display: inline; }
   .contact-btn {
     flex: none; display: none;
@@ -186,11 +186,11 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
   }
   .avatar {
     width: 18px; height: 18px; border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #a855f7);
+    background: linear-gradient(135deg, #0785F9, #a855f7);
     display: flex; align-items: center; justify-content: center;
     font-size: 9px; font-weight: 800; color: #fff;
   }
-  /* Nút mở rộng / thu nhỏ / về trang chủ */
+  /* Nút mở rộng / thu nhỏ / mở cửa sổ mới / về trang chủ */
   .chrome-btn {
     flex: none;
     background: rgba(148, 163, 184, 0.15);
@@ -206,14 +206,14 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
   .back {
     flex: none;
     display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(129, 140, 248, 0.18);
-    border: 1px solid rgba(129, 140, 248, 0.4);
-    color: #c7d2fe; text-decoration: none;
+    background: rgba(7, 133, 249, 0.18);
+    border: 1px solid rgba(7, 133, 249, 0.4);
+    color: #93c5fd; text-decoration: none;
     height: 28px; padding: 0 10px; border-radius: 8px;
     font-size: 12px; font-weight: 600;
     transition: background 0.15s, color 0.15s;
   }
-  .back:hover { background: rgba(129, 140, 248, 0.35); color: #fff; }
+  .back:hover { background: rgba(7, 133, 249, 0.35); color: #fff; }
   .back .back-arrow { font-size: 13px; line-height: 1; }
   .back .back-label { white-space: nowrap; }
   /* Popup email liên hệ */
@@ -270,9 +270,9 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
   <div class="frame">
     <div class="chrome">
       <div class="brand">
-        <span class="brand-badge">UB</span>
+        <span class="brand-badge">OL</span>
         <span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span>
-        <span class="brand-label">Học Tập Số</span>
+        <span class="brand-label">OpenEduLab</span>
       </div>
       <div class="author-info">
         <span class="avatar">${initial}</span>
@@ -288,10 +288,13 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
       <button class="chrome-btn" id="btnExpand" title="Mở rộng toàn màn hình" aria-label="Mở rộng toàn màn hình" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M16 21h5v-5"/></svg>
       </button>
+      <button class="chrome-btn" id="btnNewTab" title="Mở sang cửa sổ độc lập (nếu nguồn chặn nhúng)" aria-label="Mở sang cửa sổ độc lập" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </button>
       <a class="back" href="${homeUrl}"><span class="back-arrow">&larr;</span><span class="back-label">Về trang chủ</span></a>
     </div>
     <div class="viewport">
-      <iframe src="${frameSrc}" title="${title}" allowfullscreen allow="fullscreen; autoplay; geolocation"></iframe>
+      <iframe id="simFrame" src="${frameSrc}" title="${title}" allowfullscreen allow="fullscreen; autoplay; geolocation; microphone; camera; midi"></iframe>
       <div class="author-badge"><span class="avatar">${initial}</span><span>${author}</span></div>
     </div>
   </div>
@@ -308,7 +311,34 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
       var body = document.body;
       var btnCollapse = document.getElementById('btnCollapse');
       var btnExpand = document.getElementById('btnExpand');
+      var btnNewTab = document.getElementById('btnNewTab');
+      var realUrl = ${JSON.stringify(target)};
 
+      // 1. Thoát trang chính là thoát hết (Auto close when parent tab is closed)
+      try {
+        if (window.opener) {
+          var closeWatcher = setInterval(function () {
+            try {
+              if (!window.opener || window.opener.closed) {
+                clearInterval(closeWatcher);
+                window.close();
+              }
+            } catch (e) {
+              clearInterval(closeWatcher);
+            }
+          }, 600);
+        }
+      } catch (e) {}
+
+      // 2. Nút mở sang cửa sổ mới an toàn (kết nối opener)
+      btnNewTab && btnNewTab.addEventListener('click', function () {
+        var subWin = window.open(realUrl, '_blank');
+        if (window.opener && subWin) {
+          // Lưu lại để quản lý nếu cần
+        }
+      });
+
+      // 3. Nút thu nhỏ / mở rộng
       btnCollapse && btnCollapse.addEventListener('click', function () {
         body.classList.toggle('is-collapsed');
         var collapsed = body.classList.contains('is-collapsed');
@@ -322,6 +352,7 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
         btnExpand.setAttribute('aria-label', full ? 'Thoát toàn màn hình' : 'Mở rộng toàn màn hình');
       });
 
+      // 4. Popup liên hệ tác giả
       var btnContact = document.getElementById('btnContact');
       var mailPopup = document.getElementById('mailPopup');
       var mailMask = document.getElementById('mailMask');
