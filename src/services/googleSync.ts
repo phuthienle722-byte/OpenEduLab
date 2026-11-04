@@ -443,7 +443,7 @@ export async function fetchProjectsFromSheet(scriptUrl: string): Promise<SyncRes
             String(item.isUserSubmission) === '1'
           ) || !isFamous,
         };
-      }).map(ensureGoLink);
+      }).map((p) => ensureGoLink(p));
 
       setLastSyncTime();
       return {
@@ -499,7 +499,7 @@ export async function pushProjectsToSheet(scriptUrl: string, projects: WebProjec
   try {
     const payload = JSON.stringify({
       action: 'syncAll',
-      projects: projects.map(ensureGoLink),
+      projects: projects.map((p) => ensureGoLink(p)),
       timestamp: new Date().toISOString(),
     });
 
@@ -682,7 +682,7 @@ export async function fetchSubmissionsFromSheet(scriptUrl: string): Promise<Sync
         isFamous: isFamous,
         isUserSubmission: isUserSubmission,
       };
-    }).map(ensureGoLink);
+    }).map((p) => ensureGoLink(p));
 
     return { success: true, message: `Đã tải ${projects.length} dự án mới từ Google Sheets`, count: projects.length, data: projects };
   } catch (err: any) {

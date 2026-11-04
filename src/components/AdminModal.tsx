@@ -9,7 +9,7 @@ import {
   Copy,
   Download,
   ExternalLink,
-  Globe2,
+  Globe,
   KeyRound,
   Lock,
   Pencil,
@@ -548,15 +548,29 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                             </a>
 
                             <button
-                              onClick={() => onReject(item.id)}
-                              className="px-3 py-2 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold"
+                              onClick={() => {
+                                onReject(item.id);
+                                setPendingSyncMsg({
+                                  type: 'info',
+                                  text: `Đã từ chối mô phỏng "${item.title}".`,
+                                });
+                                setTimeout(() => setPendingSyncMsg(null), 4000);
+                              }}
+                              className="px-3 py-2 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold cursor-pointer"
                             >
                               {t.rejectBtn}
                             </button>
 
                             <button
-                              onClick={() => onApprove(item.id)}
-                              className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1 shadow-sm"
+                              onClick={() => {
+                                onApprove(item.id);
+                                setPendingSyncMsg({
+                                  type: 'success',
+                                  text: `Đã phê duyệt mô phỏng "${item.title}" thành công!`,
+                                });
+                                setTimeout(() => setPendingSyncMsg(null), 4000);
+                              }}
+                              className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1 shadow-sm cursor-pointer"
                             >
                               <Check className="w-3.5 h-3.5" />
                               <span>{t.approveBtn}</span>

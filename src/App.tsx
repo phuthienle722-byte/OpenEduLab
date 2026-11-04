@@ -1017,38 +1017,60 @@ export default function App() {
   };
 
   const handleApprove = (id: string) => {
+    const nowIso = new Date().toISOString();
     setProjects((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: 'approved' } : p))
+      prev.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              status: 'approved',
+              isUserSubmission: true,
+              updatedAt: nowIso,
+            }
+          : p
+      )
     );
 
-    // Äá»“ng bá»™ toĂ n bá»™ thĂ´ng tin bĂ i (gá»“m áº£nh Ä‘áº¡i diá»‡n) lĂªn Google Sheets
+    // Đồng bộ toàn bộ thông tin bài (gồm ảnh đại diện) lên Google Sheets
     const project = projects.find((p) => p.id === id);
     if (!project) return;
     const scriptUrl = getStoredScriptUrl();
     if (scriptUrl && isAutoSyncEnabled()) {
-      // BĂ i Ä‘Æ°á»£c admin duyá»‡t â†’ luĂ´n coi lĂ  bĂ i cá»™ng Ä‘á»“ng (hiá»ƒn thá»‹ á»Ÿ "BĂ i Ä‘Äƒng táº£i")
+      // Bài được admin duyệt -> luôn coi là bài cộng đồng (hiển thị ở 'Bài đăng tải')
       upsertProjectToSheet(scriptUrl, {
         ...project,
         status: 'approved',
         isUserSubmission: true,
+        updatedAt: nowIso,
       }).then(() => {
-        syncPendingFromCloud();
+        setTimeout(() => {
+          syncPendingFromCloud();
+        }, 1500);
       });
     }
   };
 
   const handleReject = (id: string) => {
+    const nowIso = new Date().toISOString();
     setProjects((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: 'rejected' } : p))
+      prev.map((p) =>
+        p.id === id ? { ...p, status: 'rejected', updatedAt: nowIso } : p
+      )
     );
 
-    // Äá»“ng bá»™ tráº¡ng thĂ¡i tá»« chá»‘i (kĂ¨m toĂ n bá»™ thĂ´ng tin) lĂªn Google Sheets
+    // Đồng bộ trạng thái từ chối (kèm toàn bộ thông tin) lên Google Sheets
     const project = projects.find((p) => p.id === id);
     if (!project) return;
     const scriptUrl = getStoredScriptUrl();
     if (scriptUrl && isAutoSyncEnabled()) {
-      upsertProjectToSheet(scriptUrl, { ...project, status: 'rejected' }).then(() => {
-        syncPendingFromCloud();
+      upsertProjectToSheet(scriptUrl, {
+        ...project,
+        status: 'rejected',
+        updatedAt: nowIso,
+      }).then(() => {
+        setTimeout(() => {
+          syncPendingFromCloud();
+        }, 1500);
       });
     }
   };
