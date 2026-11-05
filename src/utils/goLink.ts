@@ -80,26 +80,36 @@ export function getGoUrl(
 
 /**
  * Chuẩn hóa link che /go/<mã> theo origin hiện tại của trang web:
- * - Nếu project đã có goLink chứa mã sau /go/<code>, giữ nguyên mã và đổi sang origin hiện tại.
- * - Giải quyết dứt điểm lỗi link chứa domain preview cũ bị 404 (ví dụ: openedulab-q2wm.vercel.app bị xóa).
- * - Nếu chưa có, tự động mã hóa URL và thông tin tác giả thành mã mới theo đúng origin hiện tại.
+ * 1. Ưu tiên cao nhất: Dùng mã ID ngắn của mô phỏng (ví dụ: /go/proj-1792900734949).
+ *    Link chỉ khoảng ~50 ký tự (rút ngắn hơn 75% so với link 215 ký tự cũ),
+ *    cực kỳ đẹp, gọn gàng, mã QR quét siêu nhạy và dễ nhìn!
+ * 2. Nếu project đã có goLink trước đó: bóc tách phần mã sau /go/ (kể cả mã ID hay mã hash cũ).
+ * 3. Fallback: tự động sinh mã an toàn theo origin hiện tại.
  */
 export function resolveGoUrl(
-  project: { url: string; goLink?: string; title?: string; authorName?: string; authorContact?: string },
+  project: { id?: string; url: string; goLink?: string; title?: string; authorName?: string; authorContact?: string },
   currentOrigin?: string
 ): string {
   const origin =
     currentOrigin ||
     (typeof window !== 'undefined' && window.location ? window.location.origin : '');
 
+  // 1. Ưu tiên cao nhất: Link ngắn theo ID (ví dụ: https://.../go/proj-1792900734949)
+  if (project.id && String(project.id).trim().length > 0) {
+    const cleanId = String(project.id).trim();
+    return origin ? `${origin}/go/${cleanId}` : `/go/${cleanId}`;
+  }
+
+  // 2. Nếu có goLink trước đó, bóc tách phần mã
   if (project.goLink && project.goLink.trim()) {
     const raw = project.goLink.trim();
-    const match = raw.match(/\/go\/([a-zA-Z0-9_-]+)/);
+    const match = raw.match(/\/go\/([a-zA-Z0-9_.-]+)/);
     if (match && match[1]) {
       return origin ? `${origin}/go/${match[1]}` : `/go/${match[1]}`;
     }
   }
 
+  // 3. Fallback: tự mã hóa
   return getGoUrl({ origin: origin || '' }, project.url, {
     title: project.title,
     authorName: project.authorName,

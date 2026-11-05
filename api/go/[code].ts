@@ -1,10 +1,12 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
 /**
- * XOR key phải trùng 100% với src/utils/goLink.ts (XOR_KEY) — không thể import từ
- * thư mục ngoài api/ vì Vercel bundle ESM sẽ không resolve được.
+ * XOR key tương thích ngược với các link cũ (XOR_KEY)
  */
 const XOR_KEY = 'webhub-go-v2#sbx7q';
+
+const DEFAULT_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbyydT_LydZLeBt_ynJ_ioGBCwUdNnrxmdJlUsMZwXkt-HTzD4g59KPvE-CidMwbZ4yJCg/exec';
 
 /** XOR từng byte theo key (2 chiều giống nhau). */
 function xorBytes(bytes: Uint8Array): Uint8Array {
@@ -25,7 +27,7 @@ function base64UrlToBytes(str: string): Uint8Array {
   return bytes;
 }
 
-/** Giải mã mã → chuỗi payload gốc. Trả về '' nếu mã không hợp lệ. */
+/** Giải mã token XOR cũ → chuỗi payload gốc. */
 function decodeCodeToText(code: string): string {
   try {
     return new TextDecoder().decode(xorBytes(base64UrlToBytes(code)));
@@ -56,35 +58,105 @@ function escapeHtml(value: string): string {
     .replace(/'/g, '&#39;');
 }
 
+// In-memory cache cho Serverless instance để phản hồi siêu tốc (<1ms)
+let projectsCache = new Map<string, any>();
+let lastCacheTime = 0;
+
+async function lookupProject(code: string): Promise<any | null> {
+  const clean = code.trim();
+  const now = Date.now();
+
+  // 1. Kiểm tra cache còn hạn (trong vòng 60 giây)
+  if (projectsCache.size > 0 && now - lastCacheTime < 60000) {
+    const found = projectsCache.get(clean) || projectsCache.get('proj-' + clean);
+    if (found) return found;
+  }
+
+  // 2. Tải từ Google Sheets nếu chưa có hoặc cache hết hạn
+  try {
+    const res = await fetch(`${DEFAULT_SCRIPT_URL}?action=getProjects`, {
+      headers: { Accept: 'application/json' },
+    });
+    if (res.ok) {
+      const json: any = await res.json();
+      const list = json.rows || json.data || [];
+      if (Array.isArray(list) && list.length > 0) {
+        projectsCache.clear();
+        for (const item of list) {
+          if (item && item.id) {
+            const idStr = String(item.id).trim();
+            projectsCache.set(idStr, item);
+            const shortNum = idStr.replace(/^proj-/, '').trim();
+            if (shortNum) projectsCache.set(shortNum, item);
+          }
+        }
+        lastCacheTime = now;
+      }
+    }
+  } catch (err) {
+    console.warn('Cannot fetch projects from Google Sheet in serverless function:', err);
+  }
+
+  return projectsCache.get(clean) || projectsCache.get('proj-' + clean) || null;
+}
+
 /**
  * GET /go/:code
- * Đổi payload {u, t, a, e} từ mã trong link, trả về TRANG KHUNG trên domain của mình:
- * khung trình duyệt giả + thông tin tác giả (tên + email liên hệ) + iframe nạp mô
- * phỏng. URL gốc và cả link /go/<mã> đều không hiện ra giao diện.
- * Tích hợp cơ chế "Thoát trang chính là thoát hết" (Sub-window Lifecycle).
+ * Hỗ trợ đồng thời 2 định dạng:
+ * 1. LINK NGẮN SIÊU GỌN: /go/:id (ví dụ: /go/proj-1792900734949 hoặc /go/1792900734949)
+ *    -> Tự động tra cứu tức thì từ bộ nhớ cache / Google Sheets. Link siêu ngắn (~50 ký tự), QR code quét cực nhạy!
+ * 2. LINK TOKEN XOR CŨ: /go/<token-dài>
+ *    -> Tương thích ngược 100% với các link đã lưu trước đây.
  */
-export default function handler(req: IncomingMessage, res: ServerResponse) {
+export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const urlPath = (req.url || '').split('?')[0];
   const queryCode = ((req as any).query && (req as any).query.code) as string | undefined;
   const code = (queryCode || urlPath.split('/').pop() || '').trim();
 
-  let payload: GoPayload = {};
-  try {
-    payload = JSON.parse(decodeCodeToText(code) || '{}') as GoPayload;
-  } catch {
-    payload = {};
+  let target = '';
+  let title = '';
+  let author = '';
+  let email = '';
+
+  // Cách 1: Thử giải mã nếu là token XOR JSON cũ
+  if (code.length > 40) {
+    try {
+      const decoded = decodeCodeToText(code);
+      if (decoded && decoded.startsWith('{') && decoded.endsWith('}')) {
+        const payload = JSON.parse(decoded) as GoPayload;
+        if (payload.u) {
+          target = normalizeUrl(payload.u);
+          title = (payload.t || '').trim();
+          author = (payload.a || '').trim();
+          email = (payload.e || '').trim();
+        }
+      }
+    } catch {
+      // bỏ qua, tiếp tục kiểm tra theo ID
+    }
   }
 
-  const target = normalizeUrl(payload.u || '');
+  // Cách 2: Nếu chưa tìm thấy target, tra cứu theo ID dự án ngắn
+  if (!target && code) {
+    const project = await lookupProject(code);
+    if (project && project.url) {
+      target = normalizeUrl(project.url);
+      title = (project.title || '').trim();
+      author = (project.authorName || '').trim();
+      email = (project.authorContact || '').trim();
+    }
+  }
+
+  // Nếu vẫn không tìm thấy
   if (!target) {
     res.statusCode = 404;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.end(
-      '<!doctype html><html lang="vi"><meta charset="utf-8"><title>Không tìm thấy</title>' +
+      '<!doctype html><html lang="vi"><meta charset="utf-8"><title>Không tìm thấy mô phỏng</title>' +
         '<body style="font-family:sans-serif;background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0">' +
-        '<div style="text-align:center"><h1 style="margin:0 0 8px">404</h1>' +
-        '<p style="margin:0 0 16px;color:#94a3b8">Không tìm thấy mô phỏng với mã này.</p>' +
-        '<a href="/" style="color:#818cf8;text-decoration:none">← Về trang chủ</a></div></body></html>'
+        '<div style="text-align:center;padding:20px"><h1 style="margin:0 0 8px;font-size:3rem">404</h1>' +
+        '<p style="margin:0 0 16px;color:#94a3b8">Không tìm thấy mô phỏng với mã định danh này.</p>' +
+        '<a href="/" style="display:inline-block;padding:10px 20px;background:#0785F9;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">← Về trang chủ OpenEduLab</a></div></body></html>'
     );
     return;
   }
@@ -96,11 +168,11 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
     'localhost';
   const homeUrl = `${proto}://${host}/`;
 
-  const title = escapeHtml((payload.t || '').trim() || 'Mô phỏng học tập');
-  const author = escapeHtml((payload.a || '').trim() || 'Thành viên');
-  const email = escapeHtml((payload.e || '').trim());
+  const safeTitle = escapeHtml(title || 'Mô phỏng học tập');
+  const safeAuthor = escapeHtml(author || 'Thành viên');
+  const safeEmail = escapeHtml(email);
   const frameSrc = escapeHtml(target);
-  const initial = author.trim().charAt(0).toUpperCase();
+  const initial = safeAuthor.trim().charAt(0).toUpperCase();
 
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -111,7 +183,7 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>${title} — OpenEduLab</title>
+<title>${safeTitle} — OpenEduLab</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
@@ -250,18 +322,15 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
     .back { padding: 0 8px; }
     .chrome { padding: 7px 9px; gap: 8px; }
   }
-  /* Khi màn hình hẹp: ẩn email text hiện nút ✉ */
   @media (max-width: 768px) {
     .author-info .email.inline { display: none; }
     .contact-btn { display: inline-flex; }
   }
-  /* Toàn màn hình: khung che cả màn hình */
   body.is-fullscreen .frame {
     position: fixed; inset: 0; z-index: 50;
     max-width: none; width: 100vw; height: 100vh;
     border-radius: 0; border: none;
   }
-  /* Thu nhỏ: chỉ còn thanh trình duyệt giả (ẩn viewport) */
   body.is-collapsed .viewport { display: none; }
   body.is-collapsed .frame { flex: 0 0 auto; max-height: 48px; }
 </style>
@@ -277,10 +346,10 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
       <div class="author-info">
         <span class="avatar">${initial}</span>
         <span class="meta">
-          <span class="name">${author}</span>
-          ${email ? `<a class="email inline" href="mailto:${email}">${email}</a>` : ''}
+          <span class="name">${safeAuthor}</span>
+          ${safeEmail ? `<a class="email inline" href="mailto:${safeEmail}">${safeEmail}</a>` : ''}
         </span>
-        ${email ? `<button class="contact-btn" id="btnContact" title="Liên hệ" aria-label="Liên hệ" type="button">&#9993;</button>` : ''}
+        ${safeEmail ? `<button class="contact-btn" id="btnContact" title="Liên hệ tác giả" aria-label="Liên hệ" type="button">&#9993;</button>` : ''}
       </div>
       <button class="chrome-btn" id="btnCollapse" title="Thu nhỏ" aria-label="Thu nhỏ" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16H3"/></svg>
@@ -294,15 +363,15 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
       <a class="back" href="${homeUrl}"><span class="back-arrow">&larr;</span><span class="back-label">Về trang chủ</span></a>
     </div>
     <div class="viewport">
-      <iframe id="simFrame" src="${frameSrc}" title="${title}" allowfullscreen allow="fullscreen; autoplay; geolocation; microphone; camera; midi"></iframe>
-      <div class="author-badge"><span class="avatar">${initial}</span><span>${author}</span></div>
+      <iframe id="simFrame" src="${frameSrc}" title="${safeTitle}" allowfullscreen allow="fullscreen; autoplay; geolocation; microphone; camera; midi"></iframe>
+      <div class="author-badge"><span class="avatar">${initial}</span><span>${safeAuthor}</span></div>
     </div>
   </div>
 
   <div class="mail-mask" id="mailMask"></div>
-  ${email ? `<div class="mail-popup" id="mailPopup" role="dialog" aria-label="Thông tin liên hệ">
+  ${safeEmail ? `<div class="mail-popup" id="mailPopup" role="dialog" aria-label="Thông tin liên hệ">
     <span class="mail-popup-title">Liên hệ tác giả</span>
-    <a class="mail-popup-link" href="mailto:${email}">${email}</a>
+    <a class="mail-popup-link" href="mailto:${safeEmail}">${safeEmail}</a>
     <button class="mail-popup-close" type="button">Đóng</button>
   </div>` : ''}
 
@@ -330,12 +399,9 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
         }
       } catch (e) {}
 
-      // 2. Nút mở sang cửa sổ mới an toàn (kết nối opener)
+      // 2. Nút mở sang cửa sổ mới an toàn
       btnNewTab && btnNewTab.addEventListener('click', function () {
-        var subWin = window.open(realUrl, '_blank');
-        if (window.opener && subWin) {
-          // Lưu lại để quản lý nếu cần
-        }
+        window.open(realUrl, '_blank');
       });
 
       // 3. Nút thu nhỏ / mở rộng

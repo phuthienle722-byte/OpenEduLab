@@ -1,6 +1,6 @@
 import { WebProject, ProjectComment } from '../types';
 import { SEED_FOR_SHEET } from '../data/seedForSheet';
-import { getGoUrl } from '../utils/goLink';
+import { getGoUrl, resolveGoUrl } from '../utils/goLink';
 
 export const STORAGE_KEY_APPSCRIPT_URL = 'webhub_google_appscript_url';
 export const STORAGE_KEY_LAST_SYNC = 'webhub_google_last_sync';
@@ -31,11 +31,7 @@ export interface SyncResult {
 export function computeGoLink(project: WebProject): string {
   try {
     if (typeof window === 'undefined') return project.goLink || '';
-    return getGoUrl(window.location, project.url, {
-      title: project.title,
-      authorName: project.authorName,
-      authorEmail: project.authorContact,
-    });
+    return resolveGoUrl(project, window.location.origin);
   } catch {
     return project.goLink || '';
   }
@@ -53,7 +49,8 @@ function withGoLink(project: WebProject): WebProject {
  * (lần đầu tạo bài / lần đầu đồng bộ) để go-link được ổn định, không đổi mỗi lần.
  */
 export function ensureGoLink(project: WebProject, forceRefresh: boolean = false): WebProject {
-  if (project.goLink && !forceRefresh) return project;
+  // Tự động nâng cấp các link token cũ dài hơn 80 ký tự sang link ngắn gọn theo ID
+  if (project.goLink && !forceRefresh && project.goLink.length < 80) return project;
   return withGoLink(project);
 }
 
