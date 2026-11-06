@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-THM-0001",
+  "slug": "nhiet-ke-phong-thi-nghiem-110c",
+  "name": "Nhiệt kế chất lỏng -10°C đến 110°C",
+  "category": "thermal-equipment",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-THM-0001",
+    "slug": "nhiet-ke-phong-thi-nghiem-110c",
+    "name": {
+      "vi": "Nhiệt kế chất lỏng -10°C đến 110°C",
+      "en": "Laboratory Thermometer -10 to 110°C"
+    },
+    "category": "thermal-equipment",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 8,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 300,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 8,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.008,
+        "height": 0.3,
+        "depth": 0.008
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c/assets/nhiet-ke-phong-thi-nghiem-110c.webp"
+      ],
+      "proceduralArchetype": "thermometer"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 32,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/nhiet-ke-phong-thi-nghiem-110c.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c/assets/nhiet-ke-phong-thi-nghiem-110c.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Nhiệt kế chất lỏng -10°C đến 110°C",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Nhiệt kế rượu màu đỏ -10°C đến 110°C đo nhiệt độ dung dịch thí nghiệm",
+    "sourceCredit": "Wikimedia Commons (Rama / CNAM)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 8 × 300 × 8 mm · Khối lượng: 32 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Nhiệt kế chất lỏng -10°C đến 110°C"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "temperatureC",
+    "label": "Nhiệt độ chất lỏng T",
+    "unit": "°C",
+    "min": -10,
+    "max": 110,
+    "step": 0.5,
+    "defaultValue": 25,
+    "presets": [
+      {
+        "label": "0.0 °C (Nước đá tan)",
+        "statePatch": {
+          "temperatureC": 0
+        }
+      },
+      {
+        "label": "25.0 °C (Nhiệt độ phòng)",
+        "statePatch": {
+          "temperatureC": 25
+        }
+      },
+      {
+        "label": "78.3 °C (Cồn sôi)",
+        "statePatch": {
+          "temperatureC": 78.3
+        }
+      },
+      {
+        "label": "100.0 °C (Nước sôi)",
+        "statePatch": {
+          "temperatureC": 100
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": true,
+    "soundPhenomenon": "probe-measure"
+  }
+}

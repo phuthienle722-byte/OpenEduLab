@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>OL3D HTML Module — Nhiệt kế chất lỏng -10°C đến 110°C (OL3D-EQP-THM-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-THM-0001",
+  "slug": "nhiet-ke-phong-thi-nghiem-110c",
+  "name": "Nhiệt kế chất lỏng -10°C đến 110°C",
+  "category": "thermal-equipment",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-THM-0001",
+    "slug": "nhiet-ke-phong-thi-nghiem-110c",
+    "name": {
+      "vi": "Nhiệt kế chất lỏng -10°C đến 110°C",
+      "en": "Laboratory Thermometer -10 to 110°C"
+    },
+    "category": "thermal-equipment",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 8,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 300,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 8,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.008,
+        "height": 0.3,
+        "depth": 0.008
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c/assets/nhiet-ke-phong-thi-nghiem-110c.webp"
+      ],
+      "proceduralArchetype": "thermometer"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 32,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/nhiet-ke-phong-thi-nghiem-110c.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c/assets/nhiet-ke-phong-thi-nghiem-110c.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Nhiệt kế chất lỏng -10°C đến 110°C",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Nhiệt kế rượu màu đỏ -10°C đến 110°C đo nhiệt độ dung dịch thí nghiệm",
+    "sourceCredit": "Wikimedia Commons (Rama / CNAM)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 8 × 300 × 8 mm · Khối lượng: 32 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Nhiệt kế chất lỏng -10°C đến 110°C"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "temperatureC",
+    "label": "Nhiệt độ chất lỏng T",
+    "unit": "°C",
+    "min": -10,
+    "max": 110,
+    "step": 0.5,
+    "defaultValue": 25,
+    "presets": [
+      {
+        "label": "0.0 °C (Nước đá tan)",
+        "statePatch": {
+          "temperatureC": 0
+        }
+      },
+      {
+        "label": "25.0 °C (Nhiệt độ phòng)",
+        "statePatch": {
+          "temperatureC": 25
+        }
+      },
+      {
+        "label": "78.3 °C (Cồn sôi)",
+        "statePatch": {
+          "temperatureC": 78.3
+        }
+      },
+      {
+        "label": "100.0 °C (Nước sôi)",
+        "statePatch": {
+          "temperatureC": 100
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": true,
+    "soundPhenomenon": "probe-measure"
+  }
+}
+  </script>
+</head>
+<body>
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <rect x="36" y="12" width="8" height="46" rx="4" fill="#E0F2FE" fill-opacity="0.4" stroke="#0284C7" stroke-width="1.4"/>
+    <circle cx="40" cy="61" r="6.5" fill="#EF4444" stroke="#B91C1C" stroke-width="1.3"/>
+    <line x1="40" y1="28" x2="40" y2="56" stroke="#EF4444" stroke-width="2.8"/>
+    <line x1="39" y1="20" x2="43" y2="20" stroke="#0369A1" stroke-width="0.9"/>
+    <line x1="39" y1="26" x2="43" y2="26" stroke="#0369A1" stroke-width="0.9"/>
+    <line x1="39" y1="32" x2="43" y2="32" stroke="#0369A1" stroke-width="0.9"/>
+    <line x1="39" y1="38" x2="43" y2="38" stroke="#0369A1" stroke-width="0.9"/>
+  </svg>
+  </template>
+  <template id="ol3d-module-real-photo">
+    <img src="/libraries3DLab/OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c/assets/nhiet-ke-phong-thi-nghiem-110c.webp" alt="Ảnh thực tế của Nhiệt kế chất lỏng -10°C đến 110°C" width="240" height="240" style="width:240px;height:240px;object-fit:contain;background:#ffffff;" />
+  </template>
+</body>
+</html>

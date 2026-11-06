@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>OL3D HTML Module — Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng (OL3D-EQP-PRM-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-PRM-0001",
+  "slug": "equilateral-optical-prism-stand",
+  "name": "Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng",
+  "category": "optical-equipment",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-PRM-0001",
+    "slug": "equilateral-optical-prism-stand",
+    "name": {
+      "vi": "Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng",
+      "en": "Equilateral Optical Prism on Stand"
+    },
+    "category": "optical-equipment",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 80,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 150,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 80,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.08,
+        "height": 0.15,
+        "depth": 0.08
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-PRM-0001_equilateral-optical-prism-stand/assets/equilateral-optical-prism-stand.webp"
+      ],
+      "proceduralArchetype": "optical-prism"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 210,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/equilateral-optical-prism-stand.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-PRM-0001_equilateral-optical-prism-stand/assets/equilateral-optical-prism-stand.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Lăng kính tam giác thủy tinh quang học khảo sát khúc xạ và tán sắc ánh sáng",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 80 × 150 × 80 mm · Khối lượng: 210 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "incidentAngleDeg",
+    "label": "Góc tới lăng kính i",
+    "unit": "°",
+    "min": 0,
+    "max": 60,
+    "step": 1,
+    "defaultValue": 30,
+    "presets": [
+      {
+        "label": "0°",
+        "statePatch": {
+          "incidentAngleDeg": 0
+        }
+      },
+      {
+        "label": "30° (Tán sắc 7 màu)",
+        "statePatch": {
+          "incidentAngleDeg": 30
+        }
+      },
+      {
+        "label": "45°",
+        "statePatch": {
+          "incidentAngleDeg": 45
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "optical-laser"
+  }
+}
+  </script>
+</head>
+<body>
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="40,16 18,58 62,58" fill="#E0F2FE" fill-opacity="0.45" stroke="#0284C7" stroke-width="1.8"/>
+    <line x1="10" y1="44" x2="28" y2="36" stroke="#FFFFFF" stroke-width="2"/>
+    <line x1="51" y1="36" x2="72" y2="38" stroke="#EF4444" stroke-width="1.6"/>
+    <line x1="52" y1="38" x2="72" y2="42" stroke="#F59E0B" stroke-width="1.6"/>
+    <line x1="53" y1="40" x2="72" y2="46" stroke="#22C55E" stroke-width="1.6"/>
+    <line x1="54" y1="42" x2="72" y2="50" stroke="#3B82F6" stroke-width="1.6"/>
+    <line x1="55" y1="44" x2="72" y2="54" stroke="#8B5CF6" stroke-width="1.6"/>
+    <rect x="25" y="63" width="30" height="4.5" rx="1.5" fill="#334155"/>
+  </svg>
+  </template>
+  <template id="ol3d-module-real-photo">
+    <img src="/libraries3DLab/OL3D-EQP-PRM-0001_equilateral-optical-prism-stand/assets/equilateral-optical-prism-stand.webp" alt="Ảnh thực tế của Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng" width="240" height="240" style="width:240px;height:240px;object-fit:contain;background:#ffffff;" />
+  </template>
+</body>
+</html>

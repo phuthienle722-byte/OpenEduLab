@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-MAG-0001",
+  "slug": "handheld-magnifying-glass-5x",
+  "name": "Kính lúp cầm tay độ bội giác 5x",
+  "category": "optical-equipment",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-MAG-0001",
+    "slug": "handheld-magnifying-glass-5x",
+    "name": {
+      "vi": "Kính lúp cầm tay độ bội giác 5x",
+      "en": "Handheld Magnifying Glass 5x"
+    },
+    "category": "optical-equipment",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 80,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 175,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 16,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.08,
+        "height": 0.175,
+        "depth": 0.016
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-MAG-0001_handheld-magnifying-glass-5x/assets/handheld-magnifying-glass-5x.png"
+      ],
+      "proceduralArchetype": "magnifying-glass"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 115,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/handheld-magnifying-glass-5x.png",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-MAG-0001_handheld-magnifying-glass-5x/assets/handheld-magnifying-glass-5x.png",
+    "mimeType": "image/png",
+    "alt": "Ảnh thực tế của Kính lúp cầm tay độ bội giác 5x",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Kính lúp cầm tay khung kim loại độ bội giác 5x quan sát mẫu vật nhỏ",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 80 × 175 × 16 mm · Khối lượng: 115 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Kính lúp cầm tay độ bội giác 5x"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "magnification",
+    "label": "Độ bội giác G",
+    "unit": "x",
+    "min": 2,
+    "max": 10,
+    "step": 1,
+    "defaultValue": 5,
+    "presets": [
+      {
+        "label": "2.5x",
+        "statePatch": {
+          "magnification": 2.5
+        }
+      },
+      {
+        "label": "5x (Tiêu chuẩn)",
+        "statePatch": {
+          "magnification": 5
+        }
+      },
+      {
+        "label": "10x",
+        "statePatch": {
+          "magnification": 10
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "probe-measure"
+  }
+}

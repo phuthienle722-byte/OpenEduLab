@@ -203,8 +203,16 @@ const sanitizeAndMigrateProjects = (loadedList: WebProject[]): WebProject[] => {
         : typeof p.tags === 'string'
         ? (p.tags as string).split(',').map((t) => t.trim()).filter(Boolean)
         : [];
+      let safeUrl = p.url;
+      if (p.id === 'proj-openlab-3d' && (p.url === 'http://localhost:3001' || !p.url || p.url.includes('localhost:3001'))) {
+        safeUrl = '/simulations/openlab-3d/index.html';
+      } else if (p.id === 'proj-khucxa-pxtp' && (p.url === 'http://localhost:3002' || !p.url || p.url.includes('localhost:3002'))) {
+        safeUrl = '/simulations/khucxa-pxtp/index.html';
+      }
+
       return {
         ...p,
+        url: safeUrl,
         tags: safeTags,
         views: Number(p.views) || 0,
         likes: Number(p.likes) || 0,
@@ -227,7 +235,10 @@ const sanitizeAndMigrateProjects = (loadedList: WebProject[]): WebProject[] => {
   const initialLocalProjects = INITIAL_PROJECTS.filter((p) => p.isUserSubmission);
   for (let i = initialLocalProjects.length - 1; i >= 0; i--) {
     const localP = initialLocalProjects[i];
-    if (!updated.some((p) => p.id === localP.id)) {
+    const existingIdx = updated.findIndex((p) => p.id === localP.id);
+    if (existingIdx >= 0) {
+      updated[existingIdx] = { ...updated[existingIdx], url: localP.url };
+    } else {
       updated.unshift(localP);
     }
   }

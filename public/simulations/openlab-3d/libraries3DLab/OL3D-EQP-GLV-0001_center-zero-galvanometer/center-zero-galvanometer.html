@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>OL3D HTML Module — Điện kế nhạy vạch 0 ở giữa — Galvanometer (OL3D-EQP-GLV-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-GLV-0001",
+  "slug": "center-zero-galvanometer",
+  "name": "Điện kế nhạy vạch 0 ở giữa — Galvanometer",
+  "category": "electrical-equipment",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-GLV-0001",
+    "slug": "center-zero-galvanometer",
+    "name": {
+      "vi": "Điện kế nhạy vạch 0 ở giữa — Galvanometer",
+      "en": "Center-Zero Galvanometer"
+    },
+    "category": "electrical-equipment",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 100,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 135,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 85,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.1,
+        "height": 0.135,
+        "depth": 0.085
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-GLV-0001_center-zero-galvanometer/assets/center-zero-galvanometer.webp"
+      ],
+      "proceduralArchetype": "galvanometer"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 310,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/center-zero-galvanometer.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-GLV-0001_center-zero-galvanometer/assets/center-zero-galvanometer.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Điện kế nhạy vạch 0 ở giữa — Galvanometer",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Điện kế kim chỉ thị vạch 0 ở giữa phát hiện dòng điện cảm ứng điện từ",
+    "sourceCredit": "Wellcome Collection (CC BY 4.0)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 100 × 135 × 85 mm · Khối lượng: 310 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Điện kế nhạy vạch 0 ở giữa — Galvanometer"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "multimeterValue",
+    "label": "Dòng điện cảm ứng I",
+    "unit": "mA",
+    "min": -3,
+    "max": 3,
+    "step": 0.1,
+    "defaultValue": 0,
+    "presets": [
+      {
+        "label": "0.0 mA (Đứng yên)",
+        "statePatch": {
+          "multimeterValue": 0
+        }
+      },
+      {
+        "label": "+1.5 mA (Nam châm vào)",
+        "statePatch": {
+          "multimeterValue": 1.5
+        }
+      },
+      {
+        "label": "-1.5 mA (Nam châm ra)",
+        "statePatch": {
+          "multimeterValue": -1.5
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "probe-measure"
+  }
+}
+  </script>
+</head>
+<body>
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <rect x="18" y="16" width="44" height="50" rx="4" fill="#F1F5F9" stroke="#334155" stroke-width="1.8"/>
+    <rect x="23" y="21" width="34" height="24" rx="2" fill="#FFFFFF" stroke="#64748B" stroke-width="1.2"/>
+    <path d="M27 40 A13 13 0 0 1 53 40" stroke="#0B3A7D" stroke-width="1.4" fill="none"/>
+    <line x1="40" y1="41" x2="40" y2="25" stroke="#EF4444" stroke-width="1.8"/>
+    <text x="40" y="38" fill="#0B3A7D" font-size="8" font-weight="bold" text-anchor="middle">G</text>
+    <circle cx="28" cy="56" r="3.2" fill="#0F172A"/>
+    <circle cx="40" cy="56" r="3.2" fill="#EF4444"/>
+    <circle cx="52" cy="56" r="3.2" fill="#EF4444"/>
+  </svg>
+  </template>
+  <template id="ol3d-module-real-photo">
+    <img src="/libraries3DLab/OL3D-EQP-GLV-0001_center-zero-galvanometer/assets/center-zero-galvanometer.webp" alt="Ảnh thực tế của Điện kế nhạy vạch 0 ở giữa — Galvanometer" width="240" height="240" style="width:240px;height:240px;object-fit:contain;background:#ffffff;" />
+  </template>
+</body>
+</html>

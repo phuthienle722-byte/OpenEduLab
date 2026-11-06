@@ -46,6 +46,7 @@ interface GoPayload {
 function normalizeUrl(rawUrl: string): string {
   const url = (rawUrl || '').trim();
   if (!url) return '';
+  if (url.startsWith('/')) return url;
   return /^https?:\/\//i.test(url) ? url : `https://${url}`;
 }
 
@@ -104,28 +105,28 @@ async function lookupProject(code: string): Promise<any | null> {
     'proj-openlab-3d': {
       id: 'proj-openlab-3d',
       title: 'Phòng Thí Nghiệm Ảo 3D KHTN THCS (OpenLab 3D)',
-      url: 'http://localhost:3001',
+      url: '/simulations/openlab-3d/index.html',
       authorName: 'Phan Bùi Giang Ngân & Trịnh Nguyễn Tường Vy',
       authorContact: '0793067027 · Trường PTDTNT THCS Him Lam',
     },
     'openlab-3d': {
       id: 'proj-openlab-3d',
       title: 'Phòng Thí Nghiệm Ảo 3D KHTN THCS (OpenLab 3D)',
-      url: 'http://localhost:3001',
+      url: '/simulations/openlab-3d/index.html',
       authorName: 'Phan Bùi Giang Ngân & Trịnh Nguyễn Tường Vy',
       authorContact: '0793067027 · Trường PTDTNT THCS Him Lam',
     },
     'proj-khucxa-pxtp': {
       id: 'proj-khucxa-pxtp',
       title: 'Mô Phỏng Khúc Xạ & Phản Xạ Toàn Phần (KHTN 9)',
-      url: 'http://localhost:3002',
+      url: '/simulations/khucxa-pxtp/index.html',
       authorName: 'Nhóm Nghiên Cứu KHKT Him Lam',
       authorContact: '0907324280 · Trường PTDTNT THCS Him Lam',
     },
     'khucxa-pxtp': {
       id: 'proj-khucxa-pxtp',
       title: 'Mô Phỏng Khúc Xạ & Phản Xạ Toàn Phần (KHTN 9)',
-      url: 'http://localhost:3002',
+      url: '/simulations/khucxa-pxtp/index.html',
       authorName: 'Nhóm Nghiên Cứu KHKT Him Lam',
       authorContact: '0907324280 · Trường PTDTNT THCS Him Lam',
     },

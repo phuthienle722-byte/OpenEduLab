@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OL3D HTML Module — Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ (OL3D-EQP-LEV-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-LEV-0001",
+  "slug": "thanh-don-bay-thang-bang",
+  "name": "Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ",
+  "category": "mechanics-apparatus",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-LEV-0001",
+    "slug": "thanh-don-bay-thang-bang",
+    "name": {
+      "vi": "Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ",
+      "en": "Calibrated Symmetrical Lever Balance with Stand"
+    },
+    "kind": "equipment",
+    "subject": "physics",
+    "category": "mechanics-apparatus",
+    "categoryIds": [
+      "mechanics-apparatus"
+    ],
+    "tags": [
+      "đòn bẩy",
+      "mômen lực",
+      "thăng bằng",
+      "cơ học 8",
+      "khtn-8"
+    ],
+    "summary": "Bộ đòn bẩy chia vạch đối xứng 18 lỗ treo kèm giá đỡ trục quay ma sát thấp và ốc vi chỉnh đối trọng, dùng khảo sát quy tắc mômen lực trong chương trình KHTN 8.",
+    "textbookRef": {
+      "bookTitle": "SGK Khoa học tự nhiên 8 - Kết nối tri thức",
+      "chapter": "Chương IV: Tác dụng làm quay của lực",
+      "lesson": "Bài 18: Tác dụng làm quay của lực - Đòn bẩy & Điều kiện cân bằng",
+      "figureRef": "Bộ thí nghiệm đòn bẩy chia độ chuẩn Thông tư 38/2021/TT-BGDĐT",
+      "standardFunction": "Khảo sát thực nghiệm điều kiện cân bằng của vật rắn có trục quay cố định: F1.d1 = F2.d2.",
+      "usageGuidelines": "Lắp thanh đòn bẩy lên trục quay của giá đỡ, vặn 2 ốc vi chỉnh ở hai đầu để đưa thanh về thăng bằng ngang (kim chỉ 0°), sau đó móc các quả cân 50g vào các vị trí đối xứng.",
+      "safetyNote": "Không treo quá 5 quả cân (250g) vào cùng một lỗ ngoài cùng để tránh làm cong vênh thanh nhôm định hình."
+    },
+    "assetVersion": "1.0.0",
+    "manifestSchemaVersion": "2.0.0",
+    "moduleApiVersion": "2.4.0",
+    "geometry": {
+      "modelFormat": "PROCEDURAL_PBR",
+      "modelUri": "procedural://lever-balance-apparatus",
+      "modelFileVersion": "1.0.0",
+      "proceduralArchetype": "lever-balance-apparatus",
+      "upAxis": "Y",
+      "anchor": "base-center",
+      "boundingBoxM": {
+        "width": 0.4,
+        "height": 0.36,
+        "depth": 0.12
+      },
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 400,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "height": {
+          "value": 360,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "depth": {
+          "value": 120,
+          "unit": "mm",
+          "status": "verified"
+        }
+      },
+      "triangleCount": 2480,
+      "materialCount": 6,
+      "namedNodes": [
+        {
+          "nodeName": "body",
+          "role": "body",
+          "description": "Chân đế gang đúc nặng bọc cao su và cột trụ Inox đứng"
+        },
+        {
+          "nodeName": "scale_display",
+          "role": "scale_display",
+          "description": "Mặt đĩa khắc độ góc nghiêng và vạch cân bằng 0° phía trước"
+        },
+        {
+          "nodeName": "scale_display_rear",
+          "role": "scale_display",
+          "description": "Mặt đĩa đọc góc nghiêng đồng bộ 360° phía sau"
+        },
+        {
+          "nodeName": "plunger",
+          "role": "plunger",
+          "description": "Cụm thanh đòn bẩy quay quanh trục Z kèm ốc vi chỉnh và quả cân"
+        }
+      ],
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang/assets/thanh-don-bay-thang-bang.webp"
+      ]
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 680,
+        "unit": "g",
+        "status": "verified"
+      },
+      "material": {
+        "value": "Hợp kim nhôm Anode, Thép SUS304 mạ Crôm, Chân đế gang bọc cao su chống rung",
+        "status": "verified"
+      }
+    },
+    "measurementMetadata": {
+      "isMeasuringInstrument": true,
+      "measuredQuantity": "angle",
+      "rangeMin": {
+        "value": -30,
+        "unit": "deg",
+        "status": "verified"
+      },
+      "rangeMax": {
+        "value": 30,
+        "unit": "deg",
+        "status": "verified"
+      },
+      "leastCount": {
+        "value": 1,
+        "unit": "deg",
+        "status": "verified"
+      },
+      "zeroOffsetSupported": true,
+      "referenceStandard": "Thông tư 38/2021/TT-BGDĐT"
+    },
+    "capabilities": [
+      {
+        "id": "rotatable",
+        "state": "implemented"
+      },
+      {
+        "id": "weighObject",
+        "state": "implemented"
+      }
+    ],
+    "validation": {
+      "assetReviewStatus": "published",
+      "geometryStatus": "verified",
+      "metrologyStatus": "verified",
+      "behaviorStatus": "verified",
+      "safetyStatus": "reviewed"
+    },
+    "provenance": {
+      "createdBy": "Nhóm Mô phỏng Thiết bị KHTN 8",
+      "authorRole": "Giáo viên Vật lí THCS & Kỹ sư 3D OpenLab",
+      "organization": "OpenLab Vietnam",
+      "sourceType": "manufacturer-spec",
+      "license": "CC BY-NC-SA 4.0"
+    }
+  },
+  "moduleControls": {
+    "stateKey": "incidentAngleDeg",
+    "label": "Góc nghiêng đòn bẩy",
+    "unit": "°",
+    "min": -30,
+    "max": 30,
+    "step": 1,
+    "defaultValue": 0,
+    "presets": [
+      {
+        "label": "Thăng bằng ngang tuyệt đối (0° — Tổng mômen triệt tiêu)",
+        "statePatch": {
+          "incidentAngleDeg": 0
+        }
+      },
+      {
+        "label": "Lệch trái (-15° — Quả cân cánh trái m1.d1 > m2.d2)",
+        "statePatch": {
+          "incidentAngleDeg": -15
+        }
+      },
+      {
+        "label": "Lệch phải (+15° — Quả cân cánh phải m2.d2 > m1.d1)",
+        "statePatch": {
+          "incidentAngleDeg": 15
+        }
+      },
+      {
+        "label": "Chạm cữ hãm cực đại (+30° — Giới hạn cơ học)",
+        "statePatch": {
+          "incidentAngleDeg": 30
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "resonance"
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/thanh-don-bay-thang-bang.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang/assets/thanh-don-bay-thang-bang.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Bộ thí nghiệm đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ trục quay và quả cân KHTN 8",
+    "sourceCredit": "Thiết bị trường học Việt Nam (Thông tư 38/2021/TT-BGDĐT)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 8",
+    "realWorldScaleNote": "Kích thước: 400 × 360 × 120 mm · Khối lượng: 680 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 18,
+        "label": "Thanh đòn bẩy nhôm 400mm chia vạch đối xứng 18 lỗ"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 32,
+        "label": "Trục quay ma sát thấp kèm đĩa chia độ -30° đến +30°"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 92,
+        "label": "Chân đế gang đúc nặng đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "dossier": {
+    "assetId": "OL3D-EQP-LEV-0001",
+    "technicalStandard": "Thông tư 38/2021/TT-BGDĐT · SGK KHTN 8 (Bài 18: Tác dụng làm quay của lực - Đòn bẩy)",
+    "exactDimensionsSpec": "Thanh đòn bẩy: 400 × 18 × 4 mm (18 lỗ treo chia đều 2 bên, bước lỗ 20 mm) · Chiều cao giá đỡ: 360 mm · Chân đế gang: 140 × 120 × 22 mm",
+    "weightOrCapacitySpec": "Khối lượng toàn bộ: 680 g · Góc quay giới hạn: -30° đến +30° · Tải trọng an toàn mỗi bên: 5.0 N (10 quả cân 50g)",
+    "synthesizedFeatures": [
+      "Thanh hợp kim nhôm định hình mạ Anode xước mờ, chia vạch đối xứng 18 lỗ treo cách đều tâm quay O đúng 20 mm.",
+      "Hai đai ốc ren M4 bằng đồng thau khía nhám ở 2 đầu giúp vi chỉnh cân bằng zero trước khi làm thí nghiệm.",
+      "Cung chia độ góc nghiêng tại ổ trục hiển thị trực quan góc lệch và vạch 0° dạ quang khi đạt thăng bằng ngang.",
+      "Trục quay ma sát siêu thấp ăn khớp cữ hãm cơ học giới hạn góc nghiêng an toàn trong khoảng [-30°, +30°]."
+    ],
+    "fiveWebSources": [
+      {
+        "siteName": "Thư viện Pháp luật (Thông tư 38/2021/TT-BGDĐT)",
+        "domain": "thuvienphapluat.vn",
+        "verifiedSpecSummary": "Danh mục thiết bị dạy học môn KHTN THCS: Bộ đòn bẩy có giá đỡ, thanh chia vạch đối xứng dài 400mm kèm quả cân có móc."
+      },
+      {
+        "siteName": "Thiết bị Giáo dục VietValue",
+        "domain": "vietvalue.edu.vn",
+        "verifiedSpecSummary": "Bộ đòn bẩy thực hành Vật lí 8: Thanh hợp kim nhôm đục lỗ 20mm, đĩa chia độ ±30°, giá sắt chân đế gang vững chắc."
+      },
+      {
+        "siteName": "VietJack — SGK KHTN 8 Kết nối tri thức",
+        "domain": "vietjack.com",
+        "verifiedSpecSummary": "Thí nghiệm khảo sát quy tắc mômen đòn bẩy: Treo quả nặng vào các lỗ và so sánh tích F1.d1 với F2.d2."
+      },
+      {
+        "siteName": "Innotec Việt Nam — Thiết bị Dạy học",
+        "domain": "innotec.com.vn",
+        "verifiedSpecSummary": "Giá đỡ trục quay đòn bẩy có vít cân bằng, chịu tải 5N mỗi bên, bề mặt mạ kẽm/sơn tĩnh điện cao cấp."
+      },
+      {
+        "siteName": "Thư viện Vật lý Việt Nam",
+        "domain": "thuvienvatly.com",
+        "verifiedSpecSummary": "Quy tắc mômen lực M = F.d và bài toán thăng bằng thanh chắn đường, bập bênh, cân đòn."
+      }
+    ]
+  },
+  "audit360": {
+    "assetId": "OL3D-EQP-LEV-0001",
+    "omnidirectionalReadout360": "Góc nghiêng đòn bẩy và trạng thái thăng bằng đọc trực tiếp trên cung độ 2 mặt trước và sau đồng bộ thời gian thực.",
+    "coreInteractiveFunctions": [
+      "Vặn đai ốc vi chỉnh 2 đầu để lấy thăng bằng ban đầu (kim về vạch 0° màu xanh lục).",
+      "Treo quả nặng vào các lỗ từ 1 đến 9 để kiểm chứng quy tắc mômen F1.d1 = F2.d2.",
+      "Điều chỉnh góc nghiêng khảo sát dao động giảm chấn quanh vị trí cân bằng bền."
+    ],
+    "environmentalAndCrossToolInteractions": [
+      "Có thể đặt toàn bộ giá đòn bẩy lên cân điện tử để đo khối lượng tổng 680.00 g.",
+      "Treo kết hợp với Lực kế lò xo 5N để đo lực kéo thực tế tác dụng tại từng cánh tay đòn."
+    ]
+  }
+}
+  </script>
+</head>
+<body>
+  <!-- 2. ICON 2D VECTOR CHUẨN 80x80 -->
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="64" width="40" height="7" rx="1.5" fill="#1E293B" stroke="#0F172A" stroke-width="1.2"/>
+    <rect x="38" y="24" width="4" height="42" fill="#CBD5E1" stroke="#475569" stroke-width="1"/>
+    <circle cx="40" cy="34" r="11" fill="#F8FAFC" stroke="#0B3A7D" stroke-width="1.2"/>
+    <line x1="40" y1="24" x2="40" y2="44" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 1"/>
+    <line x1="30" y1="34" x2="50" y2="34" stroke="#0B3A7D" stroke-width="1"/>
+    <rect x="8" y="32" width="64" height="4" rx="1" fill="#CBD5E1" stroke="#334155" stroke-width="1"/>
+    <rect x="8" y="31" width="3" height="6" rx="0.8" fill="#F59E0B" stroke="#92400E" stroke-width="0.8"/>
+    <rect x="69" y="31" width="3" height="6" rx="0.8" fill="#F59E0B" stroke="#92400E" stroke-width="0.8"/>
+    <line x1="24" y1="36" x2="24" y2="46" stroke="#64748B" stroke-width="1"/>
+    <rect x="21" y="46" width="6" height="8" rx="0.8" fill="#F59E0B" stroke="#92400E" stroke-width="0.8"/>
+    <line x1="56" y1="36" x2="56" y2="46" stroke="#64748B" stroke-width="1"/>
+    <rect x="53" y="46" width="6" height="8" rx="0.8" fill="#F59E0B" stroke="#92400E" stroke-width="0.8"/>
+  </svg>
+  </template>
+
+  <!-- 3. ẢNH THẬT PHÒNG THÍ NGHIỆM ĐỐI CHIẾU 680x420 -->
+  <template id="ol3d-module-real-photo">
+    <svg viewBox="0 0 680 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="labBgGrad" x1="0" y1="0" x2="0" y2="420" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#0F172A" />
+          <stop offset="70%" stop-color="#1E293B" />
+          <stop offset="70.5%" stop-color="#78350F" />
+          <stop offset="100%" stop-color="#451A03" />
+        </linearGradient>
+      </defs>
+      <rect width="680" height="420" rx="14" fill="url(#labBgGrad)" />
+      <!-- Mặt bàn phòng thí nghiệm & Đường chân trời -->
+      <line x1="0" y1="296" x2="680" y2="296" stroke="#B45309" stroke-width="2" />
+      <rect x="30" y="366" width="620" height="30" rx="6" fill="#090D16" fill-opacity="0.85" stroke="#334155" />
+      <text x="44" y="386" fill="#38BDF8" font-family="monospace" font-size="12" font-weight="bold">THƯỚC ĐỐI CHIẾU THỰC TẾ: THANH 400×18×4 mm · CAO 360 mm · BƯỚC LỖ 20 mm (KHTN 8)</text>
+
+      <!-- Bóng đổ bàn -->
+      <ellipse cx="340" cy="308" rx="180" ry="16" fill="#000000" opacity="0.45" />
+
+      <!-- Chân đế gang đúc & Trụ đứng mạ Inox -->
+      <rect x="250" y="280" width="180" height="26" rx="5" fill="#334155" stroke="#1E293B" stroke-width="3" />
+      <rect x="333" y="60" width="14" height="222" rx="2" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2" />
+
+      <!-- Đĩa chia độ -30° đến +30° -->
+      <circle cx="340" cy="115" r="42" fill="#1E293B" stroke="#0284C7" stroke-width="3" />
+      <path d="M305 115 A35 35 0 0 1 375 115" stroke="#FACC15" stroke-width="3" fill="none"/>
+      <line x1="340" y1="80" x2="340" y2="92" stroke="#22C55E" stroke-width="3" />
+      <text x="340" y="104" text-anchor="middle" fill="#22C55E" font-family="monospace" font-size="11" font-weight="bold">0° CÂN BẰNG</text>
+      <text x="302" y="128" fill="#94A3B8" font-family="sans-serif" font-size="10">-30°</text>
+      <text x="362" y="128" fill="#94A3B8" font-family="sans-serif" font-size="10">+30°</text>
+
+      <!-- Thanh đòn bẩy nhôm 400mm -->
+      <g id="real_lever_arm">
+        <rect x="70" y="108" width="540" height="14" rx="4" fill="#F1F5F9" stroke="#0284C7" stroke-width="2" />
+        <!-- 18 vạch lỗ chia đều -->
+        <circle cx="100" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="130" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="160" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="190" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="220" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="250" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="280" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="310" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="370" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="400" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="430" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="460" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="490" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="520" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="550" cy="115" r="3" fill="#0284C7"/>
+        <circle cx="580" cy="115" r="3" fill="#0284C7"/>
+
+        <!-- Ốc vi chỉnh đồng thau 2 đầu -->
+        <rect x="52" y="105" width="16" height="20" rx="3" fill="#EAB308" stroke="#CA8A04" stroke-width="1.5"/>
+        <rect x="612" y="105" width="16" height="20" rx="3" fill="#EAB308" stroke="#CA8A04" stroke-width="1.5"/>
+
+        <!-- Móc treo quả cân nhánh trái (lỗ 4: x=190) -->
+        <line x1="190" y1="122" x2="190" y2="160" stroke="#64748B" stroke-width="2" />
+        <rect x="176" y="160" width="28" height="34" rx="4" fill="#94A3B8" stroke="#475569" stroke-width="2"/>
+        <text x="190" y="182" text-anchor="middle" fill="#1E293B" font-family="monospace" font-size="10" font-weight="bold">50g</text>
+
+        <!-- Móc treo quả cân nhánh phải (lỗ 2: x=430) x 2 quả -->
+        <line x1="430" y1="122" x2="430" y2="160" stroke="#64748B" stroke-width="2" />
+        <rect x="416" y="160" width="28" height="34" rx="4" fill="#94A3B8" stroke="#475569" stroke-width="2"/>
+        <text x="430" y="182" text-anchor="middle" fill="#1E293B" font-family="monospace" font-size="10" font-weight="bold">50g</text>
+        <rect x="416" y="196" width="28" height="34" rx="4" fill="#94A3B8" stroke="#475569" stroke-width="2"/>
+        <text x="430" y="218" text-anchor="middle" fill="#1E293B" font-family="monospace" font-size="10" font-weight="bold">50g</text>
+      </g>
+
+      <!-- Tâm quay chốt đỏ -->
+      <circle cx="340" cy="115" r="7" fill="#EF4444" stroke="#B91C1C" stroke-width="2"/>
+    </svg>
+  </template>
+
+  <!-- 4. MÃ DỰNG MÔ HÌNH 3D THREE.JS CHUẨN MASTER SPEC v2.4 -->
+  <script id="ol3d-module-3d-script">
+    window.OL3D_EQUIPMENT_MODULE = {
+      buildEquipmentMesh: function(THREE, asset) {
+        var group = new THREE.Group();
+        group.name = (asset && asset.slug ? asset.slug : 'lever_balance') + '_root';
+
+        // Vật liệu PBR chuẩn
+        var baseMat = new THREE.MeshStandardMaterial({
+          color: 0x273549,
+          roughness: 0.55,
+          metalness: 0.35
+        });
+        var rubberFootMat = new THREE.MeshStandardMaterial({
+          color: 0x0f172a,
+          roughness: 0.85,
+          metalness: 0.05
+        });
+        var stainlessMat = new THREE.MeshStandardMaterial({
+          color: 0xe2e8f0,
+          roughness: 0.18,
+          metalness: 0.88
+        });
+        var aluminumMat = new THREE.MeshStandardMaterial({
+          color: 0xf1f5f9,
+          roughness: 0.22,
+          metalness: 0.75
+        });
+        var brassMat = new THREE.MeshStandardMaterial({
+          color: 0xeab308,
+          roughness: 0.25,
+          metalness: 0.90
+        });
+        var weightMat = new THREE.MeshStandardMaterial({
+          color: 0x94a3b8,
+          roughness: 0.28,
+          metalness: 0.82
+        });
+
+        // ==========================================
+        // 1. CHÂN ĐẾ GANG & 4 CHÂN CAO SU (y = 0.000m -> 0.022m)
+        // ==========================================
+        var baseGroup = new THREE.Group();
+        baseGroup.name = 'body';
+        group.add(baseGroup);
+
+        // Chân đế chính: 140 x 20 x 120 mm đặt tại y = 0.012 (đáy tại y = 0.002)
+        var plinth = new THREE.Mesh(
+          new THREE.BoxGeometry(0.140, 0.020, 0.120),
+          baseMat
+        );
+        plinth.position.set(0, 0.012, 0);
+        plinth.castShadow = true;
+        plinth.receiveShadow = true;
+        baseGroup.add(plinth);
+
+        // 4 chân cao su ở 4 góc: chạm mặt bàn đúng y = 0.000m!
+        var footGeo = new THREE.CylinderGeometry(0.008, 0.008, 0.004, 16);
+        var footCoords = [
+          [-0.055, 0.002, -0.045],
+          [ 0.055, 0.002, -0.045],
+          [-0.055, 0.002,  0.045],
+          [ 0.055, 0.002,  0.045]
+        ];
+        footCoords.forEach(function(c) {
+          var foot = new THREE.Mesh(footGeo, rubberFootMat);
+          foot.position.set(c[0], c[1], c[2]);
+          baseGroup.add(foot);
+        });
+
+        // Ốc ren siết giữ cột trụ trên mặt đế
+        var collar = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.014, 0.018, 0.010, 20),
+          brassMat
+        );
+        collar.position.set(0, 0.027, 0);
+        baseGroup.add(collar);
+
+        // ==========================================
+        // 2. CỘT TRỤ ĐỨNG INOX (Chiều cao 340mm)
+        // ==========================================
+        var mast = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.006, 0.006, 0.330, 24),
+          stainlessMat
+        );
+        mast.position.set(0, 0.192, 0); // y_bottom = 0.027, y_top = 0.357
+        mast.castShadow = true;
+        baseGroup.add(mast);
+
+        // ==========================================
+        // 3. Ổ TRỤC QUAY & ĐĨA ĐỘ (-30° đến +30°) TẠI y = 0.320m
+        // ==========================================
+        var pivotY = 0.320;
+        var pivotHub = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.015, 0.015, 0.028, 24),
+          stainlessMat
+        );
+        pivotHub.rotation.x = Math.PI / 2;
+        pivotHub.position.set(0, pivotY, 0);
+        baseGroup.add(pivotHub);
+
+        // Đĩa chia độ dạng CanvasTexture
+        function createProtractorCanvas() {
+          var cv = document.createElement('canvas');
+          cv.width = 512;
+          cv.height = 256;
+          var ctx = cv.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, 512, 256);
+
+            // Vành bán nguyệt
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(256, 40, 190, 0, Math.PI);
+            ctx.stroke();
+
+            // Vạch độ chia từ -30° đến +30°
+            for (var deg = -30; deg <= 30; deg += 5) {
+              var rad = (deg + 90) * Math.PI / 180;
+              var isMajor = (deg % 10 === 0);
+              var isZero = (deg === 0);
+              var rInner = isMajor ? 150 : 168;
+              var rOuter = 190;
+              var x1 = 256 + Math.cos(rad) * rInner;
+              var y1 = 40 + Math.sin(rad) * rInner;
+              var x2 = 256 + Math.cos(rad) * rOuter;
+              var y2 = 40 + Math.sin(rad) * rOuter;
+
+              ctx.strokeStyle = isZero ? '#22c55e' : (isMajor ? '#facc15' : '#94a3b8');
+              ctx.lineWidth = isZero ? 6 : (isMajor ? 3 : 1.5);
+              ctx.beginPath();
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(x2, y2);
+              ctx.stroke();
+
+              if (isMajor) {
+                ctx.fillStyle = isZero ? '#4ade80' : '#e2e8f0';
+                ctx.font = 'bold 22px monospace';
+                ctx.textAlign = 'center';
+                var tx = 256 + Math.cos(rad) * 125;
+                var ty = 40 + Math.sin(rad) * 125 + 8;
+                ctx.fillText((deg > 0 ? '+' : '') + deg + '°', tx, ty);
+              }
+            }
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 20px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('ĐÒN BẨY THĂNG BẰNG · KHTN 8', 256, 235);
+          }
+          var tex = new THREE.CanvasTexture(cv);
+          tex.needsUpdate = true;
+          return { canvas: cv, texture: tex };
+        }
+
+        var protractorData = createProtractorCanvas();
+        var protractorMat = new THREE.MeshBasicMaterial({
+          map: protractorData.texture,
+          transparent: true,
+          side: THREE.DoubleSide
+        });
+
+        // Mặt đĩa trước (+Z)
+        var frontDial = new THREE.Mesh(new THREE.PlaneGeometry(0.120, 0.060), protractorMat);
+        frontDial.name = 'scale_display';
+        frontDial.position.set(0, pivotY - 0.030, 0.016);
+        group.add(frontDial);
+
+        // Mặt đĩa sau (-Z) đồng bộ 360°
+        var rearDial = new THREE.Mesh(new THREE.PlaneGeometry(0.120, 0.060), protractorMat);
+        rearDial.name = 'scale_display_rear';
+        rearDial.position.set(0, pivotY - 0.030, -0.016);
+        rearDial.rotation.y = Math.PI;
+        group.add(rearDial);
+
+        // ==========================================
+        // 4. THANH ĐÒN BẨY XOAY QUANH TRỤC Z ('plunger')
+        // ==========================================
+        var leverGroup = new THREE.Group();
+        leverGroup.name = 'plunger';
+        leverGroup.position.set(0, pivotY, 0);
+        group.add(leverGroup);
+
+        // Thanh nhôm 400 x 18 x 4 mm
+        var beam = new THREE.Mesh(
+          new THREE.BoxGeometry(0.400, 0.018, 0.004),
+          aluminumMat
+        );
+        beam.castShadow = true;
+        leverGroup.add(beam);
+
+        // Kim chỉ thị thăng bằng chỉ thẳng xuống đĩa chia độ
+        var needle = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.0012, 0.002, 0.055, 12),
+          new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3 })
+        );
+        needle.position.set(0, -0.030, 0.0035);
+        leverGroup.add(needle);
+
+        // 18 Lỗ treo chia đều 2 bên (bước 20 mm, từ x = ±0.020m đến ±0.180m)
+        var holeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+        var holeRingGeo = new THREE.CylinderGeometry(0.0022, 0.0022, 0.0044, 16);
+        for (var k = 1; k <= 9; k++) {
+          var xDist = k * 0.020;
+          // Lỗ bên trái
+          var hLeft = new THREE.Mesh(holeRingGeo, holeMat);
+          hLeft.rotation.x = Math.PI / 2;
+          hLeft.position.set(-xDist, 0, 0);
+          leverGroup.add(hLeft);
+          // Lỗ bên phải
+          var hRight = new THREE.Mesh(holeRingGeo, holeMat);
+          hRight.rotation.x = Math.PI / 2;
+          hRight.position.set(xDist, 0, 0);
+          leverGroup.add(hRight);
+        }
+
+        // Đai ốc vi chỉnh đối trọng ren M4 bằng đồng thau ở 2 đầu (x = ±0.195m)
+        var studGeo = new THREE.CylinderGeometry(0.002, 0.002, 0.025, 12);
+        var nutGeo = new THREE.CylinderGeometry(0.006, 0.006, 0.010, 16);
+
+        // Đầu trái
+        var studL = new THREE.Mesh(studGeo, stainlessMat);
+        studL.rotation.z = Math.PI / 2;
+        studL.position.set(-0.200, 0, 0);
+        leverGroup.add(studL);
+        var nutL = new THREE.Mesh(nutGeo, brassMat);
+        nutL.rotation.z = Math.PI / 2;
+        nutL.position.set(-0.198, 0, 0);
+        leverGroup.add(nutL);
+
+        // Đầu phải
+        var studR = new THREE.Mesh(studGeo, stainlessMat);
+        studR.rotation.z = Math.PI / 2;
+        studR.position.set(0.200, 0, 0);
+        leverGroup.add(studR);
+        var nutR = new THREE.Mesh(nutGeo, brassMat);
+        nutR.rotation.z = Math.PI / 2;
+        nutR.position.set(0.198, 0, 0);
+        leverGroup.add(nutR);
+
+        // Quả cân mẫu 50g treo tại lỗ số 4 bên trái (x = -0.080m)
+        var hangerWireL = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.0008, 0.0008, 0.035, 8),
+          stainlessMat
+        );
+        hangerWireL.position.set(-0.080, -0.020, 0);
+        leverGroup.add(hangerWireL);
+
+        var weightL = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.010, 0.010, 0.024, 20),
+          weightMat
+        );
+        weightL.position.set(-0.080, -0.045, 0);
+        leverGroup.add(weightL);
+
+        // 2 Quả cân mẫu 50g treo tại lỗ số 2 bên phải (x = +0.040m) -> F1.d1 = 1*4 = F2.d2 = 2*2 = 4 (Thăng bằng!)
+        var hangerWireR = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.0008, 0.0008, 0.035, 8),
+          stainlessMat
+        );
+        hangerWireR.position.set(0.040, -0.020, 0);
+        leverGroup.add(hangerWireR);
+
+        var weightR1 = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.010, 0.010, 0.024, 20),
+          weightMat
+        );
+        weightR1.position.set(0.040, -0.045, 0);
+        leverGroup.add(weightR1);
+
+        var weightR2 = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.010, 0.010, 0.024, 20),
+          weightMat
+        );
+        weightR2.position.set(0.040, -0.070, 0);
+        leverGroup.add(weightR2);
+
+        // Chốt trục quay trung tâm màu đỏ
+        var centerCap = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.007, 0.007, 0.012, 20),
+          new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.2 })
+        );
+        centerCap.rotation.x = Math.PI / 2;
+        centerCap.position.set(0, 0, 0.006);
+        leverGroup.add(centerCap);
+
+        group.userData = {
+          leverGroup: leverGroup,
+          needle: needle,
+          lastDeg: 0,
+          protractorData: protractorData
+        };
+
+        return group;
+      },
+
+      updateEquipmentState: function(rootObject, state, dt) {
+        var deg = 0;
+        if (state && typeof state.incidentAngleDeg === 'number') {
+          deg = state.incidentAngleDeg;
+        } else if (state && typeof state.multimeterValue === 'number') {
+          deg = state.multimeterValue;
+        }
+
+        // Giới hạn trong phạm vi cơ học cữ chặn [-30°, +30°]
+        deg = Math.max(-30, Math.min(30, deg));
+
+        var lever = rootObject.getObjectByName('plunger');
+        if (lever) {
+          // Quay thanh quanh trục Z theo góc âm/dương
+          var targetRad = (deg * Math.PI) / 180;
+          lever.rotation.z = -targetRad;
+        }
+
+        if (rootObject.userData && rootObject.userData.lastDeg !== deg) {
+          rootObject.userData.lastDeg = deg;
+        }
+      },
+
+      playEquipmentSound: function(eventType, value) {
+        try {
+          var AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          if (!window.__ol3dAudioCtx) window.__ol3dAudioCtx = new AudioCtx();
+          var ctx = window.__ol3dAudioCtx;
+          if (ctx.state === 'suspended') ctx.resume();
+          var now = ctx.currentTime;
+          var deg = typeof value === 'number' ? value : 0;
+
+          // Tiếng va chạm nhẹ khi chạm cữ hãm hoặc đạt điểm thăng bằng 0°
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.type = 'triangle';
+
+          if (Math.abs(deg) < 0.5) {
+            // Âm ngân cao êm dịu khi đạt thăng bằng chuẩn
+            osc.frequency.setValueAtTime(660, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          } else {
+            // Âm 'clack' cơ học khi dịch chuyển góc
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(140, now + 0.05);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          }
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.16);
+        } catch (e) {
+          // Audio fallback safe
+        }
+      },
+
+      // Cầu nối tương thích ngược v2.2
+      buildEquipmentGroup: function(THREE, asset) {
+        return this.buildEquipmentMesh(THREE, asset);
+      },
+      applyEquipmentState: function(THREE, rootObject, instance, asset) {
+        var st = instance && instance.instanceState ? instance.instanceState : {};
+        this.updateEquipmentState(rootObject, st, 0.016);
+      }
+    };
+  </script>
+</body>
+</html>

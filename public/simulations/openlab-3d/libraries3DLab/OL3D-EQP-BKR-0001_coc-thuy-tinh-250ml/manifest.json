@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-BKR-0001",
+  "slug": "coc-thuy-tinh-250ml",
+  "name": "Cốc thủy tinh chia độ 250 ml",
+  "category": "laboratory-glassware",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-BKR-0001",
+    "slug": "coc-thuy-tinh-250ml",
+    "name": {
+      "vi": "Cốc thủy tinh chia độ 250 ml",
+      "en": "250 ml Low-Form Glass Beaker"
+    },
+    "category": "laboratory-glassware",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 70,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 98,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 70,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.07,
+        "height": 0.098,
+        "depth": 0.07
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-BKR-0001_coc-thuy-tinh-250ml/assets/coc-thuy-tinh-250ml.webp"
+      ],
+      "proceduralArchetype": "beaker-250"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 96,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/coc-thuy-tinh-250ml.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-BKR-0001_coc-thuy-tinh-250ml/assets/coc-thuy-tinh-250ml.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Cốc thủy tinh chia độ 250 ml",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Cốc thủy tinh chịu nhiệt Borosilicate có mỏ rót và vạch chia dung tích",
+    "sourceCredit": "Wikimedia Commons (Public Domain)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 70 × 98 × 70 mm · Khối lượng: 96 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Cốc thủy tinh chia độ 250 ml"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "liquidLevelMl",
+    "label": "Thể tích chất lỏng V",
+    "unit": "ml",
+    "min": 0,
+    "max": 250,
+    "step": 5,
+    "defaultValue": 125,
+    "presets": [
+      {
+        "label": "0 ml (Rỗng)",
+        "statePatch": {
+          "liquidLevelMl": 0
+        }
+      },
+      {
+        "label": "125 ml (Nửa bình)",
+        "statePatch": {
+          "liquidLevelMl": 125
+        }
+      },
+      {
+        "label": "250 ml (Đầy bình)",
+        "statePatch": {
+          "liquidLevelMl": 250
+        }
+      }
+    ],
+    "canHoldLiquid": true,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "water-pour"
+  }
+}

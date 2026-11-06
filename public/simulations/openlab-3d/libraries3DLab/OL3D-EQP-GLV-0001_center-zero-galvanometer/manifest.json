@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-GLV-0001",
+  "slug": "center-zero-galvanometer",
+  "name": "Điện kế nhạy vạch 0 ở giữa — Galvanometer",
+  "category": "electrical-equipment",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-GLV-0001",
+    "slug": "center-zero-galvanometer",
+    "name": {
+      "vi": "Điện kế nhạy vạch 0 ở giữa — Galvanometer",
+      "en": "Center-Zero Galvanometer"
+    },
+    "category": "electrical-equipment",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 100,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 135,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 85,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.1,
+        "height": 0.135,
+        "depth": 0.085
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-GLV-0001_center-zero-galvanometer/assets/center-zero-galvanometer.webp"
+      ],
+      "proceduralArchetype": "galvanometer"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 310,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/center-zero-galvanometer.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-GLV-0001_center-zero-galvanometer/assets/center-zero-galvanometer.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Điện kế nhạy vạch 0 ở giữa — Galvanometer",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Điện kế kim chỉ thị vạch 0 ở giữa phát hiện dòng điện cảm ứng điện từ",
+    "sourceCredit": "Wellcome Collection (CC BY 4.0)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 100 × 135 × 85 mm · Khối lượng: 310 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Điện kế nhạy vạch 0 ở giữa — Galvanometer"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "multimeterValue",
+    "label": "Dòng điện cảm ứng I",
+    "unit": "mA",
+    "min": -3,
+    "max": 3,
+    "step": 0.1,
+    "defaultValue": 0,
+    "presets": [
+      {
+        "label": "0.0 mA (Đứng yên)",
+        "statePatch": {
+          "multimeterValue": 0
+        }
+      },
+      {
+        "label": "+1.5 mA (Nam châm vào)",
+        "statePatch": {
+          "multimeterValue": 1.5
+        }
+      },
+      {
+        "label": "-1.5 mA (Nam châm ra)",
+        "statePatch": {
+          "multimeterValue": -1.5
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "probe-measure"
+  }
+}

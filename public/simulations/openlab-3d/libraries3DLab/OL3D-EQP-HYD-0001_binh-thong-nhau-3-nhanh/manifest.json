@@ -1,0 +1,187 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-HYD-0001",
+  "slug": "binh-thong-nhau-3-nhanh",
+  "name": "Bình thông nhau 3 nhánh dị hình trên đế",
+  "category": "volumetric-glassware",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-HYD-0001",
+    "slug": "binh-thong-nhau-3-nhanh",
+    "name": {
+      "vi": "Bình thông nhau 3 nhánh dị hình trên đế",
+      "en": "Communicating Vessels 3-Shape Branch on Stand"
+    },
+    "kind": "equipment",
+    "subject": "physics",
+    "category": "volumetric-glassware",
+    "categoryIds": [
+      "volumetric-glassware",
+      "mechanics-apparatus"
+    ],
+    "tags": [
+      "bình thông nhau",
+      "áp suất chất lỏng",
+      "thủy tĩnh",
+      "khtn-8",
+      "vật lí 8"
+    ],
+    "summary": "Bộ dụng cụ bình thông nhau 3 nhánh thủy tinh Borosilicate dị hình (thẳng, lượn sóng, phình quả trám) gắn trên đế vững chắc, minh chứng mặt thoáng chất lỏng đứng yên luôn cùng độ cao nằm ngang.",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 160,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "height": {
+          "value": 180,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "depth": {
+          "value": 55,
+          "unit": "mm",
+          "status": "verified"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.16,
+        "height": 0.18,
+        "depth": 0.055
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh/assets/binh-thong-nhau-3-nhanh.webp"
+      ],
+      "proceduralArchetype": "communicating-vessels-3way"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 165,
+        "unit": "g",
+        "status": "verified"
+      },
+      "referenceVolume": {
+        "value": 150,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "capacity": {
+        "value": 150,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "material": {
+        "value": "Thủy tinh Borosilicate 3.3 & Nhựa Polypropylene nguyên sinh",
+        "status": "verified"
+      }
+    },
+    "measurementMetadata": {
+      "isMeasuringInstrument": true,
+      "measuredQuantity": "volume",
+      "rangeMin": {
+        "value": 0,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "rangeMax": {
+        "value": 150,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "leastCount": {
+        "value": 5,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "zeroOffsetSupported": true,
+      "referenceStandard": "Thông tư 38/2021/TT-BGDĐT"
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/binh-thong-nhau-3-nhanh.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh/assets/binh-thong-nhau-3-nhanh.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Bình thông nhau 3 nhánh dị hình trên đế",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Bình thông nhau 3 nhánh thủy tinh dị hình (thẳng, lượn sóng, phình) trên đế nhựa phòng thí nghiệm",
+    "sourceCredit": "Thiết bị trường học Việt Nam (Thông tư 38/2021/TT-BGDĐT)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 8",
+    "realWorldScaleNote": "Kích thước: 160 × 180 × 55 mm · Khối lượng: 165 g · Dung tích: 150 ml",
+    "annotations": [
+      {
+        "xPercent": 25,
+        "yPercent": 22,
+        "label": "Nhánh 1: Ống trụ thẳng Ø 12 mm"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 22,
+        "label": "Nhánh 2: Ống uốn lượn sóng sin Ø 10 mm"
+      },
+      {
+        "xPercent": 75,
+        "yPercent": 22,
+        "label": "Nhánh 3: Ống phình quả trám Ø 30 mm"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 55,
+        "label": "Mặt thoáng chất lỏng phẳng ngang đồng mức h1 = h2 = h3"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 92,
+        "label": "Đế nhựa chống lật đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "liquidLevelMl",
+    "label": "Thể tích nước rót vào",
+    "unit": "ml",
+    "min": 0,
+    "max": 150,
+    "step": 5,
+    "defaultValue": 75,
+    "presets": [
+      {
+        "label": "Trống (0 ml)",
+        "statePatch": {
+          "liquidLevelMl": 0
+        }
+      },
+      {
+        "label": "Đáy nối (25 ml)",
+        "statePatch": {
+          "liquidLevelMl": 25
+        }
+      },
+      {
+        "label": "1/2 nhánh (75 ml)",
+        "statePatch": {
+          "liquidLevelMl": 75
+        }
+      },
+      {
+        "label": "Đầy 3 nhánh (140 ml)",
+        "statePatch": {
+          "liquidLevelMl": 140
+        }
+      }
+    ],
+    "canHoldLiquid": true,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "water-pour"
+  }
+}

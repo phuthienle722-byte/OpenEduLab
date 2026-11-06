@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>OL3D HTML Module — Cân điện tử hiện số 500 g (OL3D-EQP-BAL-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-BAL-0001",
+  "slug": "can-dien-tu-hien-so-500g",
+  "name": "Cân điện tử hiện số 500 g",
+  "category": "mass-measurement",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-BAL-0001",
+    "slug": "can-dien-tu-hien-so-500g",
+    "name": {
+      "vi": "Cân điện tử hiện số 500 g",
+      "en": "Precision Electronic Balance 500 g"
+    },
+    "category": "mass-measurement",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 200,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 85,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 240,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.2,
+        "height": 0.085,
+        "depth": 0.24
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-BAL-0001_can-dien-tu-hien-so-500g/assets/can-dien-tu-hien-so-500g.png"
+      ],
+      "proceduralArchetype": "electronic-balance"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 1450,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/can-dien-tu-hien-so-500g.png",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-BAL-0001_can-dien-tu-hien-so-500g/assets/can-dien-tu-hien-so-500g.png",
+    "mimeType": "image/png",
+    "alt": "Ảnh thực tế của Cân điện tử hiện số 500 g",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Cân điện tử hiện số OHAUS Scout 500g × 0.01g dùng trong phòng thí nghiệm KHTN",
+    "sourceCredit": "OHAUS Scout Series Reference Photo",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 200 × 85 × 240 mm · Khối lượng: 1450 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Cân điện tử hiện số 500 g"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "measuredMassG",
+    "label": "Khối lượng đo m",
+    "unit": "g",
+    "min": 0,
+    "max": 500,
+    "step": 0.01,
+    "defaultValue": 0,
+    "presets": [
+      {
+        "label": "0.00 g (Trừ bì TARE)",
+        "statePatch": {
+          "measuredMassG": 0
+        }
+      },
+      {
+        "label": "50.00 g (Quả cân chuẩn)",
+        "statePatch": {
+          "measuredMassG": 50
+        }
+      },
+      {
+        "label": "66.25 g (Trụ nhôm)",
+        "statePatch": {
+          "measuredMassG": 66.25
+        }
+      },
+      {
+        "label": "219.00 g (Khối đồng)",
+        "statePatch": {
+          "measuredMassG": 219
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "probe-measure"
+  }
+}
+  </script>
+</head>
+<body>
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="40" cy="70" rx="30" ry="5" fill="#E2E8F0" />
+    <path d="M16 58 C16 54 18 52 22 52 H58 C62 52 64 54 64 58 L62 65 C62 66 60 67 58 67 H22 C20 67 18 66 18 65 Z" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    <rect x="25" y="55" width="30" height="9" rx="1.5" fill="#DCE7F5" stroke="#94A3B8" stroke-width="0.8"/>
+    <text x="52" y="62" fill="#0F172A" font-size="6.5" font-family="monospace" font-weight="bold" text-anchor="end">0.00g</text>
+    <rect x="20" y="38" width="40" height="13" rx="4" fill="#94A3B8" stroke="#64748B" stroke-width="1.2"/>
+    <rect x="22" y="39" width="36" height="10" rx="3" fill="#F1F5F9"/>
+  </svg>
+  </template>
+  <template id="ol3d-module-real-photo">
+    <img src="/libraries3DLab/OL3D-EQP-BAL-0001_can-dien-tu-hien-so-500g/assets/can-dien-tu-hien-so-500g.png" alt="Ảnh thực tế của Cân điện tử hiện số 500 g" width="240" height="240" style="width:240px;height:240px;object-fit:contain;background:#ffffff;" />
+  </template>
+</body>
+</html>

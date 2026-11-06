@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-LEV-0001",
+  "slug": "thanh-don-bay-thang-bang",
+  "name": "Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ",
+  "category": "mechanics-apparatus",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-LEV-0001",
+    "slug": "thanh-don-bay-thang-bang",
+    "name": {
+      "vi": "Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ",
+      "en": "Calibrated Symmetrical Lever Balance with Stand"
+    },
+    "kind": "equipment",
+    "subject": "physics",
+    "category": "mechanics-apparatus",
+    "categoryIds": [
+      "mechanics-apparatus"
+    ],
+    "tags": [
+      "đòn bẩy",
+      "mômen lực",
+      "thăng bằng",
+      "cơ học 8",
+      "khtn-8"
+    ],
+    "summary": "Bộ đòn bẩy chia vạch đối xứng 18 lỗ treo kèm giá đỡ trục quay ma sát thấp và ốc vi chỉnh đối trọng, dùng khảo sát quy tắc mômen lực trong chương trình KHTN 8.",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 400,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "height": {
+          "value": 360,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "depth": {
+          "value": 120,
+          "unit": "mm",
+          "status": "verified"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.4,
+        "height": 0.36,
+        "depth": 0.12
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang/assets/thanh-don-bay-thang-bang.webp"
+      ],
+      "proceduralArchetype": "lever-balance-apparatus"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 680,
+        "unit": "g",
+        "status": "verified"
+      },
+      "material": {
+        "value": "Hợp kim nhôm Anode, Thép SUS304 mạ Crôm, Chân đế gang bọc cao su chống rung",
+        "status": "verified"
+      }
+    },
+    "measurementMetadata": {
+      "isMeasuringInstrument": true,
+      "measuredQuantity": "angle",
+      "rangeMin": {
+        "value": -30,
+        "unit": "deg",
+        "status": "verified"
+      },
+      "rangeMax": {
+        "value": 30,
+        "unit": "deg",
+        "status": "verified"
+      },
+      "leastCount": {
+        "value": 1,
+        "unit": "deg",
+        "status": "verified"
+      },
+      "zeroOffsetSupported": true,
+      "referenceStandard": "Thông tư 38/2021/TT-BGDĐT"
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/thanh-don-bay-thang-bang.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang/assets/thanh-don-bay-thang-bang.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Bộ thí nghiệm đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ trục quay và quả cân KHTN 8",
+    "sourceCredit": "Thiết bị trường học Việt Nam (Thông tư 38/2021/TT-BGDĐT)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 8",
+    "realWorldScaleNote": "Kích thước: 400 × 360 × 120 mm · Khối lượng: 680 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 18,
+        "label": "Thanh đòn bẩy nhôm 400mm chia vạch đối xứng 18 lỗ"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 32,
+        "label": "Trục quay ma sát thấp kèm đĩa chia độ -30° đến +30°"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 92,
+        "label": "Chân đế gang đúc nặng đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "incidentAngleDeg",
+    "label": "Góc nghiêng đòn bẩy",
+    "unit": "°",
+    "min": -30,
+    "max": 30,
+    "step": 1,
+    "defaultValue": 0,
+    "presets": [
+      {
+        "label": "Thăng bằng (0°)",
+        "statePatch": {
+          "incidentAngleDeg": 0
+        }
+      },
+      {
+        "label": "Nghiêng trái (-15°)",
+        "statePatch": {
+          "incidentAngleDeg": -15
+        }
+      },
+      {
+        "label": "Nghiêng phải (+15°)",
+        "statePatch": {
+          "incidentAngleDeg": 15
+        }
+      },
+      {
+        "label": "Cực đại (+30°)",
+        "statePatch": {
+          "incidentAngleDeg": 30
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "lever-click"
+  }
+}

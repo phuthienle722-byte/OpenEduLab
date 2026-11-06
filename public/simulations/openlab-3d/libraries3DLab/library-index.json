@@ -1,0 +1,894 @@
+{
+  "librarySpec": "OL3D-HOST-IMAGE-BRIDGE-v1.0",
+  "configuredBasePath": "C:\\Users\\ltlie\\Documents\\libraries3DLab",
+  "updatedAt": "2026-11-03T13:48:26.670Z",
+  "totalPreinstalledModules": 19,
+  "note": "17 thiết bị đã được nạp sẵn ảnh thực tế 240x240 chuẩn 1:1 trong thư mục libraries3DLab; hỗ trợ đồng bộ trực tiếp ra ổ đĩa máy tính.",
+  "libraries": [
+    {
+      "moduleId": "OL3D-EQP-BAL-0001",
+      "assetId": "OL3D-EQP-BAL-0001",
+      "slug": "can-dien-tu-hien-so-500g",
+      "nameVi": "Cân điện tử hiện số 500 g",
+      "nameEn": "Precision Electronic Balance 500 g",
+      "category": "mass-measurement",
+      "folderName": "OL3D-EQP-BAL-0001_can-dien-tu-hien-so-500g",
+      "htmlFileName": "can-dien-tu-hien-so-500g.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-BAL-0001_can-dien-tu-hien-so-500g/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-BAL-0001_can-dien-tu-hien-so-500g/assets/can-dien-tu-hien-so-500g.png",
+      "mimeType": "image/png",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-BAL-0001_can-dien-tu-hien-so-500g\\can-dien-tu-hien-so-500g.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/can-dien-tu-hien-so-500g.png",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-BAL-0001_can-dien-tu-hien-so-500g/assets/can-dien-tu-hien-so-500g.png",
+        "mimeType": "image/png",
+        "alt": "Ảnh thực tế của Cân điện tử hiện số 500 g",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Cân điện tử hiện số OHAUS Scout 500g × 0.01g dùng trong phòng thí nghiệm KHTN",
+        "sourceCredit": "OHAUS Scout Series Reference Photo",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 200 × 85 × 240 mm · Khối lượng: 1450 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Cân điện tử hiện số 500 g"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-MAG-0001",
+      "assetId": "OL3D-EQP-MAG-0001",
+      "slug": "handheld-magnifying-glass-5x",
+      "nameVi": "Kính lúp cầm tay độ bội giác 5x",
+      "nameEn": "Handheld Magnifying Glass 5x",
+      "category": "optical-equipment",
+      "folderName": "OL3D-EQP-MAG-0001_handheld-magnifying-glass-5x",
+      "htmlFileName": "handheld-magnifying-glass-5x.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-MAG-0001_handheld-magnifying-glass-5x/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-MAG-0001_handheld-magnifying-glass-5x/assets/handheld-magnifying-glass-5x.png",
+      "mimeType": "image/png",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-MAG-0001_handheld-magnifying-glass-5x\\handheld-magnifying-glass-5x.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/handheld-magnifying-glass-5x.png",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-MAG-0001_handheld-magnifying-glass-5x/assets/handheld-magnifying-glass-5x.png",
+        "mimeType": "image/png",
+        "alt": "Ảnh thực tế của Kính lúp cầm tay độ bội giác 5x",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Kính lúp cầm tay khung kim loại độ bội giác 5x quan sát mẫu vật nhỏ",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 80 × 175 × 16 mm · Khối lượng: 115 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Kính lúp cầm tay độ bội giác 5x"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-CYL-0001",
+      "assetId": "OL3D-EQP-CYL-0001",
+      "slug": "ong-dong-thuy-tinh-100ml",
+      "nameVi": "Ống đong thủy tinh 100 ml",
+      "nameEn": "100 ml Graduated Cylinder",
+      "category": "volume-measurement",
+      "folderName": "OL3D-EQP-CYL-0001_ong-dong-thuy-tinh-100ml",
+      "htmlFileName": "ong-dong-thuy-tinh-100ml.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-CYL-0001_ong-dong-thuy-tinh-100ml/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-CYL-0001_ong-dong-thuy-tinh-100ml/assets/ong-dong-thuy-tinh-100ml.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-CYL-0001_ong-dong-thuy-tinh-100ml\\ong-dong-thuy-tinh-100ml.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/ong-dong-thuy-tinh-100ml.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-CYL-0001_ong-dong-thuy-tinh-100ml/assets/ong-dong-thuy-tinh-100ml.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Ống đong thủy tinh 100 ml",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Ống đong thủy tinh Borosilicate 3.3 chia vạch chuẩn đo thể tích chất lỏng",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 32 × 255 × 65 mm · Khối lượng: 138.5 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Ống đong thủy tinh 100 ml"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-BKR-0001",
+      "assetId": "OL3D-EQP-BKR-0001",
+      "slug": "coc-thuy-tinh-250ml",
+      "nameVi": "Cốc thủy tinh chia độ 250 ml",
+      "nameEn": "250 ml Low-Form Glass Beaker",
+      "category": "laboratory-glassware",
+      "folderName": "OL3D-EQP-BKR-0001_coc-thuy-tinh-250ml",
+      "htmlFileName": "coc-thuy-tinh-250ml.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-BKR-0001_coc-thuy-tinh-250ml/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-BKR-0001_coc-thuy-tinh-250ml/assets/coc-thuy-tinh-250ml.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-BKR-0001_coc-thuy-tinh-250ml\\coc-thuy-tinh-250ml.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/coc-thuy-tinh-250ml.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-BKR-0001_coc-thuy-tinh-250ml/assets/coc-thuy-tinh-250ml.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Cốc thủy tinh chia độ 250 ml",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Cốc thủy tinh chịu nhiệt Borosilicate có mỏ rót và vạch chia dung tích",
+        "sourceCredit": "Wikimedia Commons (Public Domain)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 70 × 98 × 70 mm · Khối lượng: 96 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Cốc thủy tinh chia độ 250 ml"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-FLK-0001",
+      "assetId": "OL3D-EQP-FLK-0001",
+      "slug": "binh-tam-giac-erlenmeyer-250ml",
+      "nameVi": "Bình tam giác Erlenmeyer 250 ml",
+      "nameEn": "250 ml Erlenmeyer Flask",
+      "category": "laboratory-glassware",
+      "folderName": "OL3D-EQP-FLK-0001_binh-tam-giac-erlenmeyer-250ml",
+      "htmlFileName": "binh-tam-giac-erlenmeyer-250ml.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-FLK-0001_binh-tam-giac-erlenmeyer-250ml/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-FLK-0001_binh-tam-giac-erlenmeyer-250ml/assets/binh-tam-giac-erlenmeyer-250ml.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-FLK-0001_binh-tam-giac-erlenmeyer-250ml\\binh-tam-giac-erlenmeyer-250ml.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/binh-tam-giac-erlenmeyer-250ml.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-FLK-0001_binh-tam-giac-erlenmeyer-250ml/assets/binh-tam-giac-erlenmeyer-250ml.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Bình tam giác Erlenmeyer 250 ml",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Bình tam giác cổ hẹp Erlenmeyer 250 ml chuẩn độ và lắc phản ứng hóa học",
+        "sourceCredit": "Wikimedia Commons (Hannes Grobe)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 85 × 145 × 85 mm · Khối lượng: 112 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Bình tam giác Erlenmeyer 250 ml"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-CAL-0001",
+      "assetId": "OL3D-EQP-CAL-0001",
+      "slug": "thuoc-cap-du-xich-150mm",
+      "nameVi": "Thước cặp du xích 150 mm (0.02 mm)",
+      "nameEn": "150 mm Vernier Caliper",
+      "category": "length-measurement",
+      "folderName": "OL3D-EQP-CAL-0001_thuoc-cap-du-xich-150mm",
+      "htmlFileName": "thuoc-cap-du-xich-150mm.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-CAL-0001_thuoc-cap-du-xich-150mm/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-CAL-0001_thuoc-cap-du-xich-150mm/assets/thuoc-cap-du-xich-150mm.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-CAL-0001_thuoc-cap-du-xich-150mm\\thuoc-cap-du-xich-150mm.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/thuoc-cap-du-xich-150mm.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-CAL-0001_thuoc-cap-du-xich-150mm/assets/thuoc-cap-du-xich-150mm.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Thước cặp du xích 150 mm (0.02 mm)",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Thước cặp du xích thép không gỉ 0–150 mm đo đường kính ngoài, trong và chiều sâu",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 235 × 16 × 78 mm · Khối lượng: 165 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Thước cặp du xích 150 mm (0.02 mm)"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-DYN-0001",
+      "assetId": "OL3D-EQP-DYN-0001",
+      "slug": "luc-ke-lo-xo-5n",
+      "nameVi": "Lực kế lò xo ống trụ 5 N",
+      "nameEn": "5 N Tubular Spring Dynamometer",
+      "category": "force-measurement",
+      "folderName": "OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n",
+      "htmlFileName": "luc-ke-lo-xo-5n.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n/assets/luc-ke-lo-xo-5n.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n\\luc-ke-lo-xo-5n.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/luc-ke-lo-xo-5n.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n/assets/luc-ke-lo-xo-5n.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Lực kế lò xo ống trụ 5 N",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Lực kế lò xo treo đo trọng lượng và lực kéo cơ học trong phòng thí nghiệm",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 24 × 220 × 24 mm · Khối lượng: 85 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Lực kế lò xo ống trụ 5 N"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-THM-0001",
+      "assetId": "OL3D-EQP-THM-0001",
+      "slug": "nhiet-ke-phong-thi-nghiem-110c",
+      "nameVi": "Nhiệt kế chất lỏng -10°C đến 110°C",
+      "nameEn": "Laboratory Thermometer -10 to 110°C",
+      "category": "thermal-equipment",
+      "folderName": "OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c",
+      "htmlFileName": "nhiet-ke-phong-thi-nghiem-110c.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c/assets/nhiet-ke-phong-thi-nghiem-110c.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c\\nhiet-ke-phong-thi-nghiem-110c.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/nhiet-ke-phong-thi-nghiem-110c.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-THM-0001_nhiet-ke-phong-thi-nghiem-110c/assets/nhiet-ke-phong-thi-nghiem-110c.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Nhiệt kế chất lỏng -10°C đến 110°C",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Nhiệt kế rượu màu đỏ -10°C đến 110°C đo nhiệt độ dung dịch thí nghiệm",
+        "sourceCredit": "Wikimedia Commons (Rama / CNAM)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 8 × 300 × 8 mm · Khối lượng: 32 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Nhiệt kế chất lỏng -10°C đến 110°C"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-OPT-0001",
+      "assetId": "OL3D-EQP-OPT-0001",
+      "slug": "thau-kinh-hoi-tu-f100mm",
+      "nameVi": "Thấu kính hội tụ tiêu cự f = 100 mm kèm giá",
+      "nameEn": "Converging Lens f=100mm",
+      "category": "optical-equipment",
+      "folderName": "OL3D-EQP-OPT-0001_thau-kinh-hoi-tu-f100mm",
+      "htmlFileName": "thau-kinh-hoi-tu-f100mm.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-OPT-0001_thau-kinh-hoi-tu-f100mm/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-OPT-0001_thau-kinh-hoi-tu-f100mm/assets/thau-kinh-hoi-tu-f100mm.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-OPT-0001_thau-kinh-hoi-tu-f100mm\\thau-kinh-hoi-tu-f100mm.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/thau-kinh-hoi-tu-f100mm.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-OPT-0001_thau-kinh-hoi-tu-f100mm/assets/thau-kinh-hoi-tu-f100mm.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Thấu kính hội tụ tiêu cự f = 100 mm kèm giá",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Thấu kính hội tụ rìa mỏng dùng trong thí nghiệm quang học KHTN 9",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 60 × 120 × 50 mm · Khối lượng: 140 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Thấu kính hội tụ tiêu cự f = 100 mm kèm giá"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-PRM-0001",
+      "assetId": "OL3D-EQP-PRM-0001",
+      "slug": "equilateral-optical-prism-stand",
+      "nameVi": "Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng",
+      "nameEn": "Equilateral Optical Prism on Stand",
+      "category": "optical-equipment",
+      "folderName": "OL3D-EQP-PRM-0001_equilateral-optical-prism-stand",
+      "htmlFileName": "equilateral-optical-prism-stand.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-PRM-0001_equilateral-optical-prism-stand/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-PRM-0001_equilateral-optical-prism-stand/assets/equilateral-optical-prism-stand.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-PRM-0001_equilateral-optical-prism-stand\\equilateral-optical-prism-stand.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/equilateral-optical-prism-stand.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-PRM-0001_equilateral-optical-prism-stand/assets/equilateral-optical-prism-stand.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Lăng kính tam giác thủy tinh quang học khảo sát khúc xạ và tán sắc ánh sáng",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 80 × 150 × 80 mm · Khối lượng: 210 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-DMM-0001",
+      "assetId": "OL3D-EQP-DMM-0001",
+      "slug": "digital-multimeter-ac-dc",
+      "nameVi": "Đồng hồ đo điện đa năng hiện số",
+      "nameEn": "Digital Multimeter AC/DC",
+      "category": "electrical-equipment",
+      "folderName": "OL3D-EQP-DMM-0001_digital-multimeter-ac-dc",
+      "htmlFileName": "digital-multimeter-ac-dc.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-DMM-0001_digital-multimeter-ac-dc/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-DMM-0001_digital-multimeter-ac-dc/assets/digital-multimeter-ac-dc.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-DMM-0001_digital-multimeter-ac-dc\\digital-multimeter-ac-dc.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/digital-multimeter-ac-dc.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-DMM-0001_digital-multimeter-ac-dc/assets/digital-multimeter-ac-dc.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Đồng hồ đo điện đa năng hiện số",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Đồng hồ vạn năng hiện số đo hiệu điện thế U, cường độ dòng điện I và điện trở R",
+        "sourceCredit": "Wikimedia Commons (André Karwath)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 90 × 185 × 42 mm · Khối lượng: 280 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Đồng hồ đo điện đa năng hiện số"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-SEP-0001",
+      "assetId": "OL3D-EQP-SEP-0001",
+      "slug": "separatory-funnel-stand",
+      "nameVi": "Phễu chiết có khoá & Phễu lọc trên giá đỡ",
+      "nameEn": "Separatory Funnel with Stopcock",
+      "category": "chemical-apparatus",
+      "folderName": "OL3D-EQP-SEP-0001_separatory-funnel-stand",
+      "htmlFileName": "separatory-funnel-stand.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-SEP-0001_separatory-funnel-stand/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-SEP-0001_separatory-funnel-stand/assets/separatory-funnel-stand.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-SEP-0001_separatory-funnel-stand\\separatory-funnel-stand.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/separatory-funnel-stand.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-SEP-0001_separatory-funnel-stand/assets/separatory-funnel-stand.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Phễu chiết có khoá & Phễu lọc trên giá đỡ",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Phễu chiết thủy tinh có khóa PTFE tách hai chất lỏng không tan vào nhau",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 140 × 380 × 140 mm · Khối lượng: 620 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Phễu chiết có khoá & Phễu lọc trên giá đỡ"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-MIC-0001",
+      "assetId": "OL3D-EQP-MIC-0001",
+      "slug": "optical-microscope-chromosome-slide",
+      "nameVi": "Kính hiển vi quang học (10x, 40x, 100x) & Tiêu bản NST",
+      "nameEn": "Compound Optical Microscope",
+      "category": "biology-microscopy",
+      "folderName": "OL3D-EQP-MIC-0001_optical-microscope-chromosome-slide",
+      "htmlFileName": "optical-microscope-chromosome-slide.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-MIC-0001_optical-microscope-chromosome-slide/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-MIC-0001_optical-microscope-chromosome-slide/assets/optical-microscope-chromosome-slide.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-MIC-0001_optical-microscope-chromosome-slide\\optical-microscope-chromosome-slide.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/optical-microscope-chromosome-slide.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-MIC-0001_optical-microscope-chromosome-slide/assets/optical-microscope-chromosome-slide.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Kính hiển vi quang học (10x, 40x, 100x) & Tiêu bản NST",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Kính hiển vi quang học 3 vật kính quan sát tiêu bản tế bào và nhiễm sắc thể",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 180 × 340 × 220 mm · Khối lượng: 2450 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Kính hiển vi quang học (10x, 40x, 100x) & Tiêu bản NST"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-DSH-0001",
+      "assetId": "OL3D-EQP-DSH-0001",
+      "slug": "porcelain-evaporating-dish",
+      "nameVi": "Bát sứ chịu nhiệt — Cô đặc & Đốt cháy cồn",
+      "nameEn": "Porcelain Evaporating Dish",
+      "category": "chemical-apparatus",
+      "folderName": "OL3D-EQP-DSH-0001_porcelain-evaporating-dish",
+      "htmlFileName": "porcelain-evaporating-dish.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-DSH-0001_porcelain-evaporating-dish/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-DSH-0001_porcelain-evaporating-dish/assets/porcelain-evaporating-dish.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-DSH-0001_porcelain-evaporating-dish\\porcelain-evaporating-dish.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/porcelain-evaporating-dish.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-DSH-0001_porcelain-evaporating-dish/assets/porcelain-evaporating-dish.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Bát sứ chịu nhiệt — Cô đặc & Đốt cháy cồn",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Bát sứ tráng men chịu nhiệt cao dùng cô cạn dung dịch muối và thí nghiệm nhiệt",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 95 × 42 × 95 mm · Khối lượng: 110 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Bát sứ chịu nhiệt — Cô đặc & Đốt cháy cồn"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-GLV-0001",
+      "assetId": "OL3D-EQP-GLV-0001",
+      "slug": "center-zero-galvanometer",
+      "nameVi": "Điện kế nhạy vạch 0 ở giữa — Galvanometer",
+      "nameEn": "Center-Zero Galvanometer",
+      "category": "electrical-equipment",
+      "folderName": "OL3D-EQP-GLV-0001_center-zero-galvanometer",
+      "htmlFileName": "center-zero-galvanometer.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-GLV-0001_center-zero-galvanometer/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-GLV-0001_center-zero-galvanometer/assets/center-zero-galvanometer.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-GLV-0001_center-zero-galvanometer\\center-zero-galvanometer.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/center-zero-galvanometer.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-GLV-0001_center-zero-galvanometer/assets/center-zero-galvanometer.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Điện kế nhạy vạch 0 ở giữa — Galvanometer",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Điện kế kim chỉ thị vạch 0 ở giữa phát hiện dòng điện cảm ứng điện từ",
+        "sourceCredit": "Wellcome Collection (CC BY 4.0)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 100 × 135 × 85 mm · Khối lượng: 310 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Điện kế nhạy vạch 0 ở giữa — Galvanometer"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-STD-0001",
+      "assetId": "OL3D-EQP-STD-0001",
+      "slug": "gia-do-thi-nghiem-da-nang",
+      "nameVi": "Giá đỡ thí nghiệm kèm khớp nối & tay kẹp",
+      "nameEn": "Laboratory Retort Stand with Clamp",
+      "category": "support-hardware",
+      "folderName": "OL3D-EQP-STD-0001_gia-do-thi-nghiem-da-nang",
+      "htmlFileName": "gia-do-thi-nghiem-da-nang.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-STD-0001_gia-do-thi-nghiem-da-nang/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-STD-0001_gia-do-thi-nghiem-da-nang/assets/gia-do-thi-nghiem-da-nang.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-STD-0001_gia-do-thi-nghiem-da-nang\\gia-do-thi-nghiem-da-nang.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/gia-do-thi-nghiem-da-nang.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-STD-0001_gia-do-thi-nghiem-da-nang/assets/gia-do-thi-nghiem-da-nang.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Giá đỡ thí nghiệm kèm khớp nối & tay kẹp",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Giá sắt thí nghiệm đế gang kèm trụ thép và tay kẹp đa năng",
+        "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 200 × 500 × 140 mm · Khối lượng: 1850 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 28,
+            "label": "Thân chính: Giá đỡ thí nghiệm kèm khớp nối & tay kẹp"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 78,
+            "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-SLB-0001",
+      "assetId": "OL3D-EQP-SLB-0001",
+      "slug": "semicircular-glass-slab-protractor",
+      "nameVi": "Bản bán trụ thuỷ tinh & Đĩa chia độ 360° (SGK KHTN 9)",
+      "nameEn": "Semicircular Glass Block & 360° Protractor Disc",
+      "category": "optical-equipment",
+      "folderName": "OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor",
+      "htmlFileName": "semicircular-glass-slab-protractor.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor/assets/semicircular-glass-slab-protractor.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor\\semicircular-glass-slab-protractor.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/semicircular-glass-slab-protractor.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor/assets/semicircular-glass-slab-protractor.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Bản bán trụ thuỷ tinh & Đĩa chia độ 360°",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Bản bán trụ thủy tinh quang học Crown BK7 đặt đồng tâm trên đĩa tròn chia độ Hartmann 360°",
+        "sourceCredit": "OpenLab 3D Optics Lab / Chuẩn Thông tư 38/2021/TT-BGDĐT",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+        "realWorldScaleNote": "Kích thước: 190 × 48 × 190 mm · Khối lượng: 320 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 26,
+            "label": "Bản bán trụ thủy tinh Crown BK7 (R = 48 mm, n = 1.50)"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 52,
+            "label": "Tâm O định vị trên mặt phân cách phẳng (Z = 0)"
+          },
+          {
+            "xPercent": 25,
+            "yPercent": 36,
+            "label": "Cần xoay dẫn hướng mang đèn Laser bán dẫn và kim chỉ góc"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 84,
+            "label": "Mâm đĩa chia độ Hartmann 360° (ĐCNN 1°, đánh dấu i_gh = 41.8°)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-LEV-0001",
+      "assetId": "OL3D-EQP-LEV-0001",
+      "slug": "thanh-don-bay-thang-bang",
+      "nameVi": "Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ",
+      "nameEn": "Calibrated Symmetrical Lever Balance with Stand",
+      "category": "mechanics-apparatus",
+      "folderName": "OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang",
+      "htmlFileName": "thanh-don-bay-thang-bang.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang/assets/thanh-don-bay-thang-bang.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang\\thanh-don-bay-thang-bang.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/thanh-don-bay-thang-bang.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-LEV-0001_thanh-don-bay-thang-bang/assets/thanh-don-bay-thang-bang.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Bộ đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Bộ thí nghiệm đòn bẩy thăng bằng chia vạch đối xứng kèm giá đỡ trục quay và quả cân KHTN 8",
+        "sourceCredit": "Thiết bị trường học Việt Nam (Thông tư 38/2021/TT-BGDĐT)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 8",
+        "realWorldScaleNote": "Kích thước: 400 × 360 × 120 mm · Khối lượng: 680 g",
+        "annotations": [
+          {
+            "xPercent": 50,
+            "yPercent": 18,
+            "label": "Thanh đòn bẩy nhôm 400mm chia vạch đối xứng 18 lỗ"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 32,
+            "label": "Trục quay ma sát thấp kèm đĩa chia độ -30° đến +30°"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 92,
+            "label": "Chân đế gang đúc nặng đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    },
+    {
+      "moduleId": "OL3D-EQP-HYD-0001",
+      "assetId": "OL3D-EQP-HYD-0001",
+      "slug": "binh-thong-nhau-3-nhanh",
+      "nameVi": "Bình thông nhau 3 nhánh dị hình trên đế",
+      "nameEn": "Communicating Vessels 3-Shape Branch on Stand",
+      "category": "volumetric-glassware",
+      "folderName": "OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh",
+      "htmlFileName": "binh-thong-nhau-3-nhanh.html",
+      "manifestPath": "/libraries3DLab/OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh/manifest.json",
+      "realPhotoSrc": "/libraries3DLab/OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh/assets/binh-thong-nhau-3-nhanh.webp",
+      "mimeType": "image/webp",
+      "virtualDiskPath": "C:\\Users\\ltlie\\Documents\\libraries3DLab\\OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh\\binh-thong-nhau-3-nhanh.html",
+      "realPhotoMeta": {
+        "available": true,
+        "src": "./assets/binh-thong-nhau-3-nhanh.webp",
+        "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh/assets/binh-thong-nhau-3-nhanh.webp",
+        "mimeType": "image/webp",
+        "alt": "Ảnh thực tế của Bình thông nhau 3 nhánh dị hình trên đế",
+        "display": {
+          "width": 240,
+          "height": 240,
+          "ratio": "1:1",
+          "fit": "contain",
+          "background": "#ffffff"
+        },
+        "sourceKind": "real-photo",
+        "caption": "Bình thông nhau 3 nhánh thủy tinh dị hình (thẳng, lượn sóng, phình) trên đế nhựa phòng thí nghiệm",
+        "sourceCredit": "Thiết bị trường học Việt Nam (Thông tư 38/2021/TT-BGDĐT)",
+        "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 8",
+        "realWorldScaleNote": "Kích thước: 160 × 180 × 55 mm · Khối lượng: 165 g · Dung tích: 150 ml",
+        "annotations": [
+          {
+            "xPercent": 25,
+            "yPercent": 22,
+            "label": "Nhánh 1: Ống trụ thẳng Ø 12 mm"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 22,
+            "label": "Nhánh 2: Ống uốn lượn sóng sin Ø 10 mm"
+          },
+          {
+            "xPercent": 75,
+            "yPercent": 22,
+            "label": "Nhánh 3: Ống phình quả trám Ø 30 mm"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 55,
+            "label": "Mặt thoáng chất lỏng phẳng ngang đồng mức h1 = h2 = h3"
+          },
+          {
+            "xPercent": 50,
+            "yPercent": 92,
+            "label": "Đế nhựa chống lật đặt bàn thí nghiệm (y = 0)"
+          }
+        ]
+      }
+    }
+  ]
+}

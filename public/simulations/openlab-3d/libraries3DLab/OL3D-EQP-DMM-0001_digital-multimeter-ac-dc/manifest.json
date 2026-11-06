@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-DMM-0001",
+  "slug": "digital-multimeter-ac-dc",
+  "name": "Đồng hồ đo điện đa năng hiện số",
+  "category": "electrical-equipment",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-DMM-0001",
+    "slug": "digital-multimeter-ac-dc",
+    "name": {
+      "vi": "Đồng hồ đo điện đa năng hiện số",
+      "en": "Digital Multimeter AC/DC"
+    },
+    "category": "electrical-equipment",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 90,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 185,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 42,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.09,
+        "height": 0.185,
+        "depth": 0.042
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-DMM-0001_digital-multimeter-ac-dc/assets/digital-multimeter-ac-dc.webp"
+      ],
+      "proceduralArchetype": "digital-multimeter"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 280,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/digital-multimeter-ac-dc.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-DMM-0001_digital-multimeter-ac-dc/assets/digital-multimeter-ac-dc.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Đồng hồ đo điện đa năng hiện số",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Đồng hồ vạn năng hiện số đo hiệu điện thế U, cường độ dòng điện I và điện trở R",
+    "sourceCredit": "Wikimedia Commons (André Karwath)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 90 × 185 × 42 mm · Khối lượng: 280 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Đồng hồ đo điện đa năng hiện số"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "multimeterValue",
+    "label": "Giá trị đo U / I / R",
+    "unit": "V",
+    "min": 0,
+    "max": 250,
+    "step": 0.1,
+    "defaultValue": 12,
+    "presets": [
+      {
+        "label": "0.0 V (Hở mạch)",
+        "statePatch": {
+          "multimeterValue": 0
+        }
+      },
+      {
+        "label": "1.5 V (Pin AA)",
+        "statePatch": {
+          "multimeterValue": 1.5
+        }
+      },
+      {
+        "label": "12.0 V (Nguồn DC)",
+        "statePatch": {
+          "multimeterValue": 12
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "probe-measure"
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-CAL-0001",
+  "slug": "thuoc-cap-du-xich-150mm",
+  "name": "Thước cặp du xích 150 mm (0.02 mm)",
+  "category": "length-measurement",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-CAL-0001",
+    "slug": "thuoc-cap-du-xich-150mm",
+    "name": {
+      "vi": "Thước cặp du xích 150 mm (0.02 mm)",
+      "en": "150 mm Vernier Caliper"
+    },
+    "category": "length-measurement",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 235,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 16,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 78,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.235,
+        "height": 0.016,
+        "depth": 0.078
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-CAL-0001_thuoc-cap-du-xich-150mm/assets/thuoc-cap-du-xich-150mm.webp"
+      ],
+      "proceduralArchetype": "vernier-caliper"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 165,
+        "unit": "g",
+        "status": "verified"
+      }
+    },
+    "measurementMetadata": {
+      "isMeasuringInstrument": true,
+      "measuredQuantity": "length",
+      "rangeMin": {
+        "value": 0,
+        "unit": "mm",
+        "status": "verified"
+      },
+      "rangeMax": {
+        "value": 150,
+        "unit": "mm",
+        "status": "verified"
+      },
+      "leastCount": {
+        "value": 0.02,
+        "unit": "mm",
+        "status": "verified"
+      },
+      "zeroOffsetSupported": true,
+      "calibrationMethod": "Khép kín hai mỏ đo ngoài kiểm tra vạch 0 của du xích trùng khít vạch 0 của thước chính",
+      "referenceStandard": "Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9"
+    }
+  },
+  "moduleControls": {
+    "stateKey": "jawOpeningMm",
+    "label": "Độ mở hàm kẹp d",
+    "unit": "mm",
+    "min": 0,
+    "max": 150,
+    "step": 0.02,
+    "defaultValue": 26,
+    "presets": [
+      {
+        "label": "0.00 mm (Đóng kín)",
+        "statePatch": {
+          "jawOpeningMm": 0
+        }
+      },
+      {
+        "label": "24.00 mm (Quả cân)",
+        "statePatch": {
+          "jawOpeningMm": 24
+        }
+      },
+      {
+        "label": "26.00 mm (Trụ nhôm)",
+        "statePatch": {
+          "jawOpeningMm": 26
+        }
+      },
+      {
+        "label": "30.00 mm (Bi thép)",
+        "statePatch": {
+          "jawOpeningMm": 30
+        }
+      },
+      {
+        "label": "40.00 mm (Khối đồng)",
+        "statePatch": {
+          "jawOpeningMm": 40
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "caliper-slide"
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/thuoc-cap-du-xich-150mm.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-CAL-0001_thuoc-cap-du-xich-150mm/assets/thuoc-cap-du-xich-150mm.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Thước cặp du xích 150 mm (0.02 mm)",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Thước cặp du xích thép không gỉ 0–150 mm đo đường kính ngoài, trong và chiều sâu",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 235 × 16 × 78 mm · Khối lượng: 165 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Thước cặp du xích 150 mm (0.02 mm)"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  }
+}

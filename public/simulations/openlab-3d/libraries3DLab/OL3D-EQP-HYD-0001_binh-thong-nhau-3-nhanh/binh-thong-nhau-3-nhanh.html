@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OL3D HTML Module — Bình thông nhau 3 nhánh dị hình trên đế (OL3D-EQP-HYD-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-HYD-0001",
+  "slug": "binh-thong-nhau-3-nhanh",
+  "name": "Bình thông nhau 3 nhánh dị hình trên đế",
+  "category": "volumetric-glassware",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-HYD-0001",
+    "slug": "binh-thong-nhau-3-nhanh",
+    "name": {
+      "vi": "Bình thông nhau 3 nhánh dị hình trên đế",
+      "en": "Communicating Vessels 3-Shape Branch on Stand"
+    },
+    "kind": "equipment",
+    "subject": "physics",
+    "category": "volumetric-glassware",
+    "categoryIds": [
+      "volumetric-glassware",
+      "mechanics-apparatus"
+    ],
+    "tags": [
+      "bình thông nhau",
+      "áp suất chất lỏng",
+      "thủy tĩnh",
+      "khtn-8",
+      "vật lí 8"
+    ],
+    "summary": "Bộ dụng cụ bình thông nhau 3 nhánh thủy tinh Borosilicate dị hình (thẳng, lượn sóng, phình quả trám) gắn trên đế vững chắc, minh chứng mặt thoáng chất lỏng đứng yên luôn cùng độ cao nằm ngang.",
+    "textbookRef": {
+      "bookTitle": "SGK Khoa học tự nhiên 8 - Kết nối tri thức",
+      "chapter": "Chương III: Khối lượng riêng và Áp suất",
+      "lesson": "Bài 16: Áp suất chất lỏng - Bình thông nhau & Máy nén thủy lực",
+      "figureRef": "Thí nghiệm bình thông nhau Hình 16.3 SGK KHTN 8",
+      "standardFunction": "Minh chứng nguyên lý bình thông nhau: Trong bình thông nhau chứa cùng một chất lỏng đứng yên, các mực chất lỏng ở các nhánh luôn luôn ở cùng một độ cao.",
+      "usageGuidelines": "Đặt bình thăng bằng trên bàn, rót từ từ nước có pha màu vào bất kỳ một nhánh nào và quan sát mực nước đồng thời dâng lên ở cả ba nhánh có tiết diện và hình dạng khác nhau.",
+      "safetyNote": "Làm bằng thủy tinh chịu lực nhưng tránh va đập mạnh; tráng sạch bằng nước cất và để khô ráo sau khi thực hành."
+    },
+    "assetVersion": "1.0.0",
+    "manifestSchemaVersion": "2.0.0",
+    "moduleApiVersion": "2.4.0",
+    "geometry": {
+      "modelFormat": "PROCEDURAL_PBR",
+      "modelUri": "procedural://communicating-vessels-3branch",
+      "modelFileVersion": "1.0.0",
+      "proceduralArchetype": "communicating-vessels-3way",
+      "upAxis": "Y",
+      "anchor": "base-center",
+      "boundingBoxM": {
+        "width": 0.16,
+        "height": 0.18,
+        "depth": 0.055
+      },
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 160,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "height": {
+          "value": 180,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "depth": {
+          "value": 55,
+          "unit": "mm",
+          "status": "verified"
+        }
+      },
+      "triangleCount": 3840,
+      "materialCount": 5,
+      "namedNodes": [
+        {
+          "nodeName": "body",
+          "role": "body",
+          "description": "Khối thủy tinh 3 nhánh liền khối và đế nhựa chống lật"
+        },
+        {
+          "nodeName": "liquid_surface",
+          "role": "liquid_surface",
+          "description": "Cột chất lỏng tự cân bằng đồng mức ở cả 3 nhánh"
+        },
+        {
+          "nodeName": "scale_marks",
+          "role": "scale_marks",
+          "description": "Vạch chia cao độ mm trên nhánh thẳng"
+        }
+      ],
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh/assets/binh-thong-nhau-3-nhanh.webp"
+      ]
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 165,
+        "unit": "g",
+        "status": "verified"
+      },
+      "referenceVolume": {
+        "value": 150,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "capacity": {
+        "value": 150,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "material": {
+        "value": "Thủy tinh Borosilicate 3.3 & Nhựa Polypropylene nguyên sinh",
+        "status": "verified"
+      }
+    },
+    "measurementMetadata": {
+      "isMeasuringInstrument": true,
+      "measuredQuantity": "volume",
+      "rangeMin": {
+        "value": 0,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "rangeMax": {
+        "value": 150,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "leastCount": {
+        "value": 5,
+        "unit": "ml",
+        "status": "verified"
+      },
+      "zeroOffsetSupported": true,
+      "referenceStandard": "Thông tư 38/2021/TT-BGDĐT"
+    },
+    "capabilities": [
+      {
+        "id": "canHoldLiquid",
+        "state": "implemented"
+      },
+      {
+        "id": "weighObject",
+        "state": "implemented"
+      }
+    ],
+    "validation": {
+      "assetReviewStatus": "published",
+      "geometryStatus": "verified",
+      "metrologyStatus": "verified",
+      "behaviorStatus": "verified",
+      "safetyStatus": "reviewed"
+    },
+    "provenance": {
+      "createdBy": "Nhóm Mô phỏng Thiết bị KHTN 8",
+      "authorRole": "Giáo viên Vật lí THCS & Kỹ sư 3D OpenLab",
+      "organization": "OpenLab Vietnam",
+      "sourceType": "manufacturer-spec",
+      "license": "CC BY-NC-SA 4.0"
+    }
+  },
+  "moduleControls": {
+    "stateKey": "liquidLevelMl",
+    "label": "Thể tích nước rót vào",
+    "unit": "ml",
+    "min": 0,
+    "max": 150,
+    "step": 5,
+    "defaultValue": 75,
+    "presets": [
+      {
+        "label": "Bình rỗng (0 ml)",
+        "statePatch": {
+          "liquidLevelMl": 0
+        }
+      },
+      {
+        "label": "Mực nước thấp (35 ml — Đáy ống nối)",
+        "statePatch": {
+          "liquidLevelMl": 35
+        }
+      },
+      {
+        "label": "Mực nước trung bình (75 ml — Cân bằng ngang 3 nhánh)",
+        "statePatch": {
+          "liquidLevelMl": 75
+        }
+      },
+      {
+        "label": "Mực nước qua quả trám (120 ml — Tiết diện mở rộng)",
+        "statePatch": {
+          "liquidLevelMl": 120
+        }
+      },
+      {
+        "label": "Mực nước an toàn tối đa (145 ml — Gần miệng ống)",
+        "statePatch": {
+          "liquidLevelMl": 145
+        }
+      }
+    ],
+    "canHoldLiquid": true,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "fluid-flow"
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/binh-thong-nhau-3-nhanh.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-HYD-0001_binh-thong-nhau-3-nhanh/assets/binh-thong-nhau-3-nhanh.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Bình thông nhau 3 nhánh dị hình trên đế",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Bình thông nhau 3 nhánh thủy tinh dị hình (thẳng, lượn sóng, phình) trên đế nhựa phòng thí nghiệm",
+    "sourceCredit": "Thiết bị trường học Việt Nam (Thông tư 38/2021/TT-BGDĐT)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 8",
+    "realWorldScaleNote": "Kích thước: 160 × 180 × 55 mm · Khối lượng: 165 g · Dung tích: 150 ml",
+    "annotations": [
+      {
+        "xPercent": 25,
+        "yPercent": 22,
+        "label": "Nhánh 1: Ống trụ thẳng Ø 12 mm"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 22,
+        "label": "Nhánh 2: Ống uốn lượn sóng sin Ø 10 mm"
+      },
+      {
+        "xPercent": 75,
+        "yPercent": 22,
+        "label": "Nhánh 3: Ống phình quả trám Ø 30 mm"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 55,
+        "label": "Mặt thoáng chất lỏng phẳng ngang đồng mức h1 = h2 = h3"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 92,
+        "label": "Đế nhựa chống lật đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "dossier": {
+    "assetId": "OL3D-EQP-HYD-0001",
+    "technicalStandard": "Thông tư 38/2021/TT-BGDĐT · SGK KHTN 8 (Bài 16: Áp suất chất lỏng - Bình thông nhau)",
+    "exactDimensionsSpec": "Kích thước bao: 160 × 180 × 55 mm · Ống đáy ngang: Ø 14 × 130 mm · Nhánh thẳng: Ø 12 × 150 mm · Nhánh sóng: Ø 10 mm · Nhánh phình: Ø 30 mm · Đế: 160 × 55 × 20 mm",
+    "weightOrCapacitySpec": "Khối lượng vỏ rỗng: 165 g · Dung tích: 150 ml · Khi đổ đầy nước: 315 g (165g + 150g nước)",
+    "synthesizedFeatures": [
+      "Bộ bình thông nhau 3 nhánh liền khối bằng thủy tinh Borosilicate chịu lực trong suốt.",
+      "3 nhánh mang 3 hình dạng điển hình: ống thẳng đối chứng, ống uốn lượn sóng và ống phình quả trám.",
+      "Minh chứng định luật tĩnh học chất lỏng p = p0 + d.h: áp suất tại đáy thông nhau bằng nhau dẫn đến mặt thoáng luôn cùng độ cao.",
+      "Chân đế nhựa PP đúc rãnh chữ U kẹp giữ bình đứng vững chắc trên mặt bàn không rung lắc."
+    ],
+    "fiveWebSources": [
+      {
+        "siteName": "Thư viện Pháp luật (Thông tư 38/2021/TT-BGDĐT)",
+        "domain": "thuvienphapluat.vn",
+        "verifiedSpecSummary": "Danh mục thiết bị dạy học tối thiểu THCS môn KHTN: Bộ bình thông nhau có từ 3 nhánh dị hình gắn trên đế nhựa."
+      },
+      {
+        "siteName": "Thiết bị Giáo dục VietValue",
+        "domain": "vietvalue.edu.vn",
+        "verifiedSpecSummary": "Bình thông nhau 3 nhánh thủy tinh thực hành KHTN 8: Dung tích 150ml, có nhánh thẳng, nhánh xoắn và nhánh cầu phình."
+      },
+      {
+        "siteName": "VietJack — SGK KHTN 8 Kết nối tri thức",
+        "domain": "vietjack.com",
+        "verifiedSpecSummary": "Thí nghiệm Hình 16.3: Rót nước màu vào bình thông nhau và nhận xét độ cao mực chất lỏng ở các nhánh."
+      },
+      {
+        "siteName": "DMKLab — Dụng cụ Khoa học",
+        "domain": "dmklab.vn",
+        "verifiedSpecSummary": "Bộ bình thông nhau thủy tinh borosilicate kèm đế nhựa chuyên dụng cho giáo dục phổ thông."
+      },
+      {
+        "siteName": "Thư viện Vật lý",
+        "domain": "thuvienvatly.com",
+        "verifiedSpecSummary": "Ứng dụng bình thông nhau trong đời sống: Ấm trà, ống đo mực nước nồi hơi, hệ thống cấp nước đô thị."
+      }
+    ]
+  },
+  "audit360": {
+    "assetId": "OL3D-EQP-HYD-0001",
+    "omnidirectionalReadout360": "Mặt thoáng chất lỏng và vạch cao độ nhìn rõ 360° xuyên qua thành thủy tinh trong suốt, đảm bảo đọc mực nước chính xác từ mọi hướng.",
+    "coreInteractiveFunctions": [
+      "Rót nước vào bất kỳ nhánh nào và quan sát cả 3 nhánh đồng thời dâng lên cùng mặt phẳng nằm ngang.",
+      "Chuyển đổi các mức thể tích nước từ 0 ml đến 150 ml bằng thanh trượt điều khiển.",
+      "Đặt lên cân điện tử để cân tổng khối lượng vỏ bình cộng nước (165g + V*1.0 g/ml)."
+    ],
+    "environmentalAndCrossToolInteractions": [
+      "Đặt lên Cân điện tử OHAUS Scout: Khối lượng tự động nhảy từ 165.00 g (khi rỗng) lên 240.00 g (75 ml) và 315.00 g (150 ml).",
+      "Nhận nước rót từ Cốc thủy tinh 250 ml hoặc Bình cấp nước."
+    ]
+  }
+}
+  </script>
+</head>
+<body>
+  <!-- 2. ICON 2D VECTOR CHUẨN 80x80 -->
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <rect x="14" y="64" width="52" height="6" rx="1.5" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="20" y="56" width="40" height="7" rx="1.2" fill="#E0F2FE" fill-opacity="0.4" stroke="#0284C7" stroke-width="1.2"/>
+    <rect x="21" y="57.5" width="38" height="4.5" fill="#38BDF8" fill-opacity="0.7"/>
+    <rect x="22" y="20" width="8" height="38" fill="#E0F2FE" fill-opacity="0.4" stroke="#0284C7" stroke-width="1.2"/>
+    <rect x="23" y="34" width="6" height="24" fill="#38BDF8" fill-opacity="0.7"/>
+    <path d="M37 57 Q34 44 40 35 Q45 27 38 20" fill="none" stroke="#0284C7" stroke-width="7" stroke-linecap="round"/>
+    <path d="M37 57 Q34 44 40 35" fill="none" stroke="#38BDF8" stroke-width="5" stroke-linecap="round"/>
+    <rect x="50" y="20" width="8" height="38" fill="#E0F2FE" fill-opacity="0.4" stroke="#0284C7" stroke-width="1.2"/>
+    <circle cx="54" cy="35" r="7.5" fill="#E0F2FE" fill-opacity="0.4" stroke="#0284C7" stroke-width="1.2"/>
+    <circle cx="54" cy="35" r="6" fill="#38BDF8" fill-opacity="0.7"/>
+    <rect x="51" y="34" width="6" height="24" fill="#38BDF8" fill-opacity="0.7"/>
+    <line x1="18" y1="34" x2="62" y2="34" stroke="#0284C7" stroke-width="1.2" stroke-dasharray="2 1.5"/>
+  </svg>
+  </template>
+
+  <!-- 3. ẢNH THẬT PHÒNG THÍ NGHIỆM ĐỐI CHIẾU 680x420 -->
+  <template id="ol3d-module-real-photo">
+    <svg viewBox="0 0 680 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hydLabBg" x1="0" y1="0" x2="0" y2="420" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#0F172A" />
+          <stop offset="70%" stop-color="#1E293B" />
+          <stop offset="70.5%" stop-color="#78350F" />
+          <stop offset="100%" stop-color="#451A03" />
+        </linearGradient>
+      </defs>
+      <rect width="680" height="420" rx="14" fill="url(#hydLabBg)" />
+      <!-- Bàn phòng thí nghiệm & Thước đo -->
+      <line x1="0" y1="296" x2="680" y2="296" stroke="#B45309" stroke-width="2" />
+      <rect x="30" y="366" width="620" height="30" rx="6" fill="#090D16" fill-opacity="0.85" stroke="#334155" />
+      <text x="44" y="386" fill="#38BDF8" font-family="monospace" font-size="12" font-weight="bold">THƯỚC ĐỐI CHIẾU THỰC TẾ: BÌNH 160×180×55 mm · DUNG TÍCH 150 ml (SGK KHTN 8)</text>
+
+      <!-- Bóng đổ bàn -->
+      <ellipse cx="340" cy="312" rx="160" ry="16" fill="#000000" opacity="0.45" />
+
+      <!-- Đế nhựa Polypropylene màu xanh đậm -->
+      <rect x="230" y="278" width="220" height="28" rx="6" fill="#1E293B" stroke="#0F172A" stroke-width="3" />
+      <rect x="245" y="274" width="190" height="8" rx="2" fill="#334155" />
+
+      <!-- Ống thủy tinh đáy nằm ngang -->
+      <rect x="250" y="248" width="180" height="26" rx="8" fill="#E0F2FE" fill-opacity="0.35" stroke="#0284C7" stroke-width="2.5" />
+      <rect x="252" y="250" width="176" height="22" fill="#0284C7" fill-opacity="0.85" />
+
+      <!-- Nhánh 1: Ống trụ thẳng (x = 270) -->
+      <rect x="260" y="70" width="22" height="182" rx="6" fill="#E0F2FE" fill-opacity="0.35" stroke="#0284C7" stroke-width="2.5" />
+      <rect x="262" y="150" width="18" height="102" fill="#0284C7" fill-opacity="0.85" />
+      <text x="271" y="60" text-anchor="middle" fill="#94A3B8" font-family="monospace" font-size="12" font-weight="bold">Nhánh 1</text>
+
+      <!-- Nhánh 2: Ống lượn sóng sin (x = 340) -->
+      <path d="M340 70 Q365 115 340 160 Q315 205 340 250" stroke="#0284C7" stroke-width="18" fill="none" stroke-linecap="round"/>
+      <path d="M340 150 Q315 200 340 250" stroke="#0284C7" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <text x="340" y="60" text-anchor="middle" fill="#94A3B8" font-family="monospace" font-size="12" font-weight="bold">Nhánh 2</text>
+
+      <!-- Nhánh 3: Ống phình quả trám (x = 410) -->
+      <rect x="400" y="70" width="22" height="182" rx="6" fill="#E0F2FE" fill-opacity="0.35" stroke="#0284C7" stroke-width="2.5" />
+      <ellipse cx="411" cy="145" rx="30" ry="38" fill="#E0F2FE" fill-opacity="0.35" stroke="#0284C7" stroke-width="2.5" />
+      <ellipse cx="411" cy="155" rx="28" ry="26" fill="#0284C7" fill-opacity="0.85" />
+      <rect x="402" y="150" width="18" height="102" fill="#0284C7" fill-opacity="0.85" />
+      <text x="411" y="60" text-anchor="middle" fill="#94A3B8" font-family="monospace" font-size="12" font-weight="bold">Nhánh 3</text>
+
+      <!-- Đường đỏ đứt nét minh chứng độ cao mặt thoáng h1 = h2 = h3 -->
+      <line x1="240" y1="150" x2="445" y2="150" stroke="#EF4444" stroke-width="2.5" stroke-dasharray="6 4" />
+      <rect x="300" y="132" width="160" height="22" rx="4" fill="#0F172A" fill-opacity="0.9" stroke="#EF4444" stroke-width="1.5" />
+      <text x="380" y="148" text-anchor="middle" fill="#F87171" font-family="monospace" font-size="11" font-weight="bold">h1 = h2 = h3 (ĐỒNG MỨC)</text>
+    </svg>
+  </template>
+
+  <!-- 4. MÃ DỰNG MÔ HÌNH 3D THREE.JS CHUẨN MASTER SPEC v2.4 -->
+  <script id="ol3d-module-3d-script">
+    window.OL3D_EQUIPMENT_MODULE = {
+      buildEquipmentMesh: function(THREE, asset) {
+        var group = new THREE.Group();
+        group.name = (asset && asset.slug ? asset.slug : 'communicating_vessels') + '_root';
+
+        // Vật liệu PBR chuẩn
+        var baseMat = new THREE.MeshStandardMaterial({
+          color: 0x1e293b,
+          roughness: 0.45,
+          metalness: 0.15
+        });
+        var glassMat = new THREE.MeshPhysicalMaterial({
+          color: 0xe0f2fe,
+          transparent: true,
+          opacity: 0.38,
+          roughness: 0.05,
+          transmission: 0.88,
+          ior: 1.50,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        });
+        var waterMat = new THREE.MeshPhysicalMaterial({
+          color: 0x0284c7,
+          emissive: 0x0369a1,
+          emissiveIntensity: 0.22,
+          roughness: 0.08,
+          ior: 1.333,
+          clearcoat: 1.0,
+          transparent: true,
+          opacity: 0.82,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        });
+
+        // ==========================================
+        // 1. CHÂN ĐẾ NHỰA CHỐNG LẬT (y = 0.000m -> 0.020m)
+        // ==========================================
+        var baseGroup = new THREE.Group();
+        baseGroup.name = 'body';
+        group.add(baseGroup);
+
+        // Chân đế 160 x 20 x 55 mm đặt tại y = 0.010m (chạm đáy đúng y = 0.000m!)
+        var plinth = new THREE.Mesh(
+          new THREE.BoxGeometry(0.160, 0.020, 0.055),
+          baseMat
+        );
+        plinth.position.set(0, 0.010, 0);
+        plinth.castShadow = true;
+        plinth.receiveShadow = true;
+        baseGroup.add(plinth);
+
+        // Rãnh kẹp ống thủy tinh trên đế
+        var slotMesh = new THREE.Mesh(
+          new THREE.BoxGeometry(0.144, 0.008, 0.022),
+          new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.6 })
+        );
+        slotMesh.position.set(0, 0.020, 0);
+        baseGroup.add(slotMesh);
+
+        // ==========================================
+        // 2. KHỐI THỦY TINH 3 NHÁNH BOROSILICATE
+        // ==========================================
+        var glassGroup = new THREE.Group();
+        glassGroup.name = 'glass_manifold';
+        baseGroup.add(glassGroup);
+
+        // Ống đáy nằm ngang: dài 130mm, đường kính 14mm tại y = 0.028m
+        var bottomTube = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.007, 0.007, 0.130, 24),
+          glassMat
+        );
+        bottomTube.rotation.z = Math.PI / 2;
+        bottomTube.position.set(0, 0.028, 0);
+        glassGroup.add(bottomTube);
+
+        // Nhánh 1 (Trái, x = -0.045m): Ống trụ thẳng Ø 12 mm, cao 150 mm
+        var branch1 = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.006, 0.006, 0.150, 24),
+          glassMat
+        );
+        branch1.position.set(-0.045, 0.028 + 0.075, 0);
+        glassGroup.add(branch1);
+
+        // Nhánh 2 (Giữa, x = 0.000m): Ống uốn lượn hình sóng sin
+        var waveCurve = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(0, 0.028, 0),
+          new THREE.Vector3(0.010, 0.065, 0),
+          new THREE.Vector3(-0.010, 0.105, 0),
+          new THREE.Vector3(0.010, 0.145, 0),
+          new THREE.Vector3(0, 0.178, 0)
+        ]);
+        var branch2 = new THREE.Mesh(
+          new THREE.TubeGeometry(waveCurve, 32, 0.005, 16, false),
+          glassMat
+        );
+        glassGroup.add(branch2);
+
+        // Nhánh 3 (Phải, x = +0.045m): Ống phình quả trám (Ø 30 mm)
+        var branch3Lower = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.006, 0.006, 0.050, 24),
+          glassMat
+        );
+        branch3Lower.position.set(0.045, 0.028 + 0.025, 0);
+        glassGroup.add(branch3Lower);
+
+        var branch3Bulb = new THREE.Mesh(
+          new THREE.SphereGeometry(0.015, 24, 20),
+          glassMat
+        );
+        branch3Bulb.position.set(0.045, 0.028 + 0.075, 0);
+        glassGroup.add(branch3Bulb);
+
+        var branch3Upper = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.006, 0.006, 0.050, 24),
+          glassMat
+        );
+        branch3Upper.position.set(0.045, 0.028 + 0.125, 0);
+        glassGroup.add(branch3Upper);
+
+        // Vành mút miệng 3 ống
+        var lipGeo = new THREE.TorusGeometry(0.0065, 0.0012, 12, 24);
+        var lip1 = new THREE.Mesh(lipGeo, glassMat);
+        lip1.rotation.x = Math.PI / 2;
+        lip1.position.set(-0.045, 0.178, 0);
+        glassGroup.add(lip1);
+
+        var lip2 = new THREE.Mesh(lipGeo, glassMat);
+        lip2.rotation.x = Math.PI / 2;
+        lip2.position.set(0, 0.178, 0);
+        glassGroup.add(lip2);
+
+        var lip3 = new THREE.Mesh(lipGeo, glassMat);
+        lip3.rotation.x = Math.PI / 2;
+        lip3.position.set(0.045, 0.178, 0);
+        glassGroup.add(lip3);
+
+        // ==========================================
+        // 3. KHỐI CHẤT LỎNG NƯỚC MÀU ('liquid_surface')
+        // ==========================================
+        var liquidGroup = new THREE.Group();
+        liquidGroup.name = 'liquid_surface';
+        group.add(liquidGroup);
+
+        // Nước trong ống đáy nằm ngang (luôn đầy khi liquidLevelMl > 0)
+        var waterBottomTube = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.0055, 0.0055, 0.128, 20),
+          waterMat
+        );
+        waterBottomTube.rotation.z = Math.PI / 2;
+        waterBottomTube.position.set(0, 0.028, 0);
+        liquidGroup.add(waterBottomTube);
+
+        // Cột nước nhánh 1 (thẳng)
+        var water1 = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.0048, 0.0048, 0.140, 20),
+          waterMat
+        );
+        water1.geometry.translate(0, 0.070, 0);
+        water1.position.set(-0.045, 0.028, 0);
+        liquidGroup.add(water1);
+
+        // Cột nước nhánh 2 (lượn sóng)
+        var water2 = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.0042, 0.0042, 0.140, 20),
+          waterMat
+        );
+        water2.geometry.translate(0, 0.070, 0);
+        water2.position.set(0, 0.028, 0);
+        liquidGroup.add(water2);
+
+        // Cột nước nhánh 3 (quả trám)
+        var water3 = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.0048, 0.0048, 0.140, 20),
+          waterMat
+        );
+        water3.geometry.translate(0, 0.070, 0);
+        water3.position.set(0.045, 0.028, 0);
+        liquidGroup.add(water3);
+
+        // Khối nước phình ở bầu nhánh 3
+        var waterBulb = new THREE.Mesh(
+          new THREE.SphereGeometry(0.0135, 20, 16),
+          waterMat
+        );
+        waterBulb.position.set(0.045, 0.028 + 0.075, 0);
+        liquidGroup.add(waterBulb);
+
+        // 3 Vành mặt khum mao dẫn phản chiếu ánh sáng trên đỉnh mặt nước
+        var meniscusGeo = new THREE.RingGeometry(0, 0.0052, 20);
+        var meniscusMat = new THREE.MeshBasicMaterial({
+          color: 0x38bdf8,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.85
+        });
+
+        var mRing1 = new THREE.Mesh(meniscusGeo, meniscusMat);
+        mRing1.rotation.x = -Math.PI / 2;
+        mRing1.position.set(-0.045, 0.098, 0);
+        liquidGroup.add(mRing1);
+
+        var mRing2 = new THREE.Mesh(meniscusGeo, meniscusMat);
+        mRing2.rotation.x = -Math.PI / 2;
+        mRing2.position.set(0, 0.098, 0);
+        liquidGroup.add(mRing2);
+
+        var mRing3 = new THREE.Mesh(meniscusGeo, meniscusMat);
+        mRing3.rotation.x = -Math.PI / 2;
+        mRing3.position.set(0.045, 0.098, 0);
+        liquidGroup.add(mRing3);
+
+        // Khởi tạo mức ban đầu (75 ml = 50% chiều cao)
+        var initialRatio = 75 / 150;
+        water1.scale.set(1, initialRatio, 1);
+        water2.scale.set(1, initialRatio, 1);
+        water3.scale.set(1, initialRatio, 1);
+        var currentY = 0.028 + initialRatio * 0.140;
+        mRing1.position.y = currentY;
+        mRing2.position.y = currentY;
+        mRing3.position.y = currentY;
+
+        group.userData = {
+          liquidGroup: liquidGroup,
+          water1: water1,
+          water2: water2,
+          water3: water3,
+          waterBulb: waterBulb,
+          mRing1: mRing1,
+          mRing2: mRing2,
+          mRing3: mRing3,
+          lastMl: 75
+        };
+
+        return group;
+      },
+
+      updateEquipmentState: function(rootObject, state, dt) {
+        var ml = 75;
+        if (state && typeof state.liquidLevelMl === 'number') {
+          ml = state.liquidLevelMl;
+        } else if (state && typeof state.multimeterValue === 'number') {
+          ml = state.multimeterValue;
+        }
+
+        ml = Math.max(0, Math.min(150, ml));
+
+        var lGroup = rootObject.getObjectByName('liquid_surface');
+        if (!lGroup) return;
+
+        if (ml <= 0.5) {
+          lGroup.visible = false;
+          return;
+        }
+
+        lGroup.visible = true;
+        var ratio = Math.max(0.05, Math.min(1.0, ml / 150));
+
+        var ud = rootObject.userData;
+        if (ud) {
+          if (ud.water1 && ud.water1.scale) ud.water1.scale.set(1, ratio, 1);
+          if (ud.water2 && ud.water2.scale) ud.water2.scale.set(1, ratio, 1);
+          if (ud.water3 && ud.water3.scale) ud.water3.scale.set(1, ratio, 1);
+
+          var topY = 0.028 + ratio * 0.140;
+          if (ud.mRing1) ud.mRing1.position.y = topY;
+          if (ud.mRing2) ud.mRing2.position.y = topY;
+          if (ud.mRing3) ud.mRing3.position.y = topY;
+
+          // Bầu phình nhánh 3 chỉ hiện khi nước ngập tới cao độ bầu
+          if (ud.waterBulb) {
+            ud.waterBulb.visible = (ratio >= 0.45);
+          }
+        }
+      },
+
+      playEquipmentSound: function(eventType, value) {
+        try {
+          var AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          if (!window.__ol3dAudioCtx) window.__ol3dAudioCtx = new AudioCtx();
+          var ctx = window.__ol3dAudioCtx;
+          if (ctx.state === 'suspended') ctx.resume();
+          var now = ctx.currentTime;
+          var ml = typeof value === 'number' ? value : 75;
+
+          // Tiếng rót nước róc rách vào bình thủy tinh
+          var osc1 = ctx.createOscillator();
+          var osc2 = ctx.createOscillator();
+          var gain = ctx.createGain();
+
+          osc1.type = 'sine';
+          osc2.type = 'triangle';
+
+          // Tần số cao dần theo mực nước dâng
+          var baseFreq = 420 + (ml / 150) * 360;
+          osc1.frequency.setValueAtTime(baseFreq, now);
+          osc1.frequency.exponentialRampToValueAtTime(baseFreq + 40, now + 0.12);
+
+          osc2.frequency.setValueAtTime(baseFreq * 1.5, now);
+          osc2.frequency.exponentialRampToValueAtTime(baseFreq * 1.5 - 30, now + 0.12);
+
+          gain.gain.setValueAtTime(0.09, now);
+          gain.gain.exponentialRampToValueAtTime(0.002, now + 0.14);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc1.start(now);
+          osc2.start(now);
+          osc1.stop(now + 0.15);
+          osc2.stop(now + 0.15);
+        } catch (e) {
+          // Audio safe
+        }
+      },
+
+      // Cầu nối tương thích ngược v2.2
+      buildEquipmentGroup: function(THREE, asset) {
+        return this.buildEquipmentMesh(THREE, asset);
+      },
+      applyEquipmentState: function(THREE, rootObject, instance, asset) {
+        var st = instance && instance.instanceState ? instance.instanceState : {};
+        this.updateEquipmentState(rootObject, st, 0.016);
+      }
+    };
+  </script>
+</body>
+</html>

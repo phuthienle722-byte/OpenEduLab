@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>OL3D HTML Module — Lực kế lò xo ống trụ 5 N (OL3D-EQP-DYN-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-DYN-0001",
+  "slug": "luc-ke-lo-xo-5n",
+  "name": "Lực kế lò xo ống trụ 5 N",
+  "category": "force-measurement",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-DYN-0001",
+    "slug": "luc-ke-lo-xo-5n",
+    "name": {
+      "vi": "Lực kế lò xo ống trụ 5 N",
+      "en": "5 N Tubular Spring Dynamometer"
+    },
+    "category": "force-measurement",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 24,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 220,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 24,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.024,
+        "height": 0.22,
+        "depth": 0.024
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n/assets/luc-ke-lo-xo-5n.webp"
+      ],
+      "proceduralArchetype": "spring-dynamometer"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 85,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/luc-ke-lo-xo-5n.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n/assets/luc-ke-lo-xo-5n.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Lực kế lò xo ống trụ 5 N",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Lực kế lò xo treo đo trọng lượng và lực kéo cơ học trong phòng thí nghiệm",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 24 × 220 × 24 mm · Khối lượng: 85 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Lực kế lò xo ống trụ 5 N"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "springExtensionN",
+    "label": "Lực kéo / Trọng lượng F",
+    "unit": "N",
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "defaultValue": 0,
+    "presets": [
+      {
+        "label": "0.0 N (Vạch 0)",
+        "statePatch": {
+          "springExtensionN": 0
+        }
+      },
+      {
+        "label": "0.5 N (Treo 50 g)",
+        "statePatch": {
+          "springExtensionN": 0.49
+        }
+      },
+      {
+        "label": "1.0 N (Treo 100 g)",
+        "statePatch": {
+          "springExtensionN": 0.98
+        }
+      },
+      {
+        "label": "2.0 N (Treo 200 g)",
+        "statePatch": {
+          "springExtensionN": 1.96
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "spring-stretch"
+  }
+}
+  </script>
+</head>
+<body>
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="12" r="3.8" stroke="#475569" stroke-width="1.8" fill="none"/>
+    <rect x="31" y="16" width="18" height="42" rx="2.5" fill="#E0F2FE" fill-opacity="0.3" stroke="#475569" stroke-width="1.4"/>
+    <path d="M40 20 L35 24 L45 28 L35 32 L45 36 L40 40" stroke="#D97706" stroke-width="1.6" fill="none"/>
+    <rect x="33" y="40" width="14" height="3" rx="0.8" fill="#EF4444"/>
+    <line x1="40" y1="43" x2="40" y2="64" stroke="#475569" stroke-width="2"/>
+    <path d="M40 64 C40 70 48 70 47 64" stroke="#475569" stroke-width="2" fill="none"/>
+    <line x1="43" y1="24" x2="47" y2="24" stroke="#0284C7" stroke-width="1"/>
+    <line x1="43" y1="30" x2="48" y2="30" stroke="#0284C7" stroke-width="1.2"/>
+    <line x1="43" y1="36" x2="47" y2="36" stroke="#0284C7" stroke-width="1"/>
+  </svg>
+  </template>
+  <template id="ol3d-module-real-photo">
+    <img src="/libraries3DLab/OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n/assets/luc-ke-lo-xo-5n.webp" alt="Ảnh thực tế của Lực kế lò xo ống trụ 5 N" width="240" height="240" style="width:240px;height:240px;object-fit:contain;background:#ffffff;" />
+  </template>
+</body>
+</html>

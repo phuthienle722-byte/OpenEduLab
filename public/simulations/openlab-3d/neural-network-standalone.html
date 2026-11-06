@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenLab 3D — Sơ Đồ Mạng Nơ-ron Thiết Bị KHTN THCS</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background-color: #050813; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    canvas { display: block; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.4); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.7); }
+    .panel-transition { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; }
+  </style>
+</head>
+<body class="text-slate-200 select-none bg-[#050813] w-screen h-screen relative">
+
+  <!-- KHUNG CANVAS ĐỒ THỊ NƠ-RON -->
+  <canvas id="neuralCanvas"></canvas>
+
+  <!-- THANH TIÊU ĐỀ TRÊN CÙNG -->
+  <header class="absolute top-3 left-3 z-30 flex items-center gap-2 pointer-events-auto">
+    <div class="px-4 py-2.5 rounded-2xl bg-slate-950/90 border border-indigo-500/30 backdrop-blur-xl shadow-2xl flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/30 to-violet-600/30 border border-indigo-500/50 flex items-center justify-center text-xl shadow-inner">
+        🧠
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 id="headerTitle" class="text-sm font-bold text-white tracking-wide">SƠ ĐỒ LIÊN KẾT THIẾT BỊ KHTN THCS</h1>
+          <span id="headerBadge" class="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">
+            Học sinh Lớp 6 - 9
+          </span>
+        </div>
+        <p id="headerSubtitle" class="text-[10px] text-slate-400">
+          Khám phá chuỗi liên kết & cách các thiết bị kết hợp trong thí nghiệm
+        </p>
+      </div>
+    </div>
+
+    <!-- NÚT MỞ NHANH BẢNG ĐIỀU HƯỚNG KHI BỊ THU GỌN -->
+    <button
+      id="btnOpenPanel"
+      onclick="toggleSidebar(true)"
+      class="flex px-3 py-2 rounded-xl bg-indigo-600/90 hover:bg-indigo-600 border border-indigo-400/50 text-white text-xs font-semibold shadow-2xl backdrop-blur-md items-center gap-1.5 transition-all"
+    >
+      <span>📂</span>
+      <span>Chọn bài thực hành</span>
+    </button>
+  </header>
+
+  <!-- THANH ĐIỀU KHIỂN TRÊN BÊN PHẢI -->
+  <div class="absolute top-3 right-3 z-30 flex items-center gap-2 pointer-events-auto">
+    <!-- Nút chuyển đổi Dual Mode (Học sinh vs Chuyên gia) -->
+    <div class="flex p-1 rounded-xl bg-slate-950/90 border border-indigo-500/30 backdrop-blur-xl text-xs">
+      <button onclick="setUserMode('student')" id="btn-mode-student" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-medium transition-all flex items-center gap-1 shadow-md text-xs">
+        <span>🎒</span>
+        <span>Học sinh</span>
+      </button>
+      <button onclick="setUserMode('expert')" id="btn-mode-expert" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1 text-xs">
+        <span>🔬</span>
+        <span>Chuyên gia</span>
+      </button>
+    </div>
+
+    <!-- Bộ lọc Khối Lớp -->
+    <div class="flex p-1 rounded-xl bg-slate-950/90 border border-slate-800 backdrop-blur-xl text-xs">
+      <button onclick="setGrade('ALL')" id="btn-gr-ALL" class="px-2 py-1 rounded-lg bg-indigo-600 text-white font-medium transition-all text-xs">Tất cả</button>
+      <button onclick="setGrade('grade6')" id="btn-gr-grade6" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs">Lớp 6</button>
+      <button onclick="setGrade('grade7')" id="btn-gr-grade7" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs">Lớp 7</button>
+      <button onclick="setGrade('grade8')" id="btn-gr-grade8" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs">Lớp 8</button>
+      <button onclick="setGrade('grade9')" id="btn-gr-grade9" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs">Lớp 9</button>
+    </div>
+
+    <!-- Mini-Game Thử thách nối mạch -->
+    <button onclick="toggleChallengeMode()" id="btn-challenge" class="px-3 py-1.5 rounded-xl bg-slate-950/90 border border-slate-800 hover:border-amber-500 text-xs font-semibold text-slate-300 transition-all flex items-center gap-1.5 shadow-xl">
+      <span>🎮</span>
+      <span id="challengeBtnText">Thử thách</span>
+    </button>
+  </div>
+
+  <!-- PANEL ĐIỀU HƯỚNG TRÁI: CỐ ĐỊNH KÍCH THƯỚC 310PX & MẶC ĐỊNH THU GỌN ĐỂ KHÔNG CHE BẢN ĐỒ -->
+  <aside
+    id="leftSidebar"
+    class="panel-transition absolute top-18 left-3 bottom-16 z-20 rounded-2xl bg-slate-950/92 border border-indigo-500/30 backdrop-blur-2xl shadow-2xl flex flex-col p-3.5 gap-2.5 overflow-hidden pointer-events-auto"
+    style="width: 310px; max-width: calc(100vw - 24px); transform: translateX(-340px); opacity: 0; pointer-events: none;"
+  >
+    <!-- Thanh tiêu đề panel & nút thu gọn -->
+    <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
+      <span class="text-[11px] font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+        <span>🔬</span>
+        <span>Bài Thực Hành SGK</span>
+      </span>
+      <button
+        onclick="toggleSidebar(false)"
+        class="text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 flex items-center gap-1 transition-all"
+        title="Thu gọn bảng điều khiển để xem toàn màn hình sơ đồ"
+      >
+        <span>◀ Thu gọn</span>
+      </button>
+    </div>
+
+    <!-- Ô tìm kiếm -->
+    <div>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Tìm dụng cụ (cân, đèn, kính)..."
+        class="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+      />
+    </div>
+
+    <!-- Thử thách Mini-game box nếu bật -->
+    <div id="challengeBox" class="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-xs hidden">
+      <div class="font-bold text-amber-300 flex items-center justify-between text-[11px]">
+        <span>🎯 Thử thách ghép nối</span>
+        <span id="challengeScoreText" class="font-mono text-amber-400">0 điểm</span>
+      </div>
+      <p class="text-[10px] text-amber-200/90 mt-1">
+        Nhấp chọn 2 thiết bị mà bạn nghĩ chúng có liên kết hoặc ghép nối được với nhau!
+      </p>
+      <div id="challengeAlert" class="mt-1.5 text-[10px] p-1.5 rounded bg-black/40 border border-amber-500/30 text-amber-100 hidden"></div>
+    </div>
+
+    <!-- Danh sách bài thực hành có cuộn riêng -->
+    <div class="flex-1 flex flex-col min-h-0">
+      <div id="experimentsList" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+    </div>
+
+    <!-- Chú giải loại kết nối thu nhỏ -->
+    <div class="pt-2 border-t border-slate-800/80">
+      <div class="flex items-center justify-between text-[10px] text-slate-400 font-semibold mb-1">
+        <span>Liên kết khớp nối</span>
+        <span id="edgeCountBadge" class="text-indigo-400">-- kết nối</span>
+      </div>
+      <div id="synapseLegend" class="flex flex-wrap gap-1 max-h-16 overflow-y-auto pr-1"></div>
+    </div>
+  </aside>
+
+  <!-- PANEL CHI TIẾT THIẾT BỊ NƠ-RON BÊN PHẢI -->
+  <aside
+    id="detailDrawer"
+    class="panel-transition absolute top-18 right-3 bottom-16 z-20 rounded-2xl bg-slate-950/95 border border-indigo-500/40 backdrop-blur-2xl shadow-2xl flex flex-col p-4 overflow-y-auto hidden pointer-events-auto"
+    style="width: 320px; max-width: calc(100vw - 24px);"
+  >
+    <div class="flex items-start justify-between pb-2 border-b border-slate-800">
+      <div class="flex items-center gap-2.5">
+        <span id="detailGlyph" class="text-2xl"></span>
+        <div>
+          <h3 id="detailNameMain" class="text-sm font-bold text-white"></h3>
+          <p id="detailNameSub" class="text-[11px] text-slate-400"></p>
+        </div>
+      </div>
+      <button onclick="closeDetailDrawer()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 text-xs">✕</button>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+      <span id="detailCategoryBadge" class="text-[10px] px-2 py-0.5 rounded-lg font-medium inline-block"></span>
+      <span id="detailGradeBadge" class="text-[10px] px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300 font-medium"></span>
+    </div>
+
+    <!-- Mẹo học sinh & an toàn -->
+    <div class="mt-3 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs">
+      <div class="font-semibold text-amber-300 flex items-center gap-1 text-[11px]">
+        <span>💡 Mẹo thao tác đúng & an toàn:</span>
+      </div>
+      <p id="detailStudentTip" class="text-[11px] text-amber-100/90 mt-1 leading-relaxed"></p>
+    </div>
+
+    <!-- Công thức -->
+    <div class="mt-2.5">
+      <label id="detailFormulaLabel" class="text-[10px] font-semibold uppercase text-slate-400">Công thức SGK quen thuộc</label>
+      <div id="detailFormula" class="mt-0.5 px-2.5 py-1.5 bg-indigo-950/40 border border-indigo-500/30 rounded-xl font-mono text-xs text-indigo-200"></div>
+    </div>
+
+    <!-- Vị trí cắm nối -->
+    <div class="mt-2.5">
+      <label id="detailPortsLabel" class="text-[10px] font-semibold uppercase text-slate-400">Vị trí cắm & gá lắp trên dụng cụ</label>
+      <div id="detailPorts" class="flex flex-wrap gap-1 mt-1"></div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="mt-3">
+      <label id="detailOutputsLabel" class="text-[10px] font-semibold uppercase text-indigo-400">→ Tác động truyền tới</label>
+      <div id="detailOutputs" class="flex flex-col gap-1.5 mt-1"></div>
+    </div>
+
+    <!-- Inputs -->
+    <div class="mt-3">
+      <label id="detailInputsLabel" class="text-[10px] font-semibold uppercase text-emerald-400">← Nhận tương tác từ</label>
+      <div id="detailInputs" class="flex flex-col gap-1.5 mt-1"></div>
+    </div>
+  </aside>
+
+  <!-- HUY HIỆU NỔI THIẾT BỊ ĐANG CHỌN (GỌN GÀNG, KHI BẤM 'CHI TIẾT' MỚI MỞ BẢNG ĐẦY ĐỦ) -->
+  <div
+    id="selectedNodeFloatingPill"
+    class="hidden absolute top-18 right-3 z-20 flex items-center gap-2.5 p-1.5 pl-3 rounded-2xl bg-slate-950/85 border border-indigo-500/50 backdrop-blur-xl shadow-2xl pointer-events-auto"
+  >
+    <span id="floatingGlyph" class="text-base p-1 rounded-xl bg-slate-900 border border-slate-800 shadow-inner"></span>
+    <div class="flex flex-col">
+      <span id="floatingTitle" class="text-xs font-bold text-white leading-tight"></span>
+      <span id="floatingSubtitle" class="text-[10px] text-indigo-300"></span>
+    </div>
+    <button
+      onclick="openDetailDrawerFromFloating()"
+      class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md ml-1 cursor-pointer"
+      title="Xem thông tin chi tiết đầy đủ của thiết bị này"
+    >
+      <span>📋</span>
+      <span>Chi tiết</span>
+    </button>
+    <button
+      onclick="closeSelectedNodeFloating()"
+      class="w-6 h-6 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors cursor-pointer"
+      title="Bỏ chọn thiết bị"
+    >
+      ✕
+    </button>
+  </div>
+
+  <!-- THANH CÔNG CỤ DƯỚI ĐÁY: CHỈ ĐỂ BIỂU TƯỢNG SÁT ĐÁY GỌN GÀNG, KHÔNG CHE BẢN ĐỒ -->
+  <footer class="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/85 border border-white/10 backdrop-blur-xl shadow-2xl pointer-events-auto">
+    <button onclick="resetCamera()" class="w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95" title="Căn giữa sơ đồ (hoặc nhấp đúp lên nền)">
+      🎯
+    </button>
+    <button onclick="toggleDetailDrawer()" id="btn-toggle-detail" class="w-8 h-8 rounded-xl bg-slate-900/40 text-slate-600 border border-slate-800/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95 cursor-not-allowed opacity-40" title="Chọn một thiết bị trên sơ đồ để xem chi tiết" disabled>
+      📋
+    </button>
+    <button onclick="toggleFiring()" id="btn-toggle-fire" class="w-8 h-8 rounded-xl bg-amber-500/25 border border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.3)] flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95" title="Xung tín hiệu: ĐANG BẬT (Bấm để tạm dừng)">
+      ⚡
+    </button>
+    <button onclick="toggleAudio()" id="btn-toggle-sound" class="w-8 h-8 rounded-xl bg-indigo-600/35 border border-indigo-400 text-indigo-200 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95" title="Âm thanh tương tác: ĐANG BẬT (Bấm để tắt tiếng)">
+      🔊
+    </button>
+    <button onclick="exportDiagramPng()" class="w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95" title="Xuất ảnh PNG sơ đồ nơ-ron">
+      📸
+    </button>
+    <button onclick="toggleBackgroundTheme()" id="btn-toggle-bg" class="w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-indigo-300 border border-slate-700/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95" title="Nền bản đồ: TỐI (Nhấp để đổi sang NỀN SÁNG)">
+      🌙
+    </button>
+    <button onclick="toggleLayout()" id="btn-toggle-layout" class="w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95" title="Bố cục: Vòng tròn (Nhấp để đổi sang Đa tầng)">
+      🔄
+    </button>
+    <div class="h-4 w-px bg-slate-800/80 mx-0.5"></div>
+    <button class="w-8 h-8 rounded-xl bg-slate-900/50 hover:bg-slate-800 text-slate-400 border border-slate-800/80 flex items-center justify-center text-xs transition-all cursor-help" title="Hướng dẫn: Cuộn chuột để Thu/Phóng · Giữ chuột trái để Kéo di chuyển · Nhấp đúp để Căn giữa">
+      ℹ️
+    </button>
+  </footer>
+
+  <script>
+    // PROCEDURAL AUDIO ENGINE
+    let audioCtx = null;
+    let isSoundMuted = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playClickSound() {
+      if (isSoundMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.frequency.setValueAtTime(540, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.08);
+        g.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch(e) {}
+    }
+
+    function playSuccessSound() {
+      if (isSoundMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+          g.gain.setValueAtTime(0.15, now + idx * 0.07);
+          g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.25);
+          osc.connect(g);
+          g.connect(audioCtx.destination);
+          osc.start(now + idx * 0.07);
+          osc.stop(now + idx * 0.07 + 0.25);
+        });
+      } catch(e) {}
+    }
+
+    function playErrorSound() {
+      if (isSoundMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(130, audioCtx.currentTime + 0.1);
+        g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+      } catch(e) {}
+    }
+
+    function toggleAudio() {
+      isSoundMuted = !isSoundMuted;
+      const b = document.getElementById('btn-toggle-sound');
+      if (b) {
+        b.innerHTML = !isSoundMuted ? '🔊' : '🔇';
+        b.title = !isSoundMuted ? 'Âm thanh: ĐANG BẬT (Bấm để tắt tiếng)' : 'Âm thanh: ĐÃ TẮT (Bấm để bật)';
+        b.className = !isSoundMuted
+          ? 'w-8 h-8 rounded-xl bg-indigo-600/35 border border-indigo-400 text-indigo-200 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95'
+          : 'w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 border border-slate-700/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95';
+      }
+    }
+
+    function exportDiagramPng() {
+      const c = document.getElementById('neuralCanvas');
+      const url = c.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `openlab3d-so-do-thiet-bi-${Date.now()}.png`;
+      a.click();
+      playSuccessSound();
+    }
+
+    // THU GỌN / MỞ RỘNG BẢNG ĐIỀU HƯỚNG BÊN TRÁI
+    let isSidebarOpen = true;
+    function toggleSidebar(open) {
+      isSidebarOpen = open;
+      const sidebar = document.getElementById('leftSidebar');
+      const btnOpen = document.getElementById('btnOpenPanel');
+      if (open) {
+        sidebar.style.transform = 'translateX(0)';
+        sidebar.style.opacity = '1';
+        sidebar.style.pointerEvents = 'auto';
+        btnOpen.classList.add('hidden');
+        btnOpen.classList.remove('flex');
+      } else {
+        sidebar.style.transform = 'translateX(-340px)';
+        sidebar.style.opacity = '0';
+        sidebar.style.pointerEvents = 'none';
+        btnOpen.classList.remove('hidden');
+        btnOpen.classList.add('flex');
+      }
+      playClickSound();
+    }
+
+    // DỮ LIỆU CẤU HÌNH & 36 THIẾT BỊ NƠ-RON
+    const CATEGORIES = {
+      G01_DIMENSION:    { name: 'G01 · Kích thước & Góc', studentName: 'Dụng cụ Đo kích thước', color: '#f97316', icon: '📏' },
+      G02_MASS_FORCE:   { name: 'G02 · Khối lượng & Lực', studentName: 'Cân & Đo lực', color: '#ef4444', icon: '⚖️' },
+      G03_TIME_TEMP:    { name: 'G03 · Thời gian & Nhiệt', studentName: 'Nhiệt kế & Bấm giờ', color: '#eab308', icon: '🌡️' },
+      G04_VOLUMETRIC:   { name: 'G04 · Đo Thể tích', studentName: 'Ống đong & Bình chứa', color: '#06b6d4', icon: '🧪' },
+      G05_CHEM_HEATING: { name: 'G05 · Hóa học & Gia nhiệt', studentName: 'Đèn cồn & Đun nóng', color: '#ec4899', icon: '🔥' },
+      G06_OPTICS:       { name: 'G06 · Quang học', studentName: 'Đèn chiếu & Thấu kính', color: '#8b5cf6', icon: '🔦' },
+      G07_ELECTRICITY:  { name: 'G07 · Điện & Cảm ứng', studentName: 'Nguồn điện & Nam châm', color: '#10b981', icon: '⚡' },
+      G08_MECHANICS:    { name: 'G08 · Cơ học & Cân bằng', studentName: 'Đòn bẩy & Bình nước', color: '#f59e0b', icon: '⚙️' },
+      G09_BIOLOGY:      { name: 'G09 · Sinh học & Vi mô', studentName: 'Kính hiển vi & Tế bào', color: '#22c55e', icon: '🔬' },
+      G10_FLUID_SUPPLY: { name: 'G10 · Nguồn Lưu chất', studentName: 'Bình cấp nước sạch', color: '#3b82f6', icon: '🚰' },
+    };
+
+    const SYNAPSES = {
+      mechanical_support:        { name: 'Đỡ tải cơ học', studentName: 'Đặt lên đĩa cân', color: '#ef4444' },
+      mechanical_clamp:          { name: 'Kẹp ôm khít', studentName: 'Kẹp đo kích thước', color: '#f97316' },
+      mechanical_hook:           { name: 'Móc treo đàn hồi', studentName: 'Móc treo lực kế', color: '#fb923c', dash: [6, 4] },
+      mechanical_rail:           { name: 'Ray trượt 1D', studentName: 'Gắn trượt trên ray', color: '#eab308' },
+      optical_carrier:           { name: 'Đế mang quang', studentName: 'Đế trượt quang học', color: '#a78bfa' },
+      optical_alignment:         { name: 'Đồng trục truyền quang', studentName: 'Chiếu tia sáng qua', color: '#c084fc', dash: [5, 5] },
+      optical_refraction:        { name: 'Khúc xạ & Tán sắc', studentName: 'Bẻ cong tia sáng / Cầu vồng', color: '#e879f9', dash: [4, 4] },
+      electrical_terminal:       { name: 'Cọc cắm điện 4mm', studentName: 'Dây cắm nguồn điện', color: '#10b981' },
+      electrical_interlock:      { name: 'Liên động nguồn điện', studentName: 'Cắm điện mới sáng đèn', color: '#06b6d4', dash: [8, 3] },
+      fluid_spout:               { name: 'Rót / Xả chất lỏng', studentName: 'Nước chảy từ vòi', color: '#3b82f6' },
+      fluid_receptacle:          { name: 'Miệng hứng chất lỏng', studentName: 'Hứng nước chảy vào', color: '#60a5fa', dash: [4, 4] },
+      submersion:                { name: 'Thả chìm chiếm chỗ', studentName: 'Thả chìm làm dâng nước', color: '#14b8a6', dash: [8, 4] },
+      buoyancy_force:            { name: 'Lực đẩy Archimedes', studentName: 'Lực đẩy nước nâng lên', color: '#2dd4bf', dash: [3, 5] },
+      electromagnetic_induction: { name: 'Cảm ứng điện từ', studentName: 'Nam châm tạo ra điện', color: '#facc15', dash: [6, 4] },
+      thermal_exchange:          { name: 'Truyền nhiệt đối lưu', studentName: 'Đun nóng truyền nhiệt', color: '#f43f5e', dash: [5, 5] },
+      microscopy_dock:           { name: 'Gá vi thể hiển vi', studentName: 'Soi mẫu vật tế bào', color: '#4ade80' }
+    };
+
+    const NODES = [
+      { id: 'vernier-caliper', assetId: 'OL3D-EQP-CAL-0001', nameVi: 'Thước cặp du xích 150 mm', nameStudent: 'Thước kẹp đo chính xác', shortKeyword: 'Thước kẹp', category: 'G01_DIMENSION', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '📏', ports: ['CONN_VERNIER_CALIPER_JAWS'], studentPorts: ['Ngàm kẹp ngoài', 'Ngàm đo trong'], tip: 'Nhẹ nhàng trượt ngàm kẹp ôm vừa khít vật thể, không siết quá mạnh làm xước dụng cụ!', sgkFormula: 'Độ chính xác: 0.02 mm (1/50 mm)' },
+      { id: 'ruler-30', assetId: 'OL3D-EQP-RUL-0001', nameVi: 'Thước thẳng chia vạch 30 cm', nameStudent: 'Thước kẻ đo chiều dài', shortKeyword: 'Thước kẻ', category: 'G01_DIMENSION', subject: 'general', grades: ['grade6', 'grade7', 'grade8', 'grade9'], glyph: '📐', ports: [], studentPorts: ['Thân chia vạch milimet'], tip: 'Đặt mắt nhìn vuông góc với vạch chia để tránh sai số đo nhé!', sgkFormula: 'ĐCNN = 1 mm' },
+      { id: 'electronic-balance', assetId: 'OL3D-EQP-BAL-0001', nameVi: 'Cân điện tử hiện số 500 g', nameStudent: 'Cân điện tử hiện số', shortKeyword: 'Cân điện tử', category: 'G02_MASS_FORCE', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '⚖️', ports: ['CONN_BALANCE_PAN'], studentPorts: ['Đĩa cân inox', 'Nút trừ bì TARE'], tip: 'Nhớ bấm nút TARE để đưa màn hình về 0.00g khi đã đặt cốc lên đĩa cân trước khi rót nước!', sgkFormula: 'Khối lượng = Số chỉ trên màn hình (gam)' },
+      { id: 'calibration-weight', assetId: 'OL3D-EQP-WGT-0001', nameVi: 'Bộ quả cân chuẩn bằng đồng 50 g', nameStudent: 'Quả cân chuẩn 50g', shortKeyword: 'Quả cân 50g', category: 'G02_MASS_FORCE', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '🥉', ports: [], studentPorts: ['Khuyên móc đỉnh', 'Đáy phẳng tiếp xúc'], tip: 'Cầm quả cân ở phần núm trên đỉnh, tránh chạm tay vào thân để không dính mồ hôi làm sai số!', sgkFormula: 'Khối lượng chuẩn: m = 50 gam' },
+      { id: 'solid-cylinder', assetId: 'OL3D-EQP-SLD-0001', nameVi: 'Khối trụ đặc hợp kim nhôm', nameStudent: 'Khối nhôm hình trụ', shortKeyword: 'Khối nhôm', category: 'G02_MASS_FORCE', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '🔩', ports: [], studentPorts: ['Thân trụ kim loại', 'Quai móc treo'], tip: 'Khối nhôm nhẹ hơn đồng thau, chìm trong nước nhưng chịu lực đẩy Ác-si-mét nâng lên.', sgkFormula: 'Khối lượng riêng: D = m / V' },
+      { id: 'solid-sphere', assetId: 'OL3D-EQP-SPH-0001', nameVi: 'Khối bi cầu thép không gỉ', nameStudent: 'Viên bi thép tròn', shortKeyword: 'Bi thép', category: 'G02_MASS_FORCE', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '⚪', ports: [], studentPorts: ['Bề mặt cầu trơn'], tip: 'Thả nhẹ tay vào ống đong nghiêng để bi trượt xuống từ từ, không làm vỡ đáy thủy tinh!', sgkFormula: 'Thể tích: V = (4/3)·3.14·R³' },
+      { id: 'solid-block', assetId: 'OL3D-EQP-BLK-0001', nameVi: 'Khối hộp chữ nhật đồng thau', nameStudent: 'Khối đồng hình hộp', shortKeyword: 'Khối đồng', category: 'G02_MASS_FORCE', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '📦', ports: [], studentPorts: ['6 mặt phẳng đồng thau'], tip: 'Khối này to hơn miệng ống đong (chiều ngang 30mm > 28mm), các em phải dùng Bình tràn Eureka nhé!', sgkFormula: 'V = Dài × Rộng × Cao' },
+      { id: 'hollow-cylinder', assetId: 'OL3D-EQP-HLW-0001', nameVi: 'Ống trụ kim loại rỗng khoang kín', nameStudent: 'Ống kim loại rỗng ruột', shortKeyword: 'Ống rỗng', category: 'G02_MASS_FORCE', subject: 'physics', grades: ['grade8'], glyph: '🕳️', ports: [], studentPorts: ['Khoang rỗng bên trong'], tip: 'Mặc dù làm bằng kim loại nhưng có ruột rỗng chứa không khí nên vật có thể nổi trên mặt nước!', sgkFormula: 'Lực đẩy Ác-si-mét: F_A = d · V_chìm' },
+      { id: 'spring-dynamometer', assetId: 'OL3D-EQP-DYN-0001', nameVi: 'Lực kế lò xo ống trụ 5 N', nameStudent: 'Lực kế đo độ lớn lực', shortKeyword: 'Lực kế 5N', category: 'G02_MASS_FORCE', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '🪝', ports: ['CONN_SPRING_DYNO_HOOK'], studentPorts: ['Móc treo dưới', 'Vòng cầm trên'], tip: 'Giữ lực kế thẳng đứng và chỉnh kim về đúng vạch 0 trước khi móc vật nặng.', sgkFormula: 'Trọng lượng: P = 10 · m (Newton)' },
+      { id: 'thermometer', assetId: 'OL3D-EQP-THM-0001', nameVi: 'Nhiệt kế rượu -10..110°C', nameStudent: 'Nhiệt kế đo nhiệt độ', shortKeyword: 'Nhiệt kế', category: 'G03_TIME_TEMP', subject: 'general', grades: ['grade6', 'grade7', 'grade8'], glyph: '🌡️', ports: [], studentPorts: ['Bầu cảm ứng nhiệt', 'Ống mao dẫn đỏ'], tip: 'Không để bầu nhiệt kế chạm đáy cốc đang đun để tránh đo sai nhiệt độ của ngọn lửa!', sgkFormula: 'Nhiệt độ đọc theo mực đỏ (°C)' },
+      { id: 'stopwatch', assetId: 'OL3D-EQP-STW-0001', nameVi: 'Đồng hồ bấm giây 0.01 s', nameStudent: 'Đồng hồ bấm giây', shortKeyword: 'Đồng hồ bấm giây', category: 'G03_TIME_TEMP', subject: 'general', grades: ['grade6', 'grade7'], glyph: '⏱️', ports: [], studentPorts: ['Nút Start/Stop', 'Nút Reset về 0'], tip: 'Bấm Start ngay khi bắt đầu hiện tượng và bấm Stop ngay khi kết thúc.', sgkFormula: 'Thời gian: giây (s)' },
+      { id: 'graduated-cylinder', assetId: 'OL3D-EQP-CYL-0001', nameVi: 'Ống đong thủy tinh 100 ml', nameStudent: 'Ống đong đo thể tích', shortKeyword: 'Ống đong', category: 'G04_VOLUMETRIC', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '🧪', ports: ['CONN_CYLINDER_APERTURE'], studentPorts: ['Miệng rót trên', 'Vạch chia mililit'], tip: 'Đọc thể tích tại đáy của mặt khum chất lỏng cong lõm nhé các em!', sgkFormula: 'Thể tích vật = Nước dâng lên (V2 - V1)' },
+      { id: 'beaker-250', assetId: 'OL3D-EQP-BKR-0001', nameVi: 'Cốc thủy tinh chịu nhiệt 250 ml', nameStudent: 'Cốc thủy tinh 250ml', shortKeyword: 'Cốc 250ml', category: 'G04_VOLUMETRIC', subject: 'general', grades: ['grade6', 'grade7', 'grade8', 'grade9'], glyph: '🥛', ports: ['CONN_BEAKER_RIM'], studentPorts: ['Miệng vòi rót', 'Đáy chịu nhiệt'], tip: 'Cốc thủy tinh khi đun phải đặt trên lưới tản nhiệt amiăng để không bị nứt vỡ.', sgkFormula: 'Dung tích chứa: 250 mL' },
+      { id: 'overflow-can', assetId: 'OL3D-EQP-OVF-0001', nameVi: 'Bình tràn Eureka 250 ml', nameStudent: 'Bình tràn Eureka có vòi', shortKeyword: 'Bình tràn', category: 'G04_VOLUMETRIC', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '🫗', ports: ['CONN_OVERFLOW_CAN_APERTURE', 'CONN_OVERFLOW_CAN_SPOUT'], studentPorts: ['Miệng bình thả vật', 'Vòi xả tràn nghiêng'], tip: 'Chờ nước chảy hết qua vòi tràn trước khi thả vật vào, để chỉ hứng đúng lượng nước bị chiếm chỗ!', sgkFormula: 'Vật chìm đẩy nước tràn ra cốc hứng' },
+      { id: 'erlenmeyer-flask', assetId: 'OL3D-EQP-FLK-0001', nameVi: 'Bình tam giác Erlenmeyer 250 ml', nameStudent: 'Bình tam giác', shortKeyword: 'Bình tam giác', category: 'G04_VOLUMETRIC', subject: 'chemistry', grades: ['grade8', 'grade9'], glyph: '⚗️', ports: [], studentPorts: ['Cổ bình thon', 'Đáy rộng'], tip: 'Cổ thon giúp các em lắc tròn dung dịch mà không bị bắn hóa chất ra ngoài.', sgkFormula: 'Bình pha chế & lắc dung dịch' },
+      { id: 'test-tube', assetId: 'OL3D-EQP-TUB-0001', nameVi: 'Ống nghiệm thủy tinh 150 mm', nameStudent: 'Ống nghiệm nhỏ', shortKeyword: 'Ống nghiệm', category: 'G05_CHEM_HEATING', subject: 'chemistry', grades: ['grade7', 'grade8', 'grade9'], glyph: '🧪', ports: [], studentPorts: ['Miệng ống', 'Đáy tròn chịu nhiệt'], tip: 'Khi đun ống nghiệm, luôn hướng miệng ống về nơi không có người!', sgkFormula: 'Dụng cụ phản ứng lượng nhỏ' },
+      { id: 'alcohol-lamp', assetId: 'OL3D-EQP-ALC-0001', nameVi: 'Đèn cồn thí nghiệm', nameStudent: 'Đèn cồn đốt nóng', shortKeyword: 'Đèn cồn', category: 'G05_CHEM_HEATING', subject: 'chemistry', grades: ['grade6', 'grade8', 'grade9'], glyph: '🔥', ports: [], studentPorts: ['Tim bấc đèn', 'Nắp đậy dập lửa'], tip: 'Tuyệt đối không thổi bằng miệng! Hãy đậy nắp đèn cồn lại để dập tắt ngọn lửa an toàn.', sgkFormula: 'Nguồn nhiệt đun sôi dung dịch' },
+      { id: 'porcelain-dish', assetId: 'OL3D-EQP-DSH-0001', nameVi: 'Bát sứ chịu nhiệt cô cạn', nameStudent: 'Bát sứ cô cạn muối', shortKeyword: 'Bát sứ', category: 'G05_CHEM_HEATING', subject: 'chemistry', grades: ['grade8'], glyph: '🥣', ports: [], studentPorts: ['Lòng bát chịu lửa', 'Mỏ rót nhỏ'], tip: 'Dùng kẹp gắp bát sứ nóng, không dùng tay trần chạm vào bát sứ vừa đun!', sgkFormula: 'Đun cạn nước thu muối ăn kết tinh' },
+      { id: 'separatory-funnel', assetId: 'OL3D-EQP-SEP-0001', nameVi: 'Phễu chiết quả lê có khóa', nameStudent: 'Phễu chiết tách chất lỏng', shortKeyword: 'Phễu chiết', category: 'G05_CHEM_HEATING', subject: 'chemistry', grades: ['grade8'], glyph: '⏳', ports: [], studentPorts: ['Khóa xả đáy', 'Miệng nạp có nút'], tip: 'Vặn khóa từ từ để chất lỏng nặng ở dưới chảy hết xuống cốc thì khóa ngay lại!', sgkFormula: 'Tách dầu ăn và nước' },
+      { id: 'distillation-flask', assetId: 'OL3D-EQP-DST-0001', nameVi: 'Bình cầu có nhánh chưng cất 250 ml', nameStudent: 'Bình cầu chưng cất', shortKeyword: 'Bình cầu', category: 'G05_CHEM_HEATING', subject: 'chemistry', grades: ['grade8', 'grade9'], glyph: '🍶', ports: [], studentPorts: ['Nhánh dẫn hơi', 'Miệng cắm nhiệt kế'], tip: 'Hơi rượu bay lên nhánh nghiêng gặp lạnh sẽ ngưng tụ thành giọt lỏng chảy ra.', sgkFormula: 'Tách rượu ra khỏi nước bằng nhiệt độ sôi' },
+      { id: 'optical-lamp', assetId: 'OL3D-EQP-OLP-0001', nameVi: 'Đèn chiếu sáng Halogen quang học', nameStudent: 'Đèn chiếu tia sáng', shortKeyword: 'Đèn chiếu', category: 'G06_OPTICS', subject: 'physics', grades: ['grade7', 'grade9'], glyph: '💡', ports: ['CONN_LAMP_DC_IN_POS', 'CONN_LAMP_DC_IN_NEG', 'CONN_OPTICAL_LAMP_CARRIAGE'], studentPorts: ['Cọc cắm dây điện đỏ (+)', 'Cọc cắm dây đen (-)', 'Chân gá ray trượt'], tip: 'Đèn này không có pin bên trong! Bắt buộc phải cắm 2 dây vào Hộp Nguồn và bật công tắc thì đèn mới sáng.', sgkFormula: 'Nguồn phát 1, 2, 3 tia sáng thẳng' },
+      { id: 'optical-power-supply', assetId: 'OL3D-EQP-PSU-0001', nameVi: 'Nguồn điện hạ áp thí nghiệm 3V–12V', nameStudent: 'Bộ nguồn điện thí nghiệm', shortKeyword: 'Nguồn điện DC', category: 'G06_OPTICS', subject: 'physics', grades: ['grade8', 'grade9'], glyph: '🔋', ports: ['CONN_PSU_DC_OUT_POS', 'CONN_PSU_DC_OUT_NEG'], studentPorts: ['Cực dương đỏ (+)', 'Cực âm đen (-)'], tip: 'Vặn núm chọn điện áp về 6V hoặc 12V trước khi bật công tắc nguồn.', sgkFormula: 'Cung cấp dòng điện an toàn 3V - 12V' },
+      { id: 'optical-bench', assetId: 'OL3D-EQP-OBN-0001', nameVi: 'Giá quang học 90 cm chia vạch mm', nameStudent: 'Thanh ray quang học 90cm', shortKeyword: 'Ray quang học', category: 'G06_OPTICS', subject: 'physics', grades: ['grade7', 'grade9'], glyph: '🛤️', ports: ['CONN_OPTICAL_BENCH_RAIL'], studentPorts: ['Rãnh trượt dẫn hướng', 'Thước đo milimet hai bên'], tip: 'Các thiết bị gắn lên thanh ray này sẽ tự động thẳng hàng cùng độ cao với nhau.', sgkFormula: 'Thanh ray giữ dụng cụ thẳng hàng' },
+      { id: 'frosted-f-object', assetId: 'OL3D-EQP-FOB-0001', nameVi: 'Vật sáng kính mờ hình chữ F', nameStudent: 'Tấm kính chữ F phát sáng', shortKeyword: 'Vật chữ F', category: 'G06_OPTICS', subject: 'physics', grades: ['grade9'], glyph: '🅰️', ports: [], studentPorts: ['Mặt kính chữ F', 'Đế trượt gắn ray'], tip: 'Chữ F có nét trên nét dưới không đối xứng, giúp các em dễ dàng thấy ảnh bị lộn ngược!', sgkFormula: 'Vật sáng tạo ảnh (Cao 2 cm)' },
+      { id: 'optical-lens', assetId: 'OL3D-EQP-OPT-0001', nameVi: 'Thấu kính hội tụ/phân kỳ trên đế trượt', nameStudent: 'Thấu kính tạo ảnh', shortKeyword: 'Thấu kính', category: 'G06_OPTICS', subject: 'physics', grades: ['grade9'], glyph: '🔍', ports: ['CONN_LENS_HOLDER_SOCKET'], studentPorts: ['Vành giữ kính tròn', 'Đế trượt khóa ốc'], tip: 'Thấu kính hội tụ có rìa mỏng, thấu kính phân kỳ có rìa dày hơn phần giữa.', sgkFormula: '1/f = 1/d + 1/d\' (Tiêu cự f = 10 cm)' },
+      { id: 'optical-lens-box', assetId: 'OL3D-EQP-LBX-0001', nameVi: 'Hộp bộ 6 thấu kính tiêu chuẩn', nameStudent: 'Hộp chứa các thấu kính', shortKeyword: 'Hộp thấu kính', category: 'G06_OPTICS', subject: 'physics', grades: ['grade9'], glyph: '🧰', ports: [], studentPorts: ['6 ngăn chứa lót nhung'], tip: 'Cầm mép vành nhựa thấu kính, không chạm tay vào mặt thủy tinh trong suốt.', sgkFormula: 'Gồm các thấu kính +5cm, +10cm, -10cm' },
+      { id: 'optical-screen', assetId: 'OL3D-EQP-SCR-0001', nameVi: 'Màn chắn hứng ảnh trắng mờ', nameStudent: 'Màn hứng ảnh trắng', shortKeyword: 'Màn hứng ảnh', category: 'G06_OPTICS', subject: 'physics', grades: ['grade9'], glyph: '🖥️', ports: [], studentPorts: ['Mặt phẳng màu trắng mờ', 'Đế trượt trên ray'], tip: 'Dịch chuyển màn hứng chậm rãi trên ray cho đến khi thấy chữ F hiện lên nét nhất.', sgkFormula: 'Màn hứng ảnh thật ngược chiều' },
+      { id: 'laser-source', assetId: 'OL3D-EQP-LSR-0001', nameVi: 'Nguồn sáng Laser 3 tia song song', nameStudent: 'Hộp đèn Laser 3 tia', shortKeyword: 'Đèn Laser 3 tia', category: 'G06_OPTICS', subject: 'physics', grades: ['grade7', 'grade9'], glyph: '🔴', ports: [], studentPorts: ['3 khe phát tia laser đỏ', 'Công tắc gạt'], tip: 'Tuyệt đối không nhìn thẳng vào lỗ phát laser hoặc chiếu vào mắt bạn bè!', sgkFormula: 'Phát 3 tia sáng laser song song màu đỏ' },
+      { id: 'semicircular-slab', assetId: 'OL3D-EQP-SLB-0001', nameVi: 'Bản bán trụ thủy tinh & Đĩa chia độ 360°', nameStudent: 'Khối bán trụ thủy tinh', shortKeyword: 'Bán trụ kính', category: 'G06_OPTICS', subject: 'physics', grades: ['grade9'], glyph: '🌓', ports: [], studentPorts: ['Mặt phẳng kính', 'Mặt cong bán nguyệt'], tip: 'Chiếu tia laser vào đúng tâm O của đĩa tròn để quan sát góc khúc xạ r bị gãy khúc!', sgkFormula: 'Tia sáng bị gãy khúc khi qua thủy tinh' },
+      { id: 'prism', assetId: 'OL3D-EQP-PRM-0001', nameVi: 'Lăng kính tam giác đều tán sắc', nameStudent: 'Lăng kính 7 sắc cầu vồng', shortKeyword: 'Lăng kính', category: 'G06_OPTICS', subject: 'physics', grades: ['grade9'], glyph: '🌈', ports: [], studentPorts: ['3 mặt kính tam giác đều', 'Trục xoay giá đỡ'], tip: 'Ánh sáng trắng bị lăng kính tách thành dải màu Cầu Vồng: Đỏ, Cam, Vàng, Lục, Lam, Chàm, Tím.', sgkFormula: 'Tách ánh sáng trắng thành 7 màu cầu vồng' },
+      { id: 'magnifying-glass', assetId: 'OL3D-EQP-MAG-0001', nameVi: 'Kính lúp cầm tay độ bội giác 5x', nameStudent: 'Kính lúp cầm tay', shortKeyword: 'Kính lúp', category: 'G06_OPTICS', subject: 'general', grades: ['grade6', 'grade7'], glyph: '🔎', ports: [], studentPorts: ['Tròng kính lồi', 'Tay cầm nhựa'], tip: 'Đưa kính lúp gần sát mắt rồi dịch chuyển vật mẫu từ từ để nhìn thấy phóng to rõ nhất.', sgkFormula: 'Phóng đại hình ảnh gấp 5 lần' },
+      { id: 'galvanometer', assetId: 'OL3D-EQP-GLV-0001', nameVi: 'Điện kế nhạy vạch 0 ở giữa', nameStudent: 'Điện kế nhạy (Kim ở giữa)', shortKeyword: 'Điện kế nhạy', category: 'G07_ELECTRICITY', subject: 'physics', grades: ['grade9'], glyph: '🧭', ports: [], studentPorts: ['Cọc nối dây bên trái', 'Cọc nối dây bên phải'], tip: 'Khi có dòng điện chạy qua, kim sẽ lệch sang trái hoặc sang phải báo hiệu chiều dòng điện.', sgkFormula: 'Phát hiện dòng điện cảm ứng siêu nhỏ' },
+      { id: 'digital-multimeter', assetId: 'OL3D-EQP-DMM-0001', nameVi: 'Đồng hồ vạn năng hiện số AC/DC', nameStudent: 'Đồng hồ đo điện hiện số', shortKeyword: 'Đồng hồ DMM', category: 'G07_ELECTRICITY', subject: 'physics', grades: ['grade8', 'grade9'], glyph: '📟', ports: [], studentPorts: ['Que đo đỏ (+)', 'Que đo đen (COM)'], tip: 'Chọn đúng nấc đo V (Vôn) khi đo nguồn điện, không để nhầm nấc đo điện trở Ω kẻo chập!', sgkFormula: 'Đo Vôn (V), Ampe (A), Ôm (Ω)' },
+      { id: 'induction-coil', assetId: 'OL3D-EQP-COIL-0001', nameVi: 'Cuộn dây dẫn kín kèm 2 LED & Nam châm', nameStudent: 'Cuộn dây cảm ứng & Nam châm', shortKeyword: 'Cuộn dây & Nam châm', category: 'G07_ELECTRICITY', subject: 'physics', grades: ['grade9'], glyph: '🧲', ports: [], studentPorts: ['Lòng ống cuộn dây', '2 đèn LED đỏ & xanh'], tip: 'Đẩy nam châm vào thì đèn đỏ sáng, rút nam châm ra thì đèn xanh sáng! Nam châm đứng yên thì đèn tắt.', sgkFormula: 'Di chuyển nam châm sinh ra dòng điện' },
+      { id: 'lever-balance', assetId: 'OL3D-EQP-LEV-0001', nameVi: 'Bộ đòn bẩy thăng bằng chia vạch đối xứng', nameStudent: 'Thước đòn bẩy thăng bằng', shortKeyword: 'Đòn bẩy', category: 'G08_MECHANICS', subject: 'physics', grades: ['grade8'], glyph: '⚖️', ports: [], studentPorts: ['Trục quay ở giữa', 'Các lỗ treo quả nặng 2 bên'], tip: 'Treo quả nặng ở xa trục quay thì cần ít lực hơn để bập bênh thăng bằng!', sgkFormula: 'Quy tắc đòn bẩy: Lực × Khoảng cách = Nhau' },
+      { id: 'communicating-vessels', assetId: 'OL3D-EQP-HYD-0001', nameVi: 'Bình thông nhau 3 nhánh dị hình', nameStudent: 'Bình nước thông nhau 3 nhánh', shortKeyword: 'Bình thông nhau', category: 'G08_MECHANICS', subject: 'physics', grades: ['grade8'], glyph: '🧪', ports: [], studentPorts: ['Ống thẳng', 'Ống phình', 'Ống ngoằn ngoèo'], tip: 'Dù ống có hình dáng to, nhỏ hay cong queo thì khi đứng yên, mực nước ở 3 ống luôn cao bằng nhau!', sgkFormula: 'Mực nước ở các nhánh luôn cao bằng nhau' },
+      { id: 'microscope', assetId: 'OL3D-EQP-MIC-0001', nameVi: 'Kính hiển vi quang học 3 vật kính DIN', nameStudent: 'Kính hiển vi quang học', shortKeyword: 'Kính hiển vi', category: 'G09_BIOLOGY', subject: 'biology', grades: ['grade6', 'grade9'], glyph: '🔬', ports: [], studentPorts: ['Ống thị kính nhìn', 'Mâm 3 vật kính 10x, 40x', 'Ốc sơ cấp & vi cấp'], tip: 'Dùng ốc to (sơ cấp) để tìm thấy hình mẫu mờ mờ, sau đó vặn ốc nhỏ (vi cấp) thật khẽ để hình ảnh nét căng!', sgkFormula: 'Độ phóng đại = Thị kính × Vật kính (Ví dụ: 10 × 40 = 400 lần)' },
+      { id: 'dna-model', assetId: 'OL3D-EQP-DNA-0001', nameVi: 'Mô hình cấu trúc phân tử DNA xoắn kép', nameStudent: 'Mô hình xoắn kép DNA', shortKeyword: 'Mô hình DNA', category: 'G09_BIOLOGY', subject: 'biology', grades: ['grade9'], glyph: '🧬', ports: [], studentPorts: ['Trục xoắn 3D', 'Các cặp bazơ A-T, G-X'], tip: 'Ghi nhớ nguyên tắc bổ sung: Nu loại A luôn ghép đôi với T, Nu loại G luôn ghép đôi với X.', sgkFormula: 'Nguyên tắc bổ sung: A nối với T, G nối với X' },
+      { id: 'water-dispenser', assetId: 'OL3D-EQP-WDP-1000', nameVi: 'Bình chứa nước có van xả 1000 ml', nameStudent: 'Bình cấp nước sạch có van', shortKeyword: 'Bình cấp nước', category: 'G10_FLUID_SUPPLY', subject: 'physics', grades: ['grade6', 'grade8'], glyph: '🚰', ports: ['CONN_WATER_DISPENSER_SPOUT'], studentPorts: ['Vòi xả nước có van vặn'], tip: 'Mở van vừa phải để nước không bắn tung tóe ra ngoài mặt bàn thí nghiệm.', sgkFormula: 'Bình cung cấp nước làm thí nghiệm' },
+      { id: 'retort-stand', assetId: 'OL3D-EQP-STD-0001', nameVi: 'Giá đỡ thí nghiệm kèm khớp nối & kẹp', nameStudent: 'Giá sắt đỡ thí nghiệm', shortKeyword: 'Giá thí nghiệm', category: 'G08_MECHANICS', subject: 'general', grades: ['grade8', 'grade9'], glyph: '📐', ports: [], studentPorts: ['Chân đế gang nặng', 'Cột sắt', 'Tay kẹp có ốc siết'], tip: 'Siết chặt ốc giữ ngàm kẹp để dụng cụ thủy tinh không bị trượt rơi vỡ.', sgkFormula: 'Giữ cố định các dụng cụ trên cao' },
+    ];
+
+    const EDGES = [
+      { id: 'E1', source: 'calibration-weight', target: 'electronic-balance', type: 'mechanical_support', studentRule: 'Đặt quả cân lên đĩa → Màn hình cân hiện đúng 50.00 gam', expertRule: 'Loadcell strain response m_gross = 50.00g' },
+      { id: 'E2', source: 'solid-cylinder', target: 'electronic-balance', type: 'mechanical_support', studentRule: 'Cân khối nhôm → Biết khối lượng m để tính khối lượng riêng D = m / V', expertRule: 'Weighing mass m_Al for density calc' },
+      { id: 'E3', source: 'solid-sphere', target: 'electronic-balance', type: 'mechanical_support', studentRule: 'Cân viên bi thép tròn', expertRule: 'Mass measurement of sphere specimen' },
+      { id: 'E4', source: 'solid-block', target: 'electronic-balance', type: 'mechanical_support', studentRule: 'Cân khối đồng thau', expertRule: 'Mass measurement of brass block' },
+      { id: 'E5', source: 'beaker-250', target: 'electronic-balance', type: 'mechanical_support', studentRule: 'Đặt cốc lên đĩa cân và bấm nút TARE trừ bì về 0.00g', expertRule: 'Tare tare offset compensation' },
+      { id: 'E6', source: 'solid-cylinder', target: 'graduated-cylinder', type: 'submersion', studentRule: 'Thả khối nhôm chìm vào nước → Cột nước dâng lên đúng bằng thể tích của nhôm', expertRule: 'Water displacement ΔV = V_cylinder' },
+      { id: 'E7', source: 'solid-sphere', target: 'graduated-cylinder', type: 'submersion', studentRule: 'Thả bi thép vào ống đong → Nước dâng lên để đọc thể tích', expertRule: 'Submersion volume displacement' },
+      { id: 'E8', source: 'solid-block', target: 'overflow-can', type: 'submersion', studentRule: 'Khối đồng to không vừa ống đong → Thả vào bình tràn làm nước trào qua vòi', expertRule: 'Archimedes overflow trigger (Ø > 28mm)' },
+      { id: 'E9', source: 'overflow-can', target: 'beaker-250', type: 'fluid_spout', studentRule: 'Nước chảy từ vòi bình tràn → Hứng vào cốc thủy tinh', expertRule: 'Spout discharge into receptacle' },
+      { id: 'E10', source: 'water-dispenser', target: 'overflow-can', type: 'fluid_spout', studentRule: 'Rót nước vào bình tràn cho tới khi nước vừa chớm mấp mé vòi', expertRule: 'Filling overflow can to 210 ml threshold' },
+      { id: 'E11', source: 'water-dispenser', target: 'graduated-cylinder', type: 'fluid_spout', studentRule: 'Mở van xả rót nước sạch vào ống đong (15 ml/s)', expertRule: 'Metering valve flow Q = 15 ml/s' },
+      { id: 'E12', source: 'water-dispenser', target: 'communicating-vessels', type: 'fluid_spout', studentRule: 'Rót nước vào một ống → Nước tự tràn qua đáy làm 3 ống dâng cao bằng nhau', expertRule: 'Hydrostatic pressure equilibrium' },
+      { id: 'E13', source: 'calibration-weight', target: 'spring-dynamometer', type: 'mechanical_hook', studentRule: 'Móc quả cân 50g vào móc treo → Lò xo giãn ra chỉ đúng 0.5 Newton', expertRule: 'Hooke law force P = m·g' },
+      { id: 'E14', source: 'solid-cylinder', target: 'spring-dynamometer', type: 'mechanical_hook', studentRule: 'Treo khối nhôm vào lực kế ngoài không khí → Đọc trọng lượng P1', expertRule: 'Weight measurement P1 in air' },
+      { id: 'E15', source: 'spring-dynamometer', target: 'beaker-250', type: 'buoyancy_force', studentRule: 'Nhúng vật đang treo vào cốc nước → Lực đẩy Ác-si-mét nâng lên làm lực kế giảm số chỉ P2', expertRule: 'Buoyant force F_A = P1 - P2' },
+      { id: 'E16', source: 'solid-cylinder', target: 'vernier-caliper', type: 'mechanical_clamp', studentRule: 'Kẹp 2 ngàm vào thân khối nhôm → Đọc đường kính ngoài chính xác đến 0.02mm', expertRule: 'Outside diameter caliper clamping' },
+      { id: 'E17', source: 'optical-power-supply', target: 'optical-lamp', type: 'electrical_interlock', studentRule: 'Cắm 2 dây điện từ bộ nguồn sang đèn và bật công tắc → Đèn mới sáng được!', expertRule: 'Electrical interlock: V >= 2.5V and closed circuit' },
+      { id: 'E18', source: 'optical-lamp', target: 'optical-bench', type: 'mechanical_rail', studentRule: 'Gắn đèn vào thanh ray quang học tại vạch -35 cm', expertRule: 'Rail mount 1D rider at -35cm' },
+      { id: 'E19', source: 'frosted-f-object', target: 'optical-bench', type: 'mechanical_rail', studentRule: 'Gắn tấm kính chữ F vào thanh ray tại vạch -20 cm', expertRule: 'Rail mount F-object at -20cm' },
+      { id: 'E20', source: 'optical-lens', target: 'optical-bench', type: 'mechanical_rail', studentRule: 'Gắn thấu kính vào mốc số 0 ở giữa thanh ray', expertRule: 'Rail mount lens at 0cm' },
+      { id: 'E21', source: 'optical-screen', target: 'optical-bench', type: 'mechanical_rail', studentRule: 'Gắn màn hứng màu trắng vào ray và trượt để tìm ảnh rõ nét', expertRule: 'Rail mount screen at +30cm' },
+      { id: 'E22', source: 'optical-lamp', target: 'frosted-f-object', type: 'optical_alignment', studentRule: 'Đèn chiếu sáng rọi qua tấm kính mờ → Tạo thành chữ F phát sáng rực rỡ', expertRule: 'Luminous beam projection through frosted aperture' },
+      { id: 'E23', source: 'frosted-f-object', target: 'optical-lens', type: 'optical_alignment', studentRule: 'Ánh sáng từ chữ F bay tới thấu kính → Bị bẻ cong hội tụ lại', expertRule: 'Snell refraction towards focal point' },
+      { id: 'E24', source: 'optical-lens', target: 'optical-screen', type: 'optical_alignment', studentRule: 'Các tia sáng hội tụ gặp màn hứng → Tạo ảnh thật lộn ngược chiều của chữ F!', expertRule: 'Real inverted image formation 1/f = 1/d + 1/d\'' },
+      { id: 'E25', source: 'laser-source', target: 'semicircular-slab', type: 'optical_refraction', studentRule: 'Chiếu tia laser vào khối thủy tinh → Tia sáng bị bẻ gãy góc khi đi ra không khí', expertRule: 'Snell refraction & total internal reflection' },
+      { id: 'E26', source: 'optical-lamp', target: 'prism', type: 'optical_refraction', studentRule: 'Chiếu chùm ánh sáng trắng qua lăng kính → Tách thành dải màu Cầu Vồng rực rỡ', expertRule: 'White light dispersion into 7 rainbow colors' },
+      { id: 'E27', source: 'induction-coil', target: 'galvanometer', type: 'electromagnetic_induction', studentRule: 'Đẩy nhanh nam châm vào cuộn dây → Kim điện kế lập tức lệch sang một bên!', expertRule: 'Faraday induced EMF dΦ/dt' },
+      { id: 'E28', source: 'optical-power-supply', target: 'digital-multimeter', type: 'electrical_terminal', studentRule: 'Chạm 2 que đo vào cọc nguồn → Màn hình hiện đúng số Vôn (V)', expertRule: 'DC voltage measurement' },
+      { id: 'E29', source: 'alcohol-lamp', target: 'porcelain-dish', type: 'thermal_exchange', studentRule: 'Ngọn lửa đèn cồn đun sôi bát nước muối → Nước bay hơi hết, để lại hạt muối trắng', expertRule: 'Thermal evaporation of solvent' },
+      { id: 'E30', source: 'thermometer', target: 'beaker-250', type: 'thermal_exchange', studentRule: 'Cắm nhiệt kế vào cốc nước đun → Cột màu đỏ dâng dần lên đến 100°C khi nước sôi', expertRule: 'Thermal expansion of alcohol column' },
+      { id: 'E31', source: 'calibration-weight', target: 'lever-balance', type: 'mechanical_support', studentRule: 'Treo quả cân 2 bên trục quay → Điều chỉnh khoảng cách để đòn bẩy nằm ngang thăng bằng', expertRule: 'Torque balance equilibrium F1·d1 = F2·d2' },
+      { id: 'E32', source: 'microscope', target: 'dna-model', type: 'microscopy_dock', studentRule: 'Soi tế bào dưới kính hiển vi → Nhìn sâu vào nhân thấy nhiễm sắc thể và phân tử DNA', expertRule: 'Microscopy cytological to molecular linkage' },
+    ];
+
+    const EXPERIMENTS = [
+      {
+        id: 'EXP-OPTICS-812',
+        title: 'Tạo ảnh qua Thấu kính hội tụ (Bài 8.12)',
+        grade: 'KHTN 9',
+        gradeCode: 'grade9',
+        studentGoal: 'Tìm xem ảnh của chữ F khi đi qua kính lồi (thấu kính hội tụ) có đặc điểm gì?',
+        devices: ['optical-power-supply', 'optical-lamp', 'frosted-f-object', 'optical-lens', 'optical-screen', 'optical-bench'],
+        steps: [
+          { title: 'Bước 1: Gá thấu kính tại mốc 0cm', desc: 'Đặt thanh ray quang học lên bàn và gắn thấu kính hội tụ tại mốc 0cm ở chính giữa.', activeDevs: ['optical-bench', 'optical-lens'], activeEdges: ['E20'] },
+          { title: 'Bước 2: Cấp điện thắp sáng đèn', desc: 'Gá đèn tại mốc -35cm, cắm 2 dây điện đỏ/đen vào bộ nguồn 12V và bật công tắc.', activeDevs: ['optical-power-supply', 'optical-lamp', 'optical-bench'], activeEdges: ['E17', 'E18'] },
+          { title: 'Bước 3: Đặt vật sáng chữ F', desc: 'Gá tấm kính chữ F tại mốc -20cm (cách thấu kính d = 20cm, lớn hơn tiêu cự f = 10cm).', activeDevs: ['optical-lamp', 'frosted-f-object', 'optical-lens'], activeEdges: ['E19', 'E22', 'E23'] },
+          { title: 'Bước 4: Trượt màn hứng tìm ảnh', desc: 'Gá màn hứng trắng phía sau thấu kính và trượt xung quanh mốc +20cm đến +30cm tìm ảnh nét.', activeDevs: ['optical-lens', 'optical-screen', 'optical-bench'], activeEdges: ['E21', 'E24'] },
+        ]
+      },
+      {
+        id: 'EXP-ARCHIMEDES',
+        title: 'Nghiệm chứng Lực đẩy Ác-si-mét',
+        grade: 'KHTN 8',
+        gradeCode: 'grade8',
+        studentGoal: 'Tại sao khi nhúng một vật vào nước ta lại cảm thấy vật nhẹ hơn?',
+        devices: ['electronic-balance', 'graduated-cylinder', 'overflow-can', 'spring-dynamometer', 'solid-cylinder', 'beaker-250', 'water-dispenser'],
+        steps: [
+          { title: 'Bước 1: Đo trọng lượng P1 ngoài không khí', desc: 'Dùng lực kế móc vào mẫu trụ nhôm đọc số chỉ P1 ngoài không khí (P1 = 2.0 N).', activeDevs: ['solid-cylinder', 'spring-dynamometer'], activeEdges: ['E14'] },
+          { title: 'Bước 2: Rót nước đầy bình tràn Eureka', desc: 'Mở van bình cấp nước rót vào bình tràn cho tới khi nước vừa chớm tràn qua vòi xả.', activeDevs: ['water-dispenser', 'overflow-can'], activeEdges: ['E10'] },
+          { title: 'Bước 3: Nhúng vật vào bình tràn', desc: 'Nhúng từ từ vật vào bình tràn, hứng nước tràn vào cốc và đọc số chỉ P2 trên lực kế.', activeDevs: ['spring-dynamometer', 'solid-cylinder', 'overflow-can', 'beaker-250'], activeEdges: ['E15', 'E9', 'E8'] },
+          { title: 'Bước 4: Cân nước tràn đối chứng', desc: 'Đem cốc nước tràn đặt lên cân điện tử, xác nhận trọng lượng nước tràn đúng bằng P1 - P2!', activeDevs: ['beaker-250', 'electronic-balance'], activeEdges: ['E5'] },
+        ]
+      },
+      {
+        id: 'EXP-FARADAY',
+        title: 'Hiện tượng Cảm ứng Điện từ',
+        grade: 'KHTN 9',
+        gradeCode: 'grade9',
+        studentGoal: 'Làm thế nào để tạo ra dòng điện mà không cần đến pin hay ắc-quy?',
+        devices: ['induction-coil', 'galvanometer', 'digital-multimeter'],
+        steps: [
+          { title: 'Bước 1: Nối cuộn dây với điện kế nhạy', desc: 'Cắm 2 đầu dây của cuộn cảm vào 2 cọc đo của điện kế vạch 0 ở giữa.', activeDevs: ['induction-coil', 'galvanometer'], activeEdges: ['E27'] },
+          { title: 'Bước 2: Đẩy nam châm vào cuộn dây', desc: 'Đẩy nhanh cực Bắc nam châm vào lòng cuộn dây → Kim điện kế lệch sang phải, LED đỏ sáng!', activeDevs: ['induction-coil', 'galvanometer'], activeEdges: ['E27'] },
+          { title: 'Bước 3: Rút nam châm ra', desc: 'Rút nhanh nam châm ra theo chiều ngược lại → Kim điện kế đổi chiều sang trái, LED xanh sáng!', activeDevs: ['induction-coil', 'galvanometer'], activeEdges: ['E27'] },
+        ]
+      },
+      {
+        id: 'EXP-CELL-MICROSCOPY',
+        title: 'Quan sát Tế bào Kính hiển vi 3D',
+        grade: 'KHTN 6',
+        gradeCode: 'grade6',
+        studentGoal: 'Tế bào sinh vật có hình dạng như thế nào dưới độ phóng đại hàng trăm lần?',
+        devices: ['microscope', 'dna-model', 'magnifying-glass'],
+        steps: [
+          { title: 'Bước 1: Đặt lam kính lên bàn sa trượt', desc: 'Kẹp lam kính tiêu bản tế bào vào giữa ngàm giữ trên bàn kính hiển vi.', activeDevs: ['microscope'], activeEdges: [] },
+          { title: 'Bước 2: Chỉnh ốc sơ cấp lấy nét thô', desc: 'Vặn ốc to nâng bàn kính lên cho tới khi thấy bóng tế bào mờ mờ.', activeDevs: ['microscope'], activeEdges: [] },
+          { title: 'Bước 3: Chỉnh ốc vi cấp làm nét căng', desc: 'Vặn khẽ ốc nhỏ để thấy rõ màng, tế bào chất và nhân tế bào chứa DNA.', activeDevs: ['microscope', 'dna-model'], activeEdges: ['E32'] },
+        ]
+      }
+    ];
+
+    // TRẠNG THÁI
+    const canvas = document.getElementById('neuralCanvas');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+
+    let userMode = 'student';
+    let selectedGrade = 'ALL';
+    let layoutMode = 'circular';
+    let selectedNode = null;
+    let hoveredNode = null;
+    let selectedExp = null;
+    let currentStepIdx = 0;
+    let isFiring = true;
+    let searchKeyword = '';
+    let challengeMode = false;
+    let challengeScore = 0;
+    let mapTheme = 'dark'; // 'dark' | 'light' | 'transparent'
+
+    function toggleBackgroundTheme() {
+      if (mapTheme === 'dark') {
+        mapTheme = 'light';
+      } else if (mapTheme === 'light') {
+        mapTheme = 'transparent';
+      } else {
+        mapTheme = 'dark';
+      }
+      applyMapTheme();
+      playClickSound();
+    }
+
+    function applyMapTheme() {
+      const btn = document.getElementById('btn-toggle-bg');
+      const body = document.body;
+      if (mapTheme === 'dark') {
+        body.classList.remove('bg-[#f8fafc]', 'bg-transparent');
+        body.classList.add('bg-[#050813]');
+        if (btn) {
+          btn.innerHTML = '🌙';
+          btn.title = 'Nền bản đồ: TỐI (Nhấp để đổi sang NỀN SÁNG)';
+          btn.className = 'w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-indigo-300 border border-slate-700/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95';
+        }
+      } else if (mapTheme === 'light') {
+        body.classList.remove('bg-[#050813]', 'bg-transparent');
+        body.classList.add('bg-[#f8fafc]');
+        if (btn) {
+          btn.innerHTML = '☀️';
+          btn.title = 'Nền bản đồ: SÁNG (Nhấp để đổi sang NỀN TRONG SUỐT)';
+          btn.className = 'w-8 h-8 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-400/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95 shadow-[0_0_10px_rgba(251,191,36,0.3)]';
+        }
+      } else {
+        body.classList.remove('bg-[#050813]', 'bg-[#f8fafc]');
+        body.classList.add('bg-transparent');
+        if (btn) {
+          btn.innerHTML = '🪟';
+          btn.title = 'Nền bản đồ: TRONG SUỐT (Nhấp để đổi sang NỀN TỐI)';
+          btn.className = 'w-8 h-8 rounded-xl bg-cyan-600/30 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-400/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95';
+        }
+      }
+    }
+
+    // Camera ở tâm gốc (0, 0)
+    const camera = { x: 0, y: 0, zoom: 1 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let camStart = { x: 0, y: 0 };
+
+    // VỊ TRÍ GỐC TỌA ĐỘ WORLD LÀ (0, 0)
+    const nodeSims = NODES.map(d => ({
+      d,
+      x: (Math.random() - 0.5) * 160,
+      y: (Math.random() - 0.5) * 160,
+      tx: 0,
+      ty: 0,
+      r: 12
+    }));
+
+    const particles = [];
+
+    // BỐ CỤC CHUẨN XÁC: GỐC (0, 0) LÀ TÂM VỚI KHỬ VA CHẠM (COLLISION RELAXATION)
+    function applyLayout() {
+      // Giới hạn bán kính quỹ đạo để toàn bộ nơ-ron không bao giờ chạm mép trên/dưới
+      const maxR = Math.min((W - 350) * 0.44, (H - 180) * 0.44);
+      const R_orbit = Math.max(260, Math.min(380, maxR));
+
+      if (layoutMode === 'circular') {
+        const catKeys = Object.keys(CATEGORIES);
+        catKeys.forEach((cat, idx) => {
+          const angle = (idx / catKeys.length) * Math.PI * 2 - Math.PI / 2;
+          const inCat = nodeSims.filter(n => n.d.category === cat);
+          
+          if (inCat.length === 1) {
+            inCat[0].tx = R_orbit * Math.cos(angle);
+            inCat[0].ty = R_orbit * Math.sin(angle) * 0.90;
+          } else if (inCat.length === 2) {
+            const halfSpan = 0.16;
+            inCat[0].tx = (R_orbit * 0.92) * Math.cos(angle - halfSpan);
+            inCat[0].ty = (R_orbit * 0.92) * Math.sin(angle - halfSpan) * 0.90;
+            inCat[1].tx = (R_orbit * 1.16) * Math.cos(angle + halfSpan);
+            inCat[1].ty = (R_orbit * 1.16) * Math.sin(angle + halfSpan) * 0.90;
+          } else {
+            // BIỆN PHÁP 3: TÁCH TẦNG ĐA BÁN KÍNH (CONCENTRIC TIERING)
+            const sorted = [...inCat].sort((a, b) => (b.connections || 0) - (a.connections || 0));
+            const coreCount = sorted.length >= 6 ? 2 : 1;
+            const coreNodes = sorted.slice(0, coreCount);
+            const satNodes = sorted.slice(coreCount);
+
+            if (coreNodes.length === 1) {
+              coreNodes[0].tx = (R_orbit * 0.78) * Math.cos(angle);
+              coreNodes[0].ty = (R_orbit * 0.78) * Math.sin(angle) * 0.90;
+            } else {
+              const coreSpan = 0.32;
+              coreNodes.forEach((cn, cIdx) => {
+                const ca = angle - coreSpan / 2 + (cIdx / (coreNodes.length - 1)) * coreSpan;
+                cn.tx = (R_orbit * 0.78) * Math.cos(ca);
+                cn.ty = (R_orbit * 0.78) * Math.sin(ca) * 0.90;
+              });
+            }
+
+            const satSpan = Math.PI * 0.44;
+            satNodes.forEach((sn, sIdx) => {
+              const sa = angle - satSpan / 2 + (sIdx / Math.max(1, satNodes.length - 1)) * satSpan;
+              const satRadius = R_orbit * (1.20 + (sIdx % 2 === 0 ? 0.14 : -0.04));
+              sn.tx = satRadius * Math.cos(sa);
+              sn.ty = satRadius * Math.sin(sa) * 0.90;
+            });
+          }
+        });
+
+        // THUẬT TOÁN KHỬ TRÙNG LẶP & ĐÈ NHÃN (ELLIPTICAL COLLISION RELAXATION)
+        for (let iter = 0; iter < 50; iter++) {
+          for (let i = 0; i < nodeSims.length; i++) {
+            for (let j = i + 1; j < nodeSims.length; j++) {
+              const a = nodeSims[i];
+              const b = nodeSims[j];
+              const dx = b.tx - a.tx;
+              const dy = b.ty - a.ty;
+              // Hình elip bao quanh nơ-ron và nhãn chữ (ngang 115px, dọc 42px)
+              const rx = 105;
+              const ry = 46;
+              const nx = dx / rx;
+              const ny = dy / ry;
+              const d2 = nx * nx + ny * ny;
+              if (d2 < 1 && d2 > 0.0001) {
+                const d = Math.sqrt(d2);
+                const overlap = (1 - d) * 0.5;
+                const pushX = (nx / d) * overlap * rx;
+                const pushY = (ny / d) * overlap * ry;
+                b.tx += pushX;
+                b.ty += pushY;
+                a.tx -= pushX;
+                a.ty -= pushY;
+              }
+            }
+          }
+        }
+      } else {
+        // BỐ CỤC ĐA TẦNG NƠ-RON 6 GIAI ĐOẠN KHÔNG TRÙNG LẶP
+        const layerMap = {
+          G10_FLUID_SUPPLY: 0, G07_ELECTRICITY: 0,
+          G01_DIMENSION: 1,
+          G02_MASS_FORCE: 2, G04_VOLUMETRIC: 2,
+          G05_CHEM_HEATING: 3,
+          G06_OPTICS: 4, G08_MECHANICS: 4,
+          G03_TIME_TEMP: 5, G09_BIOLOGY: 5
+        };
+        const layers = [[], [], [], [], [], []];
+        nodeSims.forEach(n => layers[layerMap[n.d.category] ?? 3].push(n));
+        const totalW = Math.min((W - 350) * 0.88, 920);
+        const spacingX = totalW / 5;
+        const totalH = Math.min(H * 0.65, 520);
+        layers.forEach((nodes, lIdx) => {
+          const lx = -totalW / 2 + lIdx * spacingX;
+          nodes.forEach((n, i) => {
+            n.tx = lx;
+            n.ty = -totalH / 2 + ((i + 0.5) / (nodes.length || 1)) * totalH;
+          });
+        });
+      }
+    }
+
+    function getOriginX() {
+      let centerOffsetX = 0;
+      if (window.innerWidth > 900) {
+        if (isSidebarOpen && !selectedNode) {
+          centerOffsetX = 150;
+        } else if (isSidebarOpen && selectedNode) {
+          centerOffsetX = -10;
+        } else if (!isSidebarOpen && selectedNode) {
+          centerOffsetX = -155;
+        }
+      }
+      return W / 2 + centerOffsetX;
+    }
+
+    // VÒNG LẶP RENDER
+    function loop(time) {
+      nodeSims.forEach(n => {
+        n.x += (n.tx - n.x) * 0.08;
+        n.y += (n.ty - n.y) * 0.08;
+      });
+
+      const visibleNodes = nodeSims.filter(n => {
+        if (selectedGrade !== 'ALL' && !n.d.grades.includes(selectedGrade)) return false;
+        if (searchKeyword) {
+          const kw = searchKeyword.toLowerCase();
+          return n.d.nameVi.toLowerCase().includes(kw) || n.d.nameStudent.toLowerCase().includes(kw);
+        }
+        return true;
+      });
+      const visibleNodeIds = new Set(visibleNodes.map(n => n.d.id));
+
+      const visibleEdges = EDGES.filter(e => {
+        if (!visibleNodeIds.has(e.source) || !visibleNodeIds.has(e.target)) return false;
+        if (selectedExp) {
+          if (selectedExp.steps && selectedExp.steps.length > 0) {
+            const step = selectedExp.steps[currentStepIdx];
+            return step.activeEdges.includes(e.id);
+          }
+          return selectedExp.devices.includes(e.source) && selectedExp.devices.includes(e.target);
+        }
+        return true;
+      });
+
+      // Update particles
+      if (isFiring && visibleEdges.length > 0 && particles.length < 240 && Math.random() < 0.45) {
+        const edge = visibleEdges[Math.floor(Math.random() * visibleEdges.length)];
+        const s = nodeSims.find(n => n.d.id === edge.source);
+        const t = nodeSims.find(n => n.d.id === edge.target);
+        if (s && t) {
+          let pColor = '#6366f1'; // Mặc định lam tím neon
+          let pDir = 'bidirectional';
+          if (selectedNode) {
+            if (edge.source === selectedNode.id) {
+              pColor = '#0080ff'; // Dòng chảy ra: Xanh dương neon
+              pDir = 'outflow';
+            } else if (edge.target === selectedNode.id) {
+              pColor = '#b026ff'; // Dòng chảy vào: Tím neon (đổi từ cam sang tím)
+              pDir = 'inflow';
+            }
+          }
+          // Chuỗi 3 hạt nhỏ chảy thành dòng
+          for (let sIdx = 0; sIdx < 3; sIdx++) {
+            particles.push({ s, t, edge, progress: -sIdx * 0.08, speed: 0.012 + Math.random() * 0.012, color: pColor, direction: pDir });
+          }
+        }
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].progress += particles[i].speed;
+        if (particles[i].progress >= 1) particles.splice(i, 1);
+      }
+
+      // Draw background - Hỗ trợ NỀN TỐI, NỀN SÁNG hoặc NỀN TRONG SUỐT
+      if (mapTheme === 'transparent') {
+        ctx.clearRect(0, 0, W, H);
+      } else if (mapTheme === 'light') {
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(0, 0, W, H);
+      } else {
+        ctx.fillStyle = '#050813';
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      const cam = camera;
+      const originX = getOriginX();
+      const originY = H / 2;
+
+      const gridSize = 45 * cam.zoom;
+      const ox = (-cam.x * cam.zoom + originX) % gridSize;
+      const oy = (-cam.y * cam.zoom + originY) % gridSize;
+      ctx.strokeStyle = mapTheme === 'light' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(79, 110, 247, 0.05)';
+      ctx.lineWidth = 1;
+      for (let x = ox; x < W; x += gridSize) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = oy; y < H; y += gridSize) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+
+      // CHUYỂN ĐỔI CHUẨN XÁC TỪ WORLD SANG SCREEN
+      const toScreen = (wx, wy) => ({
+        x: (wx - cam.x) * cam.zoom + originX,
+        y: (wy - cam.y) * cam.zoom + originY
+      });
+
+      // Draw edges
+      visibleEdges.forEach(e => {
+        const s = nodeSims.find(n => n.d.id === e.source);
+        const t = nodeSims.find(n => n.d.id === e.target);
+        if (!s || !t) return;
+        const sp = toScreen(s.x, s.y);
+        const tp = toScreen(t.x, t.y);
+        const meta = SYNAPSES[e.type] || { color: '#6366f1' };
+
+        const isHighlight =
+          (selectedNode && (selectedNode.id === e.source || selectedNode.id === e.target)) ||
+          (hoveredNode && (hoveredNode.id === e.source || hoveredNode.id === e.target)) ||
+          (selectedExp && selectedExp.devices.includes(e.source) && selectedExp.devices.includes(e.target));
+
+        ctx.save();
+        ctx.beginPath();
+        const midX = (sp.x + tp.x) / 2;
+        const midY = (sp.y + tp.y) / 2;
+        const dx = tp.x - sp.x;
+        const dy = tp.y - sp.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const curv = Math.min(dist * 0.12, 30);
+        const cx = midX - (dy / dist) * curv;
+        const cy = midY + (dx / dist) * curv;
+
+        ctx.moveTo(sp.x, sp.y);
+        ctx.quadraticCurveTo(cx, cy, tp.x, tp.y);
+
+        if (meta.dash) ctx.setLineDash(meta.dash);
+
+        // Phân định chuẩn màu Neon nhân quả:
+        // Dòng chảy ra: Xanh dương neon (#0080ff) - Đổi từ Xanh sáng sang Xanh dương
+        // Dòng chảy vào: Tím neon (#b026ff) - Đổi từ Cam thành Tím
+        // Cùng cấp / gợi ý: Lam tím neon (#6366f1)
+        let strokeColor = '#6366f1';
+        if (selectedNode) {
+          if (e.source === selectedNode.id) {
+            strokeColor = '#0080ff';
+          } else if (e.target === selectedNode.id) {
+            strokeColor = '#b026ff';
+          }
+        }
+
+        if (isHighlight) {
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = 2.4 * cam.zoom;
+          ctx.shadowColor = strokeColor;
+          ctx.shadowBlur = 12;
+          ctx.globalAlpha = 1.0;
+        } else {
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = 1.2 * cam.zoom;
+          ctx.shadowColor = strokeColor;
+          ctx.shadowBlur = 4;
+          ctx.globalAlpha = selectedNode || selectedExp ? 0.12 : 0.38;
+        }
+        ctx.stroke();
+
+        // Arrow
+        const pr = 0.65;
+        const ax = (1-pr)*(1-pr)*sp.x + 2*(1-pr)*pr*cx + pr*pr*tp.x;
+        const ay = (1-pr)*(1-pr)*sp.y + 2*(1-pr)*pr*cy + pr*pr*tp.y;
+        const npr = pr + 0.02;
+        const nax = (1-npr)*(1-npr)*sp.x + 2*(1-npr)*npr*cx + npr*npr*tp.x;
+        const nay = (1-npr)*(1-npr)*sp.y + 2*(1-npr)*npr*cy + npr*npr*tp.y;
+        const adx = nax - ax;
+        const ady = nay - ay;
+        const adist = Math.sqrt(adx*adx + ady*ady) || 1;
+        const al = 5.8 * cam.zoom;
+
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(ax + (adx/adist)*al, ay + (ady/adist)*al);
+        ctx.lineTo(ax - (ady/adist)*(al*0.6) - (adx/adist)*al, ay + (adx/adist)*(al*0.6) - (ady/adist)*al);
+        ctx.lineTo(ax + (ady/adist)*(al*0.6) - (adx/adist)*al, ay - (adx/adist)*(al*0.6) - (ady/adist)*al);
+        ctx.closePath();
+        ctx.fillStyle = strokeColor;
+        ctx.fill();
+
+        ctx.restore();
+      });
+
+      // Draw particles
+      particles.forEach(p => {
+        const sp = toScreen(p.s.x, p.s.y);
+        const tp = toScreen(p.t.x, p.t.y);
+        const midX = (sp.x + tp.x) / 2;
+        const midY = (sp.y + tp.y) / 2;
+        const dx = tp.x - sp.x;
+        const dy = tp.y - sp.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const curv = Math.min(dist * 0.12, 30);
+        const cx = midX - (dy / dist) * curv;
+        const cy = midY + (dx / dist) * curv;
+
+        if (p.progress < 0 || p.progress > 1) return;
+
+        let pr = p.progress;
+        if (p.direction === 'inflow') {
+          pr = 1 - p.progress; // Chảy ngược từ target vào source
+        } else if (p.direction === 'bidirectional') {
+          pr = 0.5 + 0.48 * Math.sin(p.progress * Math.PI * 2); // Chảy qua lại dao động hai chiều
+        }
+
+        const px = (1-pr)*(1-pr)*sp.x + 2*(1-pr)*pr*cx + pr*pr*tp.x;
+        const py = (1-pr)*(1-pr)*sp.y + 2*(1-pr)*pr*cy + pr*pr*tp.y;
+        const pCol = p.color || SYNAPSES[p.edge.type]?.color || '#818cf8';
+
+        ctx.save();
+        ctx.globalAlpha = Math.sin(p.progress * Math.PI);
+        ctx.beginPath();
+        ctx.arc(px, py, (1.4 + (p.direction === 'bidirectional' ? 0.3 : 0)) * cam.zoom, 0, Math.PI * 2);
+        ctx.fillStyle = pCol;
+        ctx.shadowColor = pCol;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Draw nodes
+      visibleNodes.forEach(n => {
+        const pos = toScreen(n.x, n.y);
+        const meta = CATEGORIES[n.d.category];
+        const r = (12 + (n.d.studentPorts?.length || 1) * 2) * cam.zoom;
+
+        const isSel = selectedNode?.id === n.d.id;
+        const isHov = hoveredNode?.id === n.d.id;
+        
+        let isExpStep = false;
+        if (selectedExp && selectedExp.steps && selectedExp.steps.length > 0) {
+          const step = selectedExp.steps[currentStepIdx];
+          isExpStep = step.activeDevs.includes(n.d.id);
+        } else if (selectedExp) {
+          isExpStep = selectedExp.devices.includes(n.d.id);
+        }
+
+        let alpha = 1.0;
+        if (selectedNode) {
+          const rel = isSel || EDGES.some(e =>
+            (e.source === selectedNode.id && e.target === n.d.id) ||
+            (e.target === selectedNode.id && e.source === n.d.id)
+          );
+          if (!rel) alpha = 0.14;
+        } else if (selectedExp && !isExpStep) {
+          alpha = 0.14;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+
+        if (isSel || isHov || isExpStep) {
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, r + 9 * cam.zoom, 0, Math.PI * 2);
+          ctx.strokeStyle = isExpStep ? '#eab308' : meta.color;
+          ctx.lineWidth = 2.5;
+          ctx.shadowColor = isExpStep ? '#eab308' : meta.color;
+          ctx.shadowBlur = 18;
+          ctx.stroke();
+        }
+
+        const grad = ctx.createRadialGradient(pos.x - r*0.3, pos.y - r*0.3, 0, pos.x, pos.y, r);
+        grad.addColorStop(0, meta.color);
+        grad.addColorStop(0.7, meta.color + 'aa');
+        grad.addColorStop(1, '#0f172a');
+
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.shadowColor = meta.color;
+        ctx.shadowBlur = isSel ? 20 : 6;
+        ctx.fill();
+
+        // Biểu tượng glyph
+        if (cam.zoom > 0.45) {
+          ctx.font = `${Math.max(12, 13 * cam.zoom)}px system-ui, "Apple Color Emoji", "Segoe UI Emoji"`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(n.d.glyph, pos.x, pos.y);
+        }
+
+        // Nhãn tên dạng thẻ bo góc cao cấp
+          if (cam.zoom > 0.35) {
+            ctx.font = `600 ${Math.max(10, 11 * cam.zoom)}px system-ui, -apple-system, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // BIỆN PHÁP 1: RÚT GỌN TỪ KHÓA NHÃN (PILL-TAGS THÔNG MINH)
+            const isExpanded = isSel || isHov || isExpStep;
+            const label = isExpanded
+              ? (userMode === 'student' ? n.d.nameStudent : n.d.nameVi)
+              : (n.d.shortKeyword || (userMode === 'student' ? n.d.nameStudent : n.d.nameVi));
+
+            const lw = ctx.measureText(label).width;
+            const padH = 6 * cam.zoom;
+            const bw = lw + padH * 2;
+            const bh = Math.max(16, 18 * cam.zoom);
+
+            // BIỆN PHÁP 2: ĐẶT NHÃN HƯỚNG TÂM MỞ RA NGOÀI (RADIAL OUTWARD ANCHORING)
+            let bx = pos.x - bw / 2;
+            let by = pos.y + r + 5 * cam.zoom;
+
+            if (layoutMode === 'circular') {
+              const len = Math.hypot(n.x, n.y) || 1;
+              const ux = n.x / len;
+              const uy = n.y / len;
+
+              if (uy < -0.42) {
+                // Nửa trên vòng tròn: Nhãn hướng LÊN PHÍA TRÊN
+                by = pos.y - r - bh - 5 * cam.zoom;
+                bx = pos.x - bw / 2 + ux * 10 * cam.zoom;
+              } else if (uy > 0.42) {
+                // Nửa dưới vòng tròn: Nhãn hướng XUỐNG PHÍA DƯỚI
+                by = pos.y + r + 5 * cam.zoom;
+                bx = pos.x - bw / 2 + ux * 10 * cam.zoom;
+              } else if (ux > 0) {
+                // Phía sườn bên phải: Nhãn nằm BÊN PHẢI nút
+                bx = pos.x + r + 7 * cam.zoom;
+                by = pos.y - bh / 2 + uy * 8 * cam.zoom;
+              } else {
+                // Phía sườn bên trái: Nhãn nằm BÊN TRÁI nút
+                bx = pos.x - r - bw - 7 * cam.zoom;
+                by = pos.y - bh / 2 + uy * 8 * cam.zoom;
+              }
+            } else {
+              const isStaggerAbove = (n.d.id.charCodeAt(0) % 2 === 0);
+              if (isStaggerAbove) {
+                by = pos.y - r - bh - 5 * cam.zoom;
+              } else {
+                by = pos.y + r + 5 * cam.zoom;
+              }
+            }
+
+            if (mapTheme === 'light') {
+              ctx.fillStyle = isSel ? 'rgba(255, 255, 255, 0.98)' : isHov ? 'rgba(241, 245, 249, 0.98)' : 'rgba(255, 255, 255, 0.92)';
+              ctx.strokeStyle = isSel ? meta.color : isHov ? '#1e293b' : (isExpStep ? '#d97706' : 'rgba(148, 163, 184, 0.7)');
+              ctx.lineWidth = isSel || isHov || isExpStep ? 1.8 : 1.2;
+            } else {
+              ctx.fillStyle = isSel ? 'rgba(30, 41, 59, 0.96)' : isHov ? 'rgba(15, 23, 42, 0.94)' : 'rgba(8, 12, 28, 0.90)';
+              ctx.strokeStyle = isSel ? meta.color : isHov ? '#ffffff' : (isExpStep ? '#eab308' : 'rgba(99, 102, 241, 0.35)');
+              ctx.lineWidth = isSel || isHov || isExpStep ? 1.5 : 1;
+            }
+            ctx.beginPath();
+            if (ctx.roundRect) {
+              ctx.roundRect(bx, by, bw, bh, 5);
+            } else {
+              ctx.rect(bx, by, bw, bh);
+            }
+            ctx.fill();
+            ctx.stroke();
+
+            if (mapTheme === 'light') {
+              ctx.fillStyle = isSel ? meta.color : isHov ? '#0f172a' : isExpStep ? '#b45309' : '#1e293b';
+            } else {
+              ctx.fillStyle = isSel || isHov ? '#ffffff' : isExpStep ? '#fef08a' : '#cbd5e1';
+            }
+            ctx.fillText(label, bx + bw / 2, by + bh / 2);
+        }
+
+        ctx.restore();
+      });
+
+      requestAnimationFrame(loop);
+    }
+
+    // TƯƠNG TÁC CHUỘT
+    canvas.addEventListener('pointerdown', e => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const originX = getOriginX();
+      const originY = H / 2;
+
+      const wx = (mx - originX) / camera.zoom + camera.x;
+      const wy = (my - originY) / camera.zoom + camera.y;
+
+      const clicked = nodeSims.find(n => {
+        const dx = n.x - wx;
+        const dy = n.y - wy;
+        return dx * dx + dy * dy <= (18) * (18);
+      });
+
+      if (clicked) {
+        playClickSound();
+        if (challengeMode && selectedNode && selectedNode.id !== clicked.d.id) {
+          const isConn = EDGES.some(edge =>
+            (edge.source === selectedNode.id && edge.target === clicked.d.id) ||
+            (edge.target === selectedNode.id && edge.source === clicked.d.id)
+          );
+          const alertEl = document.getElementById('challengeAlert');
+          alertEl.classList.remove('hidden');
+          if (isConn) {
+            challengeScore += 10;
+            document.getElementById('challengeScoreText').textContent = `${challengeScore} điểm`;
+            alertEl.innerHTML = `🎉 <b>CHÍNH XÁC!</b> ${selectedNode.nameStudent} kết nối chuẩn với ${clicked.d.nameStudent}! (+10 điểm)`;
+            playSuccessSound();
+          } else {
+            alertEl.innerHTML = `❌ <b>Chưa đúng!</b> ${selectedNode.nameStudent} và ${clicked.d.nameStudent} không trực tiếp ghép nối với nhau.`;
+            playErrorSound();
+          }
+        }
+        selectedNode = selectedNode?.id === clicked.d.id ? null : clicked.d;
+        renderDetailDrawer(selectedNode);
+      } else {
+        isDragging = true;
+        dragStart = { x: e.clientX, y: e.clientY };
+        camStart = { x: camera.x, y: camera.y };
+      }
+    });
+
+    canvas.addEventListener('pointermove', e => {
+      if (isDragging) {
+        camera.x = camStart.x - (e.clientX - dragStart.x) / camera.zoom;
+        camera.y = camStart.y - (e.clientY - dragStart.y) / camera.zoom;
+        return;
+      }
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const originX = getOriginX();
+      const originY = H / 2;
+
+      const wx = (mx - originX) / camera.zoom + camera.x;
+      const wy = (my - originY) / camera.zoom + camera.y;
+
+      const hov = nodeSims.find(n => {
+        const dx = n.x - wx;
+        const dy = n.y - wy;
+        return dx * dx + dy * dy <= (18) * (18);
+      });
+      hoveredNode = hov ? hov.d : null;
+      canvas.style.cursor = hov ? 'pointer' : isDragging ? 'grabbing' : 'grab';
+    });
+
+    window.addEventListener('pointerup', () => { isDragging = false; });
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const f = e.deltaY > 0 ? 0.9 : 1.1;
+      camera.zoom = Math.max(0.2, Math.min(3.5, camera.zoom * f));
+    }, { passive: false });
+
+    window.addEventListener('resize', () => {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      applyLayout();
+    });
+
+    // CHUYỂN ĐỔI CHẾ ĐỘ
+    function setUserMode(mode) {
+      userMode = mode;
+      const bStudent = document.getElementById('btn-mode-student');
+      const bExpert = document.getElementById('btn-mode-expert');
+      if (mode === 'student') {
+        bStudent.className = 'px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-medium transition-all flex items-center gap-1 shadow-md text-xs';
+        bExpert.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1 text-xs';
+        document.getElementById('headerTitle').textContent = 'SƠ ĐỒ LIÊN KẾT THIẾT BỊ KHTN THCS';
+        document.getElementById('headerBadge').textContent = 'Học sinh Lớp 6 - 9';
+        document.getElementById('headerBadge').className = 'text-[9px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300';
+      } else {
+        bExpert.className = 'px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-medium transition-all flex items-center gap-1 shadow-md text-xs';
+        bStudent.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1 text-xs';
+        document.getElementById('headerTitle').textContent = 'MẠNG NƠ-RON THẦN KINH OPENLAB 3D (CHUYÊN GIA)';
+        document.getElementById('headerBadge').textContent = 'Chuẩn RWSS v1.1.1';
+        document.getElementById('headerBadge').className = 'text-[9px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300';
+      }
+      renderDetailDrawer(selectedNode);
+    }
+
+    function setGrade(gr) {
+      selectedGrade = gr;
+      ['ALL', 'grade6', 'grade7', 'grade8', 'grade9'].forEach(g => {
+        const b = document.getElementById(`btn-gr-${g}`);
+        if (g === gr) {
+          b.className = 'px-2 py-1 rounded-lg bg-indigo-600 text-white font-medium transition-all text-xs';
+        } else {
+          b.className = 'px-2 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs';
+        }
+      });
+      playClickSound();
+    }
+
+    function toggleChallengeMode() {
+      challengeMode = !challengeMode;
+      const box = document.getElementById('challengeBox');
+      const b = document.getElementById('btn-challenge');
+      const text = document.getElementById('challengeBtnText');
+      if (challengeMode) {
+        box.classList.remove('hidden');
+        b.className = 'px-3 py-1.5 rounded-xl bg-amber-500/25 border border-amber-500 text-xs font-semibold text-amber-300 transition-all flex items-center gap-1.5 shadow-xl';
+        text.textContent = `Thử thách: ${challengeScore}đ`;
+      } else {
+        box.classList.add('hidden');
+        b.className = 'px-3 py-1.5 rounded-xl bg-slate-950/90 border border-slate-800 hover:border-amber-500 text-xs font-semibold text-slate-300 transition-all flex items-center gap-1.5 shadow-xl';
+        text.textContent = 'Thử thách';
+      }
+      playClickSound();
+    }
+
+    function toggleLayout() {
+      layoutMode = layoutMode === 'circular' ? 'neural' : 'circular';
+      const b = document.getElementById('btn-toggle-layout');
+      if (b) {
+        b.innerHTML = layoutMode === 'circular' ? '🔄' : '📶';
+        b.title = `Bố cục: ${layoutMode === 'circular' ? 'Vòng tròn (Nhấp để đổi sang Đa tầng)' : 'Đa tầng (Nhấp để đổi sang Vòng tròn)'}`;
+      }
+      applyLayout();
+      playClickSound();
+    }
+
+    function resetCamera() {
+      camera.x = 0;
+      camera.y = 0;
+      camera.zoom = 1;
+      selectedNode = null;
+      selectedExp = null;
+      currentStepIdx = 0;
+      closeDetailDrawer();
+      applyLayout();
+      playClickSound();
+    }
+
+    function toggleFiring() {
+      isFiring = !isFiring;
+      const b = document.getElementById('btn-toggle-fire');
+      if (b) {
+        b.innerHTML = isFiring ? '⚡' : '⏸';
+        b.title = isFiring ? 'Xung tín hiệu: ĐANG BẬT (Bấm để tạm dừng)' : 'Xung tín hiệu: ĐÃ DỪNG (Bấm để bật)';
+        b.className = isFiring
+          ? 'w-8 h-8 rounded-xl bg-amber-500/25 border border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.3)] flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95'
+          : 'w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 border border-slate-700/60 flex items-center justify-center text-sm transition-all hover:scale-105 active:scale-95 opacity-60';
+      }
+      playClickSound();
+    }
+
+    function closeDetailDrawer() {
+      document.getElementById('detailDrawer').classList.add('hidden');
+      selectedNode = null;
+      playClickSound();
+    }
+
+    function renderDetailDrawer(node) {
+      const drawer = document.getElementById('detailDrawer');
+      if (!node) {
+        drawer.classList.add('hidden');
+        return;
+      }
+      drawer.classList.remove('hidden');
+
+      document.getElementById('detailGlyph').textContent = node.glyph;
+      document.getElementById('detailNameMain').textContent = userMode === 'student' ? node.nameStudent : node.nameVi;
+      document.getElementById('detailNameSub').textContent = userMode === 'student' ? node.nameVi : `${node.assetId}`;
+
+      const catMeta = CATEGORIES[node.category];
+      const badge = document.getElementById('detailCategoryBadge');
+      badge.textContent = `${catMeta.icon} ${userMode === 'student' ? catMeta.studentName : catMeta.name}`;
+      badge.style.backgroundColor = `${catMeta.color}25`;
+      badge.style.color = catMeta.color;
+
+      document.getElementById('detailGradeBadge').textContent = node.grades.map(g => g.replace('grade', 'Lớp ')).join(', ');
+      document.getElementById('detailStudentTip').textContent = node.tip;
+
+      const formLabel = document.getElementById('detailFormulaLabel');
+      formLabel.textContent = userMode === 'student' ? 'Công thức SGK quen thuộc' : 'Phương trình toán học chuẩn';
+      document.getElementById('detailFormula').textContent = '$' + (node.mathFormula || node.sgkFormula) + '$';
+
+      const portsLabel = document.getElementById('detailPortsLabel');
+      portsLabel.textContent = userMode === 'student' ? 'Vị trí cắm & gá lắp trên dụng cụ' : 'Cổng Connector RWSS';
+      const portsContainer = document.getElementById('detailPorts');
+      portsContainer.innerHTML = '';
+      (userMode === 'student' ? node.studentPorts : node.ports).forEach(p => {
+        portsContainer.innerHTML += `<span class="text-[10px] px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-emerald-300">${p}</span>`;
+      });
+
+      const outList = document.getElementById('detailOutputs');
+      outList.innerHTML = '';
+      const outs = EDGES.filter(e => e.source === node.id);
+      outs.forEach(e => {
+        const target = NODES.find(n => n.id === e.target);
+        const meta = SYNAPSES[e.type] || { color: '#6366f1', name: e.type, studentName: e.type };
+        outList.innerHTML += `
+          <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
+            <div class="flex items-center justify-between font-medium text-slate-200">
+              <span>${userMode === 'student' ? target?.nameStudent : target?.nameVi}</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded" style="background:${meta.color}25; color:${meta.color}">${userMode === 'student' ? meta.studentName : meta.name}</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">${userMode === 'student' ? e.studentRule : e.expertRule}</p>
+          </div>
+        `;
+      });
+      if (outs.length === 0) outList.innerHTML = '<span class="text-xs text-slate-500 italic">Không có tác động đầu ra trực tiếp</span>';
+
+      const inList = document.getElementById('detailInputs');
+      inList.innerHTML = '';
+      const ins = EDGES.filter(e => e.target === node.id);
+      ins.forEach(e => {
+        const src = NODES.find(n => n.id === e.source);
+        const meta = SYNAPSES[e.type] || { color: '#6366f1', name: e.type, studentName: e.type };
+        inList.innerHTML += `
+          <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
+            <div class="flex items-center justify-between font-medium text-slate-200">
+              <span>${userMode === 'student' ? src?.nameStudent : src?.nameVi}</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded" style="background:${meta.color}25; color:${meta.color}">${userMode === 'student' ? meta.studentName : meta.name}</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">${userMode === 'student' ? e.studentRule : e.expertRule}</p>
+          </div>
+        `;
+      });
+      if (ins.length === 0) inList.innerHTML = '<span class="text-xs text-slate-500 italic">Không có tương tác đầu vào</span>';
+    }
+
+    // KHỞI TẠO BÀI THỰC HÀNH TỪNG BƯỚC
+    function renderExperiments() {
+      const expContainer = document.getElementById('experimentsList');
+      expContainer.innerHTML = '';
+      EXPERIMENTS.forEach(exp => {
+        const isSel = selectedExp?.id === exp.id;
+        const card = document.createElement('div');
+        card.className = `p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
+          isSel ? 'bg-indigo-600/25 border-indigo-500 shadow-md shadow-indigo-500/15' : 'bg-slate-900/60 border-slate-800/80 hover:bg-slate-900'
+        }`;
+
+        let inner = `
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-slate-100 text-[11px]">${exp.title}</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono">${exp.grade}</span>
+          </div>
+          <div class="flex items-center gap-1.5 mt-1.5">
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">${exp.deviceIds ? exp.deviceIds.length : 4} dụng cụ</span>
+          </div>
+        `;
+
+        card.innerHTML = inner;
+        card.onclick = () => {
+          if (selectedExp?.id === exp.id) {
+            selectedExp = null;
+            currentStepIdx = 0;
+          } else {
+            selectedExp = exp;
+            currentStepIdx = 0;
+            selectedNode = null;
+            closeDetailDrawer();
+          }
+          renderExperiments();
+          playClickSound();
+        };
+        expContainer.appendChild(card);
+      });
+    }
+
+    function prevStep() {
+      if (!selectedExp) return;
+      currentStepIdx = Math.max(0, currentStepIdx - 1);
+      playClickSound();
+      renderExperiments();
+    }
+
+    function nextStep() {
+      if (!selectedExp) return;
+      currentStepIdx = Math.min(selectedExp.steps.length - 1, currentStepIdx + 1);
+      playClickSound();
+      renderExperiments();
+    }
+
+    // CHÚ GIẢI
+    const legendContainer = document.getElementById('synapseLegend');
+    document.getElementById('edgeCountBadge').textContent = `${EDGES.length} khớp nối`;
+    Object.entries(SYNAPSES).forEach(([kind, meta]) => {
+      legendContainer.innerHTML += `
+        <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full" style="background:${meta.color}"></span>
+          ${meta.studentName}
+        </span>
+      `;
+    });
+
+    document.getElementById('searchInput').addEventListener('input', e => {
+      searchKeyword = e.target.value.trim();
+    });
+
+    // KHỞI ĐỘNG VÀ XỬ LÝ URL PARAMS
+    applyLayout();
+    renderExperiments();
+
+    // Hỗ trợ truyền tham số qua URL để kiểm thử tự động
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('mode') === 'expert') {
+      setUserMode('expert');
+    }
+    if (urlParams.get('grade')) {
+      setGrade(urlParams.get('grade'));
+    }
+    if (urlParams.get('layout') === 'neural') {
+      toggleLayout();
+    }
+    if (urlParams.get('sidebar') === 'collapsed') {
+      toggleSidebar(false);
+    }
+    if (urlParams.get('challenge') === '1') {
+      toggleChallengeMode();
+    }
+    if (urlParams.get('node')) {
+      const nid = urlParams.get('node');
+      const found = NODES.find(n => n.id === nid);
+      if (found) {
+        selectedNode = found;
+        renderDetailDrawer(selectedNode);
+      }
+    }
+    if (urlParams.get('exp')) {
+      const eid = urlParams.get('exp');
+      const foundExp = EXPERIMENTS.find(e => e.id === eid);
+      if (foundExp) {
+        selectedExp = foundExp;
+        currentStepIdx = parseInt(urlParams.get('step') || '0', 10);
+        renderExperiments();
+      }
+    }
+
+    // Ổn định ngay vị trí nơ-ron trước khi render frame đầu
+    for (let s = 0; s < 40; s++) {
+      nodeSims.forEach(n => {
+        n.x += (n.tx - n.x) * 0.25;
+        n.y += (n.ty - n.y) * 0.25;
+      });
+    }
+
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

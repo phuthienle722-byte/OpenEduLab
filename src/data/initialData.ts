@@ -7,7 +7,7 @@ export const INITIAL_PROJECTS: WebProject[] = [
   {
     id: 'proj-openlab-3d',
     title: 'Phòng Thí Nghiệm Ảo 3D KHTN THCS (OpenLab 3D)',
-    url: 'http://localhost:3001',
+    url: '/simulations/openlab-3d/index.html',
     description: 'Phòng thí nghiệm 3D tương tác chuẩn Thông tư 38/2021/TT-BGDĐT: 10 nhóm thiết bị KHTN THCS, 24 biến môi trường (nhiệt độ, trọng lực g, áp suất...), mô phỏng cân điện tử, ống đong, đòn bẩy, mạch điện, lực kế và tính khối lượng riêng.',
     country: 'VN',
     category: 'natural_sciences',
@@ -29,7 +29,7 @@ export const INITIAL_PROJECTS: WebProject[] = [
   {
     id: 'proj-khucxa-pxtp',
     title: 'Mô Phỏng Khúc Xạ & Phản Xạ Toàn Phần (KHTN 9)',
-    url: 'http://localhost:3002',
+    url: '/simulations/khucxa-pxtp/index.html',
     description: 'Mô phỏng quang hình học trực quan chuẩn định luật Snell và hiện tượng phản xạ toàn phần. Tương tác tia tới, quan sát góc khúc xạ, tính góc tới hạn i_gh, hỗ trợ chế độ đối chứng 2 môi trường và bài tập trắc nghiệm.',
     country: 'VN',
     category: 'natural_sciences',

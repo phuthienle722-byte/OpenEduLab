@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>OL3D HTML Module — Ống đong thủy tinh 100 ml (OL3D-EQP-CYL-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-CYL-0001",
+  "slug": "ong-dong-thuy-tinh-100ml",
+  "name": "Ống đong thủy tinh 100 ml",
+  "category": "volume-measurement",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-CYL-0001",
+    "slug": "ong-dong-thuy-tinh-100ml",
+    "name": {
+      "vi": "Ống đong thủy tinh 100 ml",
+      "en": "100 ml Graduated Cylinder"
+    },
+    "category": "volume-measurement",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 32,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 255,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 65,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.032,
+        "height": 0.255,
+        "depth": 0.065
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-CYL-0001_ong-dong-thuy-tinh-100ml/assets/ong-dong-thuy-tinh-100ml.webp"
+      ],
+      "proceduralArchetype": "graduated-cylinder"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 138.5,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/ong-dong-thuy-tinh-100ml.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-CYL-0001_ong-dong-thuy-tinh-100ml/assets/ong-dong-thuy-tinh-100ml.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Ống đong thủy tinh 100 ml",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Ống đong thủy tinh Borosilicate 3.3 chia vạch chuẩn đo thể tích chất lỏng",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 32 × 255 × 65 mm · Khối lượng: 138.5 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Ống đong thủy tinh 100 ml"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "liquidLevelMl",
+    "label": "Thể tích chất lỏng V",
+    "unit": "ml",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "defaultValue": 50,
+    "presets": [
+      {
+        "label": "0 ml (Rỗng)",
+        "statePatch": {
+          "liquidLevelMl": 0
+        }
+      },
+      {
+        "label": "50 ml (Nửa bình)",
+        "statePatch": {
+          "liquidLevelMl": 50
+        }
+      },
+      {
+        "label": "100 ml (Đầy bình)",
+        "statePatch": {
+          "liquidLevelMl": 100
+        }
+      }
+    ],
+    "canHoldLiquid": true,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "water-pour"
+  }
+}
+  </script>
+</head>
+<body>
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="24,70 56,70 52,65 28,65" fill="#94A3B8" stroke="#475569" stroke-width="1.2"/>
+    <rect x="32" y="14" width="16" height="52" rx="1.5" fill="#E0F2FE" fill-opacity="0.4" stroke="#0284C7" stroke-width="1.5"/>
+    <rect x="33" y="38" width="14" height="27" fill="#38BDF8" fill-opacity="0.6"/>
+    <path d="M33 38 Q40 40.5 47 38" stroke="#0284C7" stroke-width="1.4" fill="none"/>
+    <ellipse cx="40" cy="14" rx="8" ry="2" fill="#BAE6FD" stroke="#0284C7" stroke-width="1.2"/>
+    <line x1="34" y1="22" x2="41" y2="22" stroke="#0369A1" stroke-width="1"/>
+    <line x1="34" y1="28" x2="43" y2="28" stroke="#0369A1" stroke-width="1.2"/>
+    <line x1="34" y1="34" x2="41" y2="34" stroke="#0369A1" stroke-width="1"/>
+    <line x1="34" y1="46" x2="43" y2="46" stroke="#0369A1" stroke-width="1.2"/>
+    <line x1="34" y1="54" x2="41" y2="54" stroke="#0369A1" stroke-width="1"/>
+  </svg>
+  </template>
+  <template id="ol3d-module-real-photo">
+    <img src="/libraries3DLab/OL3D-EQP-CYL-0001_ong-dong-thuy-tinh-100ml/assets/ong-dong-thuy-tinh-100ml.webp" alt="Ảnh thực tế của Ống đong thủy tinh 100 ml" width="240" height="240" style="width:240px;height:240px;object-fit:contain;background:#ffffff;" />
+  </template>
+</body>
+</html>

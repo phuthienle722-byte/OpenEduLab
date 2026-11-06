@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-SEP-0001",
+  "slug": "separatory-funnel-stand",
+  "name": "Phễu chiết có khoá & Phễu lọc trên giá đỡ",
+  "category": "chemical-apparatus",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-SEP-0001",
+    "slug": "separatory-funnel-stand",
+    "name": {
+      "vi": "Phễu chiết có khoá & Phễu lọc trên giá đỡ",
+      "en": "Separatory Funnel with Stopcock"
+    },
+    "category": "chemical-apparatus",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 140,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 380,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 140,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.14,
+        "height": 0.38,
+        "depth": 0.14
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-SEP-0001_separatory-funnel-stand/assets/separatory-funnel-stand.webp"
+      ],
+      "proceduralArchetype": "separatory-funnel"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 620,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/separatory-funnel-stand.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-SEP-0001_separatory-funnel-stand/assets/separatory-funnel-stand.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Phễu chiết có khoá & Phễu lọc trên giá đỡ",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Phễu chiết thủy tinh có khóa PTFE tách hai chất lỏng không tan vào nhau",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 140 × 380 × 140 mm · Khối lượng: 620 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Phễu chiết có khoá & Phễu lọc trên giá đỡ"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "liquidLevelMl",
+    "label": "Thể tích chất lỏng V",
+    "unit": "ml",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "defaultValue": 50,
+    "presets": [
+      {
+        "label": "0 ml (Rỗng)",
+        "statePatch": {
+          "liquidLevelMl": 0
+        }
+      },
+      {
+        "label": "50 ml (Nửa bình)",
+        "statePatch": {
+          "liquidLevelMl": 50
+        }
+      },
+      {
+        "label": "100 ml (Đầy bình)",
+        "statePatch": {
+          "liquidLevelMl": 100
+        }
+      }
+    ],
+    "canHoldLiquid": true,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "water-pour"
+  }
+}

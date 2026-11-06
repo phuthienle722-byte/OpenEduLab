@@ -12,8 +12,8 @@ function localGoRedirectPlugin(): Plugin {
         if (req.url && req.url.startsWith('/go/')) {
           const code = req.url.replace(/^\/go\//, '').split('?')[0];
           const localMap: Record<string, string> = {
-            'proj-openlab-3d': 'http://localhost:3001',
-            'proj-khucxa-pxtp': 'http://localhost:3002',
+            'proj-openlab-3d': '/simulations/openlab-3d/index.html',
+            'proj-khucxa-pxtp': '/simulations/khucxa-pxtp/index.html',
             'proj-1741697206385': 'https://donghobamgiay.netlify.app',
           };
           const targetUrl = localMap[code];

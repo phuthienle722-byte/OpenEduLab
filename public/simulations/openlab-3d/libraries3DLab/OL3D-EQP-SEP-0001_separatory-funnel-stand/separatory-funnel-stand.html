@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>OL3D HTML Module — Phễu chiết có khoá & Phễu lọc trên giá đỡ (OL3D-EQP-SEP-0001)</title>
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-SEP-0001",
+  "slug": "separatory-funnel-stand",
+  "name": "Phễu chiết có khoá & Phễu lọc trên giá đỡ",
+  "category": "chemical-apparatus",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-SEP-0001",
+    "slug": "separatory-funnel-stand",
+    "name": {
+      "vi": "Phễu chiết có khoá & Phễu lọc trên giá đỡ",
+      "en": "Separatory Funnel with Stopcock"
+    },
+    "category": "chemical-apparatus",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 140,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 380,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 140,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.14,
+        "height": 0.38,
+        "depth": 0.14
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-SEP-0001_separatory-funnel-stand/assets/separatory-funnel-stand.webp"
+      ],
+      "proceduralArchetype": "separatory-funnel"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 620,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/separatory-funnel-stand.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-SEP-0001_separatory-funnel-stand/assets/separatory-funnel-stand.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Phễu chiết có khoá & Phễu lọc trên giá đỡ",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Phễu chiết thủy tinh có khóa PTFE tách hai chất lỏng không tan vào nhau",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 140 × 380 × 140 mm · Khối lượng: 620 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Phễu chiết có khoá & Phễu lọc trên giá đỡ"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "liquidLevelMl",
+    "label": "Thể tích chất lỏng V",
+    "unit": "ml",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "defaultValue": 50,
+    "presets": [
+      {
+        "label": "0 ml (Rỗng)",
+        "statePatch": {
+          "liquidLevelMl": 0
+        }
+      },
+      {
+        "label": "50 ml (Nửa bình)",
+        "statePatch": {
+          "liquidLevelMl": 50
+        }
+      },
+      {
+        "label": "100 ml (Đầy bình)",
+        "statePatch": {
+          "liquidLevelMl": 100
+        }
+      }
+    ],
+    "canHoldLiquid": true,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "water-pour"
+  }
+}
+  </script>
+</head>
+<body>
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <line x1="22" y1="12" x2="22" y2="68" stroke="#475569" stroke-width="3"/>
+    <rect x="15" y="66" width="46" height="4.5" rx="1.5" fill="#334155"/>
+    <path d="M35 16 H49 L54 30 L42 48 L30 30 Z" fill="#E0F2FE" fill-opacity="0.4" stroke="#0284C7" stroke-width="1.4"/>
+    <polygon points="32.5,30 51.5,30 48,37 36,37" fill="#FBBF24" fill-opacity="0.8"/>
+    <polygon points="36,37 48,37 42,47" fill="#38BDF8" fill-opacity="0.75"/>
+    <line x1="42" y1="48" x2="42" y2="62" stroke="#0284C7" stroke-width="2.5"/>
+    <rect x="36" y="52" width="12" height="3.5" rx="1" fill="#EF4444"/>
+  </svg>
+  </template>
+  <template id="ol3d-module-real-photo">
+    <img src="/libraries3DLab/OL3D-EQP-SEP-0001_separatory-funnel-stand/assets/separatory-funnel-stand.webp" alt="Ảnh thực tế của Phễu chiết có khoá & Phễu lọc trên giá đỡ" width="240" height="240" style="width:240px;height:240px;object-fit:contain;background:#ffffff;" />
+  </template>
+</body>
+</html>

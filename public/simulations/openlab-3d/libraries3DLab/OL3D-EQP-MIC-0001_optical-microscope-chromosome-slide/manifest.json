@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-MIC-0001",
+  "slug": "optical-microscope-chromosome-slide",
+  "name": "Kính hiển vi quang học (10x, 40x, 100x) & Tiêu bản NST",
+  "category": "biology-microscopy",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-MIC-0001",
+    "slug": "optical-microscope-chromosome-slide",
+    "name": {
+      "vi": "Kính hiển vi quang học (10x, 40x, 100x) & Tiêu bản NST",
+      "en": "Compound Optical Microscope"
+    },
+    "category": "biology-microscopy",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 180,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 340,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 220,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.18,
+        "height": 0.34,
+        "depth": 0.22
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-MIC-0001_optical-microscope-chromosome-slide/assets/optical-microscope-chromosome-slide.webp"
+      ],
+      "proceduralArchetype": "optical-microscope"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 2450,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/optical-microscope-chromosome-slide.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-MIC-0001_optical-microscope-chromosome-slide/assets/optical-microscope-chromosome-slide.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Kính hiển vi quang học (10x, 40x, 100x) & Tiêu bản NST",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Kính hiển vi quang học 3 vật kính quan sát tiêu bản tế bào và nhiễm sắc thể",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 180 × 340 × 220 mm · Khối lượng: 2450 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Kính hiển vi quang học (10x, 40x, 100x) & Tiêu bản NST"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "magnification",
+    "label": "Độ phóng đại vật kính",
+    "unit": "x",
+    "min": 10,
+    "max": 100,
+    "step": 30,
+    "defaultValue": 40,
+    "presets": [
+      {
+        "label": "10x (Thị trường rộng)",
+        "statePatch": {
+          "magnification": 10
+        }
+      },
+      {
+        "label": "40x (Tiêu bản NST)",
+        "statePatch": {
+          "magnification": 40
+        }
+      },
+      {
+        "label": "100x (Soi dầu vi mô)",
+        "statePatch": {
+          "magnification": 100
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "switch-flip"
+  }
+}

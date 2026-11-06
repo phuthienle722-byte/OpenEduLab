@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-PRM-0001",
+  "slug": "equilateral-optical-prism-stand",
+  "name": "Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng",
+  "category": "optical-equipment",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-PRM-0001",
+    "slug": "equilateral-optical-prism-stand",
+    "name": {
+      "vi": "Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng",
+      "en": "Equilateral Optical Prism on Stand"
+    },
+    "category": "optical-equipment",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 80,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 150,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 80,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.08,
+        "height": 0.15,
+        "depth": 0.08
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-PRM-0001_equilateral-optical-prism-stand/assets/equilateral-optical-prism-stand.webp"
+      ],
+      "proceduralArchetype": "optical-prism"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 210,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/equilateral-optical-prism-stand.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-PRM-0001_equilateral-optical-prism-stand/assets/equilateral-optical-prism-stand.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Lăng kính tam giác thủy tinh quang học khảo sát khúc xạ và tán sắc ánh sáng",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 80 × 150 × 80 mm · Khối lượng: 210 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Lăng kính tam giác trên giá đỡ — Tán sắc ánh sáng"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "incidentAngleDeg",
+    "label": "Góc tới lăng kính i",
+    "unit": "°",
+    "min": 0,
+    "max": 60,
+    "step": 1,
+    "defaultValue": 30,
+    "presets": [
+      {
+        "label": "0°",
+        "statePatch": {
+          "incidentAngleDeg": 0
+        }
+      },
+      {
+        "label": "30° (Tán sắc 7 màu)",
+        "statePatch": {
+          "incidentAngleDeg": 30
+        }
+      },
+      {
+        "label": "45°",
+        "statePatch": {
+          "incidentAngleDeg": 45
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "optical-laser"
+  }
+}

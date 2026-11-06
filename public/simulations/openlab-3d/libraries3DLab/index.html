@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thư Viện Thiết Bị 3D (libraries3DLab) — OpenLab 3D</title>
+    <style>
+      :root {
+        --bg: #0b1324;
+        --panel: #131e33;
+        --card: #182640;
+        --border: #2a4068;
+        --primary: #1e6bff;
+        --cyan: #00bceb;
+        --emerald: #10b981;
+        --amber: #f59e0b;
+        --text: #f8fafc;
+        --sub: #94a3b8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+      .header {
+        background: #07224d;
+        border-bottom: 1px solid var(--border);
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .folder-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: rgba(0, 188, 235, 0.15);
+        border: 1px solid var(--cyan);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+      }
+      .subtitle {
+        margin: 3px 0 0;
+        font-size: 12.5px;
+        color: #bae6fd;
+      }
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 20px 24px 48px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .path-bar {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .path-row-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .path-input-group {
+        flex: 1;
+        min-width: 280px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #09101f;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+      }
+      .path-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--cyan);
+        white-space: nowrap;
+      }
+      .path-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: 13px;
+        font-weight: 600;
+        outline: none;
+      }
+      .btn-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      button,
+      .btn-link {
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 8.5px 14px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+      .btn-scan-all {
+        background: linear-gradient(135deg, #059669, #047857);
+        border-color: #34d399;
+        color: #fff;
+        font-weight: 800;
+        box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25);
+      }
+      .btn-scan-all:hover {
+        background: linear-gradient(135deg, #047857, #065f46);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1557db;
+      }
+      .btn-ghost {
+        background: #1e293b;
+        border-color: #334155;
+        color: #e2e8f0;
+      }
+      .btn-ghost:hover {
+        background: #334155;
+      }
+      .smart-watch-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+      .watch-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.14);
+        border: 1px solid rgba(52, 211, 153, 0.45);
+        color: #6ee7b7;
+        font-weight: 700;
+        font-size: 11.5px;
+      }
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 8px #10b981;
+      }
+      .status-banner {
+        padding: 11px 15px;
+        border-radius: 10px;
+        background: rgba(16, 185, 129, 0.14);
+        border: 1px solid rgba(52, 211, 153, 0.45);
+        color: #a7f3d0;
+        font-size: 13px;
+        font-weight: 600;
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .folder-summary-panel {
+        background: #0f182a;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        padding: 12px 15px;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .folder-summary-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12.5px;
+        font-weight: 800;
+        color: #38bdf8;
+      }
+      .folder-tree-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        max-height: 110px;
+        overflow-y: auto;
+      }
+      .tree-chip {
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: #17253f;
+        border: 1px solid #2b4470;
+        color: #e2e8f0;
+      }
+      .tree-chip.changed {
+        background: rgba(16, 185, 129, 0.18);
+        border-color: #34d399;
+        color: #a7f3d0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 14px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 12px;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .card:hover {
+        border-color: var(--cyan);
+      }
+      .card.just-updated {
+        border-color: #34d399;
+        box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.35);
+      }
+      .card-top {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .thumb {
+        width: 68px;
+        height: 68px;
+        border-radius: 9px;
+        background: #fff;
+        border: 1px solid var(--border);
+        object-fit: contain;
+        padding: 4px;
+        flex-shrink: 0;
+      }
+      .folder-name {
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: 11.5px;
+        color: var(--cyan);
+        word-break: break-all;
+      }
+      .item-title {
+        font-size: 15px;
+        font-weight: 800;
+        margin: 3px 0;
+      }
+      .disk-path {
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: 11px;
+        color: var(--sub);
+        background: #09101f;
+        padding: 5px 8px;
+        border-radius: 6px;
+        border: 1px solid #1e2f4d;
+        word-break: break-all;
+      }
+      .file-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tag {
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: 11px;
+        padding: 3px 7px;
+        border-radius: 5px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        color: #cbd5e1;
+      }
+      .tag.ok {
+        border-color: rgba(52, 211, 153, 0.5);
+        color: #a7f3d0;
+      }
+      .card-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-title">
+        <div class="folder-badge">📁</div>
+        <div>
+          <h1>Thư Viện Thiết Bị 3D (libraries3DLab)</h1>
+          <p class="subtitle">
+            Phân tích cấu trúc folder chuẩn Arduino · Tự động phát hiện thay đổi nhẹ tài nguyên & reload bảng thiết bị tức thì
+          </p>
+        </div>
+      </div>
+      <div class="btn-row">
+        <span class="watch-pill" id="watchStatusPill">
+          <span class="pulse-dot"></span>
+          <span id="watchStatusText">Theo dõi thông minh: Đang bật</span>
+        </span>
+        <span
+          id="totalCountBadge"
+          style="
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(0, 188, 235, 0.15);
+            border: 1px solid var(--cyan);
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #e0f2fe;
+          "
+        >
+          Đang tải thư viện...
+        </span>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="path-bar">
+        <div class="path-row-top">
+          <div class="path-input-group">
+            <span class="path-label">Đường dẫn libraries3D:</span>
+            <input
+              id="basePathInput"
+              class="path-input"
+              type="text"
+              value="C:\Users\ltlie\Documents\libraries3DLab"
+            />
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn-scan-all" id="scanEntireLibraryBtn">
+              🔄 Quét toàn bộ thư viện
+            </button>
+            <button type="button" class="btn-primary" id="savePathBtn">
+              ✓ Áp dụng đường dẫn
+            </button>
+            <button type="button" class="btn-ghost" id="chooseFolderDialogBtn">
+              📂 Chọn lại thư mục gốc...
+            </button>
+            <input
+              id="hiddenFolderScanner"
+              type="file"
+              webkitdirectory
+              directory
+              multiple
+              style="display: none"
+            />
+          </div>
+        </div>
+
+        <div class="smart-watch-bar">
+          <div>
+            <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700;">
+              <input type="checkbox" id="autoWatchToggle" checked style="accent-color: #10b981;" />
+              <span>
+                Tự động quét thông minh khi có thay đổi (Chỉ đọc dấu vân tay size + lastModified, 0% CPU khi không đổi)
+              </span>
+            </label>
+          </div>
+          <div id="perfMetricsText" style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #38bdf8;">
+            Chế độ Delta-Hash sẵn sàng
+          </div>
+        </div>
+      </section>
+
+      <div id="statusBanner" class="status-banner"></div>
+
+      <section id="folderSummaryPanel" class="folder-summary-panel">
+        <div class="folder-summary-header">
+          <span id="folderSummaryTitle">Cấu trúc thư mục đã phân tích</span>
+          <span id="folderSummaryMeta" style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #94a3b8;"></span>
+        </div>
+        <div id="folderTreeChips" class="folder-tree-chips"></div>
+      </section>
+
+      <div id="libraryGrid" class="grid"></div>
+    </main>
+
+    <script>
+      const DEFAULT_PATH = 'C:\\Users\\ltlie\\Documents\\libraries3DLab';
+      const IDB_NAME = 'OpenLab3D_LibrariesDisk_DB_v1';
+      const IDB_STORE_MODULES = 'library_modules';
+      const IDB_STORE_HANDLES = 'directory_handles';
+      const IDB_STORE_SETTINGS = 'library_settings';
+
+      const basePathInput = document.getElementById('basePathInput');
+      const statusBanner = document.getElementById('statusBanner');
+      const libraryGrid = document.getElementById('libraryGrid');
+      const totalCountBadge = document.getElementById('totalCountBadge');
+      const perfMetricsText = document.getElementById('perfMetricsText');
+      const folderSummaryPanel = document.getElementById('folderSummaryPanel');
+      const folderSummaryTitle = document.getElementById('folderSummaryTitle');
+      const folderSummaryMeta = document.getElementById('folderSummaryMeta');
+      const folderTreeChips = document.getElementById('folderTreeChips');
+      const autoWatchToggle = document.getElementById('autoWatchToggle');
+      const watchStatusText = document.getElementById('watchStatusText');
+
+      // Kênh đồng bộ thời gian thực sang Tab Phòng thí nghiệm 3D chính (không cần F5)
+      const liveSyncChannel =
+        'BroadcastChannel' in window
+          ? new BroadcastChannel('ol3d_library_live_sync_v1')
+          : null;
+
+      // Bộ nhớ đệm dấu vân tay (Metadata Fingerprint) cho từng folder con để chỉ đọc file khi có thay đổi thật sự
+      let connectedDirHandle = null;
+      let lastGlobalFingerprint = '';
+      const folderFingerprints = new Map(); // folderKey -> fingerprint string
+      const recentlyUpdatedAssetIds = new Set();
+      let isScanningNow = false;
+
+      if (liveSyncChannel) {
+        liveSyncChannel.onmessage = (ev) => {
+          if (ev.data && ev.data.type === 'LIBRARY_UPDATED_MAIN') {
+            loadAndRenderLibraries();
+          }
+        };
+      }
+
+      window.addEventListener('storage', (ev) => {
+        if (ev.key === 'ol3d_library_main_pulse_v1') {
+          loadAndRenderLibraries();
+        }
+      });
+
+      function notifyMainLabTabOfChanges(changedAssetIds) {
+        try {
+          if (liveSyncChannel) {
+            liveSyncChannel.postMessage({
+              type: 'LIBRARY_UPDATED_EXTERNAL',
+              changedAssetIds,
+              timestamp: Date.now(),
+            });
+          }
+          localStorage.setItem('ol3d_library_sync_pulse_v1', String(Date.now()));
+        } catch {}
+      }
+
+      function showStatus(msg) {
+        statusBanner.textContent = msg;
+        statusBanner.style.display = 'flex';
+      }
+
+      function getConfiguredPath() {
+        return localStorage.getItem('ol3d_library_base_path') || DEFAULT_PATH;
+      }
+
+      basePathInput.value = getConfiguredPath();
+
+      function openDatabase() {
+        return new Promise((resolve, reject) => {
+          if (!window.indexedDB) return reject(new Error('No IndexedDB'));
+          const req = indexedDB.open(IDB_NAME, 1);
+          req.onupgradeneeded = () => {
+            const db = req.result;
+            if (!db.objectStoreNames.contains(IDB_STORE_MODULES)) {
+              db.createObjectStore(IDB_STORE_MODULES, { keyPath: 'assetId' });
+            }
+            if (!db.objectStoreNames.contains(IDB_STORE_HANDLES)) {
+              db.createObjectStore(IDB_STORE_HANDLES);
+            }
+            if (!db.objectStoreNames.contains(IDB_STORE_SETTINGS)) {
+              db.createObjectStore(IDB_STORE_SETTINGS);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      async function getSavedDirectoryHandle() {
+        try {
+          const db = await openDatabase();
+          if (!db.objectStoreNames.contains(IDB_STORE_HANDLES)) return null;
+          return await new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE_HANDLES, 'readonly');
+            const req = tx.objectStore(IDB_STORE_HANDLES).get('root_libraries3DLab');
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => resolve(null);
+          });
+        } catch {
+          return null;
+        }
+      }
+
+      async function saveDirectoryHandle(handle) {
+        try {
+          const db = await openDatabase();
+          if (!db.objectStoreNames.contains(IDB_STORE_HANDLES)) return;
+          await new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE_HANDLES, 'readwrite');
+            tx.objectStore(IDB_STORE_HANDLES).put(handle, 'root_libraries3DLab');
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+          });
+        } catch {}
+      }
+
+      async function readIndexedDbModules() {
+        try {
+          const db = await openDatabase();
+          if (!db.objectStoreNames.contains(IDB_STORE_MODULES)) return [];
+          return await new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE_MODULES, 'readonly');
+            const getAll = tx.objectStore(IDB_STORE_MODULES).getAll();
+            getAll.onsuccess = () => resolve(getAll.result || []);
+            getAll.onerror = () => resolve([]);
+          });
+        } catch {
+          return [];
+        }
+      }
+
+      async function upsertIndexedDbModules(entries) {
+        if (!entries || entries.length === 0) return;
+        const db = await openDatabase();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE_MODULES, 'readwrite');
+          const store = tx.objectStore(IDB_STORE_MODULES);
+          for (const entry of entries) {
+            store.put(entry);
+          }
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+      }
+
+      /**
+       * Phân tích nhẹ (Lightweight Parser) thông tin thiết bị từ nội dung .HTML + manifest.json + library.properties
+       */
+      function parseFolderPackageToLibraryEntry({
+        folderKey,
+        htmlFileName,
+        rawHtmlSource,
+        manifestText,
+        propertiesText,
+        photoDataUrl,
+        basePath,
+      }) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(rawHtmlSource, 'text/html');
+        const scriptEl =
+          doc.getElementById('ol3d-module-manifest') ||
+          doc.getElementById('OPENLAB_EQUIPMENT_MANIFEST') ||
+          doc.querySelector('script[type="application/json"]');
+
+        let parsedJson = {};
+        if (scriptEl && scriptEl.textContent) {
+          try {
+            parsedJson = JSON.parse(
+              scriptEl.textContent.trim().replace(/,\s*([\]}])/g, '$1'),
+            );
+          } catch {}
+        } else if (manifestText) {
+          try {
+            parsedJson = JSON.parse(manifestText);
+          } catch {}
+        }
+
+        const rawAsset = parsedJson.asset || parsedJson || {};
+        const docTitle =
+          doc.querySelector('title')?.textContent?.trim() ||
+          htmlFileName.replace(/\.html?$/i, '');
+        const cleanTitle = docTitle
+          .replace(/^OL3D HTML Module\s*[—\-:]\s*/i, '')
+          .replace(/\s*\(OL3D-[A-Z0-9-]+\)\s*$/i, '')
+          .trim();
+
+        const idFromFolder = folderKey.match(/^([A-Z0-9-]+)_/i)?.[1];
+        const idFromTitle =
+          docTitle.match(/OL3D-[A-Z0-9-]+/i)?.[0] ||
+          rawHtmlSource.match(/OL3D-[A-Z0-9-]+/i)?.[0];
+
+        const assetId = (
+          rawAsset.assetId ||
+          parsedJson.moduleId ||
+          idFromFolder ||
+          idFromTitle ||
+          `OL3D-HTML-${folderKey.slice(0, 8).toUpperCase()}`
+        ).toUpperCase();
+
+        const nameVi =
+          (typeof rawAsset.name === 'object' && rawAsset.name?.vi) ||
+          (typeof rawAsset.name === 'string' && rawAsset.name) ||
+          parsedJson.name ||
+          cleanTitle ||
+          assetId;
+
+        const nameEn =
+          (typeof rawAsset.name === 'object' && rawAsset.name?.en) || nameVi;
+
+        const slug =
+          rawAsset.slug ||
+          parsedJson.slug ||
+          htmlFileName.replace(/\.html?$/i, '');
+
+        const safeFolderName =
+          folderKey && folderKey !== '__root__'
+            ? folderKey
+            : `${assetId.replace(/[^a-zA-Z0-9_-]/g, '_')}_${slug.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+
+        const finalPropertiesText =
+          propertiesText ||
+          [
+            `name=${nameVi} (${assetId})`,
+            `version=${rawAsset.assetVersion || '1.0.0'}`,
+            `author=OpenLab 3D Studio`,
+            `category=${rawAsset.category || 'measuring-instrument'}`,
+            `includes=${htmlFileName}`,
+            `assetId=${assetId}`,
+            `slug=${slug}`,
+            `updatedAt=${new Date().toISOString()}`,
+          ].join('\n');
+
+        const finalManifestText =
+          manifestText || JSON.stringify(parsedJson, null, 2);
+
+        const assetSnapshot = {
+          ...rawAsset,
+          assetId,
+          slug,
+          name: { vi: nameVi, en: nameEn },
+          kind: rawAsset.kind || 'equipment',
+          subject: rawAsset.subject || 'general-science',
+          category: rawAsset.category || 'measuring-instrument',
+          categoryIds: Array.isArray(rawAsset.categoryIds)
+            ? rawAsset.categoryIds
+            : [rawAsset.category || 'measuring-instrument'],
+          tags: Array.isArray(rawAsset.tags) ? rawAsset.tags : [nameVi, assetId],
+          assetVersion: rawAsset.assetVersion || '1.0.0',
+        };
+
+        return {
+          assetId,
+          slug,
+          folderName: safeFolderName,
+          virtualPath: `${basePath}\\${safeFolderName}\\${htmlFileName}`,
+          htmlFileName,
+          rawHtmlSource,
+          libraryPropertiesText: finalPropertiesText,
+          manifestJsonText: finalManifestText,
+          assetSnapshot,
+          uploadedRealPhotoDataUrl: photoDataUrl || undefined,
+          updatedAtIso: new Date().toISOString(),
+          syncedToPhysicalDisk: true,
+        };
+      }
+
+      function readFileAsDataUrl(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ''));
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(file);
+        });
+      }
+
+      /**
+       * Phân tích cấu trúc thư mục từ FileSystemDirectoryHandle một cách thông minh (Delta Fingerprint):
+       * - Bước 1: Quét nhanh siêu dữ liệu (tên folder, tên file, dung lượng, lastModified) mà KHÔNG đọc nội dung file.
+       * - Bước 2: So sánh dấu vân tay của từng folder với bộ nhớ đệm. Folder nào không đổi sẽ được bỏ qua hoàn toàn (0 tốn tài nguyên).
+       * - Bước 3: Chỉ đọc và phân tích các folder mới hoặc có file vừa thay đổi, lưu vào IndexedDB và reload bảng thiết bị ngay lập tức!
+       */
+      async function scanDirectoryHandleSmart(rootHandle, forceFullParse = false) {
+        if (!rootHandle || isScanningNow) return;
+        isScanningNow = true;
+        const t0 = performance.now();
+
+        try {
+          if (rootHandle.queryPermission) {
+            let perm = await rootHandle.queryPermission({ mode: 'read' });
+            if (perm !== 'granted' && forceFullParse && rootHandle.requestPermission) {
+              perm = await rootHandle.requestPermission({ mode: 'read' });
+            }
+            if (perm !== 'granted') {
+              isScanningNow = false;
+              return;
+            }
+          }
+
+          // Bước 1: Thu thập cấu trúc folder & metadata
+          const discoveredFolders = new Map(); // folderKey -> { htmlHandle, htmlMeta, manifestHandle, propHandle, photoHandle, filesList }
+          const globalFpParts = [];
+
+          for await (const entry of rootHandle.values()) {
+            if (
+              entry.kind === 'file' &&
+              entry.name.toLowerCase().endsWith('.html') &&
+              entry.name.toLowerCase() !== 'index.html'
+            ) {
+              const file = await entry.getFile();
+              const fp = `${entry.name}:${file.size}:${file.lastModified}`;
+              globalFpParts.push(`__root__/${fp}`);
+              discoveredFolders.set(entry.name.replace(/\.html$/i, ''), {
+                folderKey: entry.name.replace(/\.html$/i, ''),
+                fingerprint: fp,
+                htmlHandle: entry,
+                htmlFileName: entry.name,
+                manifestHandle: null,
+                propHandle: null,
+                photoHandle: null,
+                fileNames: [entry.name],
+              });
+            } else if (entry.kind === 'directory') {
+              const folderName = entry.name;
+              const fileNames = [];
+              let htmlHandle = null;
+              let htmlFileName = '';
+              let manifestHandle = null;
+              let propHandle = null;
+              let photoHandle = null;
+              const subFpParts = [];
+
+              for await (const sub of entry.values()) {
+                if (sub.kind === 'file') {
+                  const lower = sub.name.toLowerCase();
+                  fileNames.push(sub.name);
+                  const f = await sub.getFile();
+                  subFpParts.push(`${sub.name}:${f.size}:${f.lastModified}`);
+                  if (lower.endsWith('.html') && lower !== 'index.html') {
+                    htmlHandle = sub;
+                    htmlFileName = sub.name;
+                  } else if (lower === 'manifest.json') {
+                    manifestHandle = sub;
+                  } else if (lower === 'library.properties') {
+                    propHandle = sub;
+                  } else if (
+                    lower.endsWith('.png') ||
+                    lower.endsWith('.webp') ||
+                    lower.endsWith('.jpg')
+                  ) {
+                    photoHandle = sub;
+                  }
+                } else if (sub.kind === 'directory' && sub.name.toLowerCase() === 'assets') {
+                  for await (const assetEntry of sub.values()) {
+                    if (assetEntry.kind === 'file') {
+                      const lowerA = assetEntry.name.toLowerCase();
+                      if (
+                        lowerA.endsWith('.png') ||
+                        lowerA.endsWith('.webp') ||
+                        lowerA.endsWith('.jpg')
+                      ) {
+                        const af = await assetEntry.getFile();
+                        subFpParts.push(
+                          `assets/${assetEntry.name}:${af.size}:${af.lastModified}`,
+                        );
+                        fileNames.push(`assets/${assetEntry.name}`);
+                        photoHandle = assetEntry;
+                      }
+                    }
+                  }
+                }
+              }
+
+              if (htmlHandle) {
+                const folderFp = subFpParts.sort().join(';');
+                globalFpParts.push(`${folderName}[${folderFp}]`);
+                discoveredFolders.set(folderName, {
+                  folderKey: folderName,
+                  fingerprint: folderFp,
+                  htmlHandle,
+                  htmlFileName,
+                  manifestHandle,
+                  propHandle,
+                  photoHandle,
+                  fileNames,
+                });
+              }
+            }
+          }
+
+          const nextGlobalFp = globalFpParts.sort().join('||');
+          if (!forceFullParse && nextGlobalFp === lastGlobalFingerprint) {
+            const dtSkip = (performance.now() - t0).toFixed(1);
+            perfMetricsText.textContent = `Kiểm tra nhanh (${dtSkip}ms): Không có thay đổi · 0% tải xử lý`;
+            isScanningNow = false;
+            return;
+          }
+
+          lastGlobalFingerprint = nextGlobalFp;
+          const basePath = getConfiguredPath();
+          const changedEntries = [];
+          const changedFolderKeys = [];
+          let skippedCount = 0;
+
+          for (const [folderKey, info] of discoveredFolders.entries()) {
+            const prevFp = folderFingerprints.get(folderKey);
+            if (!forceFullParse && prevFp === info.fingerprint) {
+              skippedCount++;
+              continue;
+            }
+
+            // Chỉ đọc nội dung của những folder thực sự thay đổi hoặc mới thêm!
+            const htmlFile = await info.htmlHandle.getFile();
+            const rawHtmlSource = await htmlFile.text();
+            const manifestText = info.manifestHandle
+              ? await (await info.manifestHandle.getFile()).text()
+              : '';
+            const propertiesText = info.propHandle
+              ? await (await info.propHandle.getFile()).text()
+              : '';
+            let photoDataUrl = '';
+            if (info.photoHandle) {
+              const photoFile = await info.photoHandle.getFile();
+              photoDataUrl = await readFileAsDataUrl(photoFile);
+            }
+
+            const entry = parseFolderPackageToLibraryEntry({
+              folderKey,
+              htmlFileName: info.htmlFileName,
+              rawHtmlSource,
+              manifestText,
+              propertiesText,
+              photoDataUrl,
+              basePath,
+            });
+
+            folderFingerprints.set(folderKey, info.fingerprint);
+            recentlyUpdatedAssetIds.add(entry.assetId);
+            changedEntries.push(entry);
+            changedFolderKeys.push(folderKey);
+          }
+
+          if (changedEntries.length > 0) {
+            await upsertIndexedDbModules(changedEntries);
+            notifyMainLabTabOfChanges(changedEntries.map((e) => e.assetId));
+          }
+
+          const dtMs = (performance.now() - t0).toFixed(1);
+          perfMetricsText.textContent = `Quét xong trong ${dtMs}ms · Cập nhật ${changedEntries.length} folder · Bỏ qua ${skippedCount} folder không đổi`;
+
+          renderFolderStructureSummary(
+            Array.from(discoveredFolders.values()),
+            new Set(changedFolderKeys),
+            dtMs,
+          );
+
+          await loadAndRenderLibraries();
+
+          if (changedEntries.length > 0 || forceFullParse) {
+            showStatus(
+              `✓ Đã phân tích ${discoveredFolders.size} folder trong thư viện (${changedEntries.length} module cập nhật mới, ${skippedCount} module giữ nguyên từ bộ nhớ đệm) và tự động đồng bộ sang bàn thí nghiệm!`,
+            );
+          }
+        } catch (err) {
+          console.warn('Quét thư mục cảnh báo:', err);
+        } finally {
+          isScanningNow = false;
+        }
+      }
+
+      /**
+       * Phân tích cấu trúc folder khi chọn qua hộp thoại <input type="file" webkitdirectory>
+       */
+      async function analyzeWebkitDirectoryFiles(fileList) {
+        const t0 = performance.now();
+        const files = Array.from(fileList || []);
+        if (files.length === 0) return;
+
+        const firstRel = files[0].webkitRelativePath || '';
+        const rootFolderName = firstRel.split('/')[0] || 'libraries3DLab';
+        const currentPath = getConfiguredPath();
+        const resolvedPath = currentPath.includes('\\')
+          ? currentPath.replace(/[^\\]+$/, rootFolderName)
+          : `C:\\Users\\ltlie\\Documents\\${rootFolderName}`;
+
+        basePathInput.value = resolvedPath;
+        localStorage.setItem('ol3d_library_base_path', resolvedPath);
+        localStorage.setItem('ol3d_library_path_applied_v1', 'true');
+
+        // Gom nhóm các file theo cấu trúc thư mục con
+        const foldersMap = new Map();
+        for (const f of files) {
+          const rel = f.webkitRelativePath || f.name;
+          const parts = rel.split('/');
+          // parts: [rootFolderName, subFolderName, fileName] hoặc [rootFolderName, fileName]
+          const folderKey = parts.length >= 3 ? parts[1] : parts[0];
+          const subPath = parts.slice(2).join('/') || parts[parts.length - 1];
+          const lower = f.name.toLowerCase();
+
+          if (!foldersMap.has(folderKey)) {
+            foldersMap.set(folderKey, {
+              folderKey,
+              htmlFile: null,
+              htmlFileName: '',
+              manifestFile: null,
+              propFile: null,
+              photoFile: null,
+              fileNames: [],
+              fpParts: [],
+            });
+          }
+          const grp = foldersMap.get(folderKey);
+          grp.fileNames.push(subPath);
+          grp.fpParts.push(`${subPath}:${f.size}:${f.lastModified}`);
+
+          if (lower.endsWith('.html') && lower !== 'index.html') {
+            grp.htmlFile = f;
+            grp.htmlFileName = f.name;
+          } else if (lower === 'manifest.json') {
+            grp.manifestFile = f;
+          } else if (lower === 'library.properties') {
+            grp.propFile = f;
+          } else if (
+            lower.endsWith('.png') ||
+            lower.endsWith('.webp') ||
+            lower.endsWith('.jpg')
+          ) {
+            grp.photoFile = f;
+          }
+        }
+
+        const changedEntries = [];
+        const changedFolderKeys = [];
+        const validFolders = [];
+        let skippedCount = 0;
+
+        for (const [folderKey, grp] of foldersMap.entries()) {
+          if (!grp.htmlFile) continue;
+          validFolders.push(grp);
+          const fp = grp.fpParts.sort().join(';');
+          if (folderFingerprints.get(folderKey) === fp) {
+            skippedCount++;
+            continue;
+          }
+
+          const rawHtmlSource = await grp.htmlFile.text();
+          const manifestText = grp.manifestFile ? await grp.manifestFile.text() : '';
+          const propertiesText = grp.propFile ? await grp.propFile.text() : '';
+          const photoDataUrl = grp.photoFile
+            ? await readFileAsDataUrl(grp.photoFile)
+            : '';
+
+          const entry = parseFolderPackageToLibraryEntry({
+            folderKey,
+            htmlFileName: grp.htmlFileName,
+            rawHtmlSource,
+            manifestText,
+            propertiesText,
+            photoDataUrl,
+            basePath: resolvedPath,
+          });
+
+          folderFingerprints.set(folderKey, fp);
+          recentlyUpdatedAssetIds.add(entry.assetId);
+          changedEntries.push(entry);
+          changedFolderKeys.push(folderKey);
+        }
+
+        if (changedEntries.length > 0) {
+          await upsertIndexedDbModules(changedEntries);
+          notifyMainLabTabOfChanges(changedEntries.map((e) => e.assetId));
+        }
+
+        const dtMs = (performance.now() - t0).toFixed(1);
+        perfMetricsText.textContent = `Quét xong trong ${dtMs}ms · Cập nhật ${changedEntries.length} folder · Bỏ qua ${skippedCount} folder không đổi`;
+
+        renderFolderStructureSummary(
+          validFolders,
+          new Set(changedFolderKeys),
+          dtMs,
+        );
+        await loadAndRenderLibraries();
+        showStatus(
+          `✓ Đã phân tích ${validFolders.length} folder trong "${rootFolderName}" (${changedEntries.length} module mới/thay đổi, ${skippedCount} giữ nguyên) và tự động reload bảng thiết bị!`,
+        );
+      }
+
+      function renderFolderStructureSummary(foldersList, changedKeysSet, dtMs) {
+        if (!foldersList || foldersList.length === 0) {
+          folderSummaryPanel.style.display = 'none';
+          return;
+        }
+        folderSummaryPanel.style.display = 'flex';
+        folderSummaryTitle.textContent = `Cấu trúc thư mục đã phân tích (${foldersList.length} gói module thiết bị)`;
+        folderSummaryMeta.textContent = `${changedKeysSet.size} thay đổi · Xử lý ${dtMs}ms`;
+        folderTreeChips.innerHTML = '';
+
+        for (const f of foldersList) {
+          const chip = document.createElement('span');
+          const isChanged = changedKeysSet.has(f.folderKey);
+          chip.className = 'tree-chip' + (isChanged ? ' changed' : '');
+          chip.textContent = `📁 ${f.folderKey}/ (${f.fileNames.length} file${isChanged ? ' · Mới cập nhật' : ''})`;
+          folderTreeChips.appendChild(chip);
+        }
+      }
+
+      // Nút "Quét toàn bộ thư viện"
+      document
+        .getElementById('scanEntireLibraryBtn')
+        .addEventListener('click', async () => {
+          if (connectedDirHandle) {
+            await scanDirectoryHandleSmart(connectedDirHandle, true);
+            return;
+          }
+          const savedHandle = await getSavedDirectoryHandle();
+          if (savedHandle) {
+            connectedDirHandle = savedHandle;
+            await scanDirectoryHandleSmart(connectedDirHandle, true);
+            return;
+          }
+          if (window.showDirectoryPicker) {
+            try {
+              const handle = await window.showDirectoryPicker({
+                id: 'libraries3DLab',
+                mode: 'readwrite',
+                startIn: 'documents',
+              });
+              connectedDirHandle = handle;
+              await saveDirectoryHandle(handle);
+              const newPath = `C:\\Users\\ltlie\\Documents\\${handle.name}`;
+              basePathInput.value = newPath;
+              localStorage.setItem('ol3d_library_base_path', newPath);
+              localStorage.setItem('ol3d_library_path_applied_v1', 'true');
+              await scanDirectoryHandleSmart(handle, true);
+              return;
+            } catch {
+              return;
+            }
+          }
+          document.getElementById('hiddenFolderScanner').click();
+        });
+
+      // Nút "Chọn lại thư mục gốc..."
+      document
+        .getElementById('chooseFolderDialogBtn')
+        .addEventListener('click', async () => {
+          if (window.showDirectoryPicker) {
+            try {
+              const handle = await window.showDirectoryPicker({
+                id: 'libraries3DLab',
+                mode: 'readwrite',
+                startIn: 'documents',
+              });
+              connectedDirHandle = handle;
+              await saveDirectoryHandle(handle);
+              const newPath = `C:\\Users\\ltlie\\Documents\\${handle.name}`;
+              basePathInput.value = newPath;
+              localStorage.setItem('ol3d_library_base_path', newPath);
+              localStorage.setItem('ol3d_library_path_applied_v1', 'true');
+              await scanDirectoryHandleSmart(handle, true);
+              return;
+            } catch {
+              return;
+            }
+          }
+          document.getElementById('hiddenFolderScanner').click();
+        });
+
+      document
+        .getElementById('hiddenFolderScanner')
+        .addEventListener('change', async (e) => {
+          await analyzeWebkitDirectoryFiles(e.target.files);
+          e.target.value = '';
+        });
+
+      document.getElementById('savePathBtn').addEventListener('click', () => {
+        const val = basePathInput.value.trim() || DEFAULT_PATH;
+        localStorage.setItem('ol3d_library_base_path', val);
+        localStorage.setItem('ol3d_library_path_applied_v1', 'true');
+        showStatus('Đã áp dụng đường dẫn thư mục libraries3D: ' + val);
+        loadAndRenderLibraries();
+      });
+
+      autoWatchToggle.addEventListener('change', () => {
+        watchStatusText.textContent = autoWatchToggle.checked
+          ? 'Theo dõi thông minh: Đang bật'
+          : 'Theo dõi thông minh: Đã tạm dừng';
+      });
+
+      async function loadAndRenderLibraries() {
+        const basePath = getConfiguredPath();
+        let bundled = [];
+        try {
+          const res = await fetch('/libraries3DLab/library-index.json');
+          if (res.ok) {
+            const data = await res.json();
+            bundled = data.libraries || [];
+          }
+        } catch {}
+
+        const idbEntries = await readIndexedDbModules();
+        const mergedMap = new Map();
+
+        for (const item of bundled) {
+          mergedMap.set(item.assetId, {
+            assetId: item.assetId,
+            nameVi: item.nameVi,
+            folderName: item.folderName,
+            htmlFileName: item.htmlFileName,
+            htmlUrl: `/libraries3DLab/${item.folderName}/${item.htmlFileName}`,
+            manifestUrl: `/libraries3DLab/${item.folderName}/manifest.json`,
+            propertiesUrl: `/libraries3DLab/${item.folderName}/library.properties`,
+            photoUrl: item.realPhotoSrc || '',
+            virtualDiskPath: `${basePath}\\${item.folderName}\\${item.htmlFileName}`,
+            sourceLabel: 'Thư viện gốc (Pre-installed)',
+            rawHtmlSource: null,
+          });
+        }
+
+        for (const entry of idbEntries) {
+          const existing = mergedMap.get(entry.assetId);
+          mergedMap.set(entry.assetId, {
+            assetId: entry.assetId,
+            nameVi:
+              entry.assetSnapshot?.name?.vi ||
+              existing?.nameVi ||
+              entry.assetId,
+            folderName: entry.folderName,
+            htmlFileName: entry.htmlFileName,
+            htmlUrl:
+              existing?.htmlUrl ||
+              `/libraries3DLab/${entry.folderName}/${entry.htmlFileName}`,
+            manifestUrl: existing?.manifestUrl || null,
+            propertiesUrl: existing?.propertiesUrl || null,
+            photoUrl:
+              entry.uploadedRealPhotoDataUrl || existing?.photoUrl || '',
+            virtualDiskPath: `${basePath}\\${entry.folderName}\\${entry.htmlFileName}`,
+            sourceLabel: 'Đã đồng bộ từ Thư mục (Smart Sync)',
+            rawHtmlSource: entry.rawHtmlSource || null,
+          });
+        }
+
+        const list = Array.from(mergedMap.values());
+        totalCountBadge.textContent = `${list.length} gói thiết bị trong libraries3DLab`;
+        libraryGrid.innerHTML = '';
+
+        for (const mod of list) {
+          const isJustUpdated = recentlyUpdatedAssetIds.has(mod.assetId);
+          const card = document.createElement('div');
+          card.className = 'card' + (isJustUpdated ? ' just-updated' : '');
+          card.innerHTML = `
+            <div>
+              <div class="card-top">
+                ${
+                  mod.photoUrl
+                    ? `<img class="thumb" src="${mod.photoUrl}" alt="${mod.nameVi}" />`
+                    : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;background:#0f172a;color:#38bdf8;font-weight:800;font-size:11px;">3D HTML</div>`
+                }
+                <div style="min-width:0;flex:1;">
+                  <div class="folder-name">📁 ${mod.folderName}/</div>
+                  <div class="item-title">${mod.nameVi}</div>
+                  <div style="font-size:11.5px;color:${isJustUpdated ? '#6ee7b7' : '#38bdf8'};font-weight:700;">
+                    ${isJustUpdated ? '⚡ Mới cập nhật tức thì' : mod.sourceLabel}
+                  </div>
+                </div>
+              </div>
+              <div class="disk-path" style="margin-top:10px;">${mod.virtualDiskPath}</div>
+              <div class="file-tags" style="margin-top:8px;">
+                <span class="tag ok">📄 ${mod.htmlFileName}</span>
+                <span class="tag ok">⚙️ library.properties</span>
+                <span class="tag ok">📋 manifest.json</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <a class="btn-link btn-primary" href="${mod.htmlUrl}" target="_blank" rel="noopener noreferrer">
+                ▶ Mở file .HTML
+              </a>
+              ${
+                mod.manifestUrl
+                  ? `<a class="btn-link btn-ghost" href="${mod.manifestUrl}" target="_blank" rel="noopener noreferrer">manifest.json</a>`
+                  : ''
+              }
+              ${
+                mod.propertiesUrl
+                  ? `<a class="btn-link btn-ghost" href="${mod.propertiesUrl}" target="_blank" rel="noopener noreferrer">library.properties</a>`
+                  : ''
+              }
+            </div>
+          `;
+
+          if (mod.rawHtmlSource) {
+            const openBtn = card.querySelector('.btn-primary');
+            openBtn.addEventListener('click', (ev) => {
+              ev.preventDefault();
+              const blob = new Blob([mod.rawHtmlSource], {
+                type: 'text/html;charset=utf-8',
+              });
+              const blobUrl = URL.createObjectURL(blob);
+              window.location.assign(blobUrl);
+            });
+          }
+
+          libraryGrid.appendChild(card);
+        }
+      }
+
+      // Khởi tạo: Nạp danh sách hiện tại + Khôi phục kết nối thư mục (nếu đã chọn) + Bật bộ theo dõi thông minh nhẹ tài nguyên
+      (async function initSmartLibraryExplorer() {
+        await loadAndRenderLibraries();
+        const savedHandle = await getSavedDirectoryHandle();
+        if (savedHandle) {
+          connectedDirHandle = savedHandle;
+          await scanDirectoryHandleSmart(connectedDirHandle, false);
+        }
+
+        // Chỉ kiểm tra dấu vân tay siêu nhẹ khi tab đang hiển thị (visibilityState === 'visible')
+        setInterval(() => {
+          if (
+            autoWatchToggle.checked &&
+            document.visibilityState === 'visible' &&
+            connectedDirHandle &&
+            !isScanningNow
+          ) {
+            scanDirectoryHandleSmart(connectedDirHandle, false);
+          }
+        }, 3500);
+
+        window.addEventListener('focus', () => {
+          if (autoWatchToggle.checked && connectedDirHandle && !isScanningNow) {
+            scanDirectoryHandleSmart(connectedDirHandle, false);
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

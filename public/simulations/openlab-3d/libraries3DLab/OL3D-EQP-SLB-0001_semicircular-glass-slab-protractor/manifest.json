@@ -1,0 +1,297 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-SLB-0001",
+  "slug": "semicircular-glass-slab-protractor",
+  "name": "Bản bán trụ thuỷ tinh & Đĩa chia độ 360°",
+  "category": "optical-equipment",
+  "version": "1.1.0",
+  "asset": {
+    "assetId": "OL3D-EQP-SLB-0001",
+    "slug": "semicircular-glass-slab-protractor",
+    "name": {
+      "vi": "Bản bán trụ thuỷ tinh & Bảng chia độ 360° (SGK KHTN 9)",
+      "en": "Semicircular Glass Block & 360° Protractor Disc"
+    },
+    "kind": "equipment",
+    "subject": "physics",
+    "category": "optical-equipment",
+    "categoryIds": [
+      "optical-equipment"
+    ],
+    "tags": [
+      "bản bán trụ",
+      "bảng chia độ",
+      "khúc xạ ánh sáng",
+      "phản xạ toàn phần",
+      "góc tới hạn",
+      "bài 1",
+      "bài 5",
+      "bài 6"
+    ],
+    "summary": "Khối thuỷ tinh bán trụ trong suốt (chiết suất n = 1,50) gắn đồng tâm trên bảng tròn chia độ 0°–90°. Dùng để đo góc tới i, góc khúc xạ r và khảo sát hiện tượng phản xạ toàn phần.",
+    "textbookRef": {
+      "bookTitle": "SGK Khoa học tự nhiên 9 (Kết nối tri thức)",
+      "chapter": "Chương II: Ánh sáng",
+      "lesson": "Bài 1 (trang 6), Bài 5 Khúc xạ ánh sáng (trang 25–28), Bài 6 Phản xạ toàn phần (trang 30–32)",
+      "figureRef": "Hình 1.2, Hình 5.1, Hình 5.2, Hình 6.1",
+      "standardFunction": "Đọc chính xác giá trị góc tới i, góc khúc xạ r và góc phản xạ i' để nghiệm lại định luật khúc xạ ánh sáng (sin i / sin r = hằng số) và xác định góc tới hạn phản xạ toàn phần (i_th ≈ 41,8°).",
+      "usageGuidelines": "Chiếu tia sáng hẹp đi qua tâm I của bản bán trụ. Thay đổi góc tới i từ 0° đến 80° và đọc góc khúc xạ r tương ứng trên vòng chia độ.",
+      "safetyNote": "Tránh làm rơi vỡ khối thuỷ tinh quang học hoặc làm xước mặt phẳng tâm I."
+    },
+    "assetVersion": "1.1.0",
+    "manifestSchemaVersion": "1.0.0",
+    "moduleApiVersion": "1.0.0",
+    "geometry": {
+      "modelFormat": "PROCEDURAL_PBR",
+      "modelUri": "procedural://openlab3d/semicircular-slab@1.1.0",
+      "modelFileVersion": "1.1.0",
+      "proceduralArchetype": "semicircular-slab",
+      "upAxis": "Y",
+      "anchor": "base-center",
+      "boundingBoxM": {
+        "width": 0.19,
+        "height": 0.048,
+        "depth": 0.19
+      },
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 190,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "height": {
+          "value": 48,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "depth": {
+          "value": 190,
+          "unit": "mm",
+          "status": "verified"
+        }
+      },
+      "triangleCount": 4120,
+      "materialCount": 7,
+      "namedNodes": [
+        {
+          "nodeName": "root",
+          "role": "root",
+          "description": "Tâm bảng chia độ quang học và bệ chân đế"
+        },
+        {
+          "nodeName": "body",
+          "role": "body",
+          "description": "Đĩa chia độ Hartmann 360° và bản bán trụ thuỷ tinh BK7"
+        },
+        {
+          "nodeName": "handle",
+          "role": "handle",
+          "description": "Cần xoay dẫn hướng, đèn laser bán dẫn và kim chỉ vạch"
+        },
+        {
+          "nodeName": "ray_paths",
+          "role": "scale_marks",
+          "description": "Hệ tia tới SI, tia khúc xạ IR và tia phản xạ IS'"
+        },
+        {
+          "nodeName": "measurement_anchor",
+          "role": "measurement_anchor",
+          "description": "Điểm sáng quang học tại tâm O trên mặt phân cách"
+        }
+      ],
+      "scaleValidation": "verified",
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor/assets/semicircular-glass-slab-protractor.webp"
+      ]
+    },
+    "scientificProperties": {
+      "material": {
+        "value": "Thuỷ tinh quang học BK7 (n = 1,50) & Đĩa men trắng Hartmann",
+        "status": "verified"
+      },
+      "referenceMass": {
+        "value": 320,
+        "unit": "g",
+        "status": "verified"
+      }
+    },
+    "measurementMetadata": {
+      "isMeasuringInstrument": true,
+      "measuredQuantity": "refraction-angle",
+      "rangeMin": {
+        "value": 0,
+        "unit": "độ (°)",
+        "status": "verified"
+      },
+      "rangeMax": {
+        "value": 90,
+        "unit": "độ (°)",
+        "status": "verified"
+      },
+      "leastCount": {
+        "value": 1,
+        "unit": "độ (°)",
+        "status": "verified"
+      }
+    },
+    "capabilities": [
+      {
+        "id": "selectable",
+        "state": "implemented"
+      },
+      {
+        "id": "translatable",
+        "state": "implemented"
+      },
+      {
+        "id": "rotatable",
+        "state": "implemented"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "incidentAngleDeg",
+    "label": "Góc tới laser i",
+    "unit": "°",
+    "min": 0,
+    "max": 90,
+    "step": 1,
+    "defaultValue": 30,
+    "presets": [
+      {
+        "label": "Vuông góc (i = 0°)",
+        "statePatch": {
+          "incidentAngleDeg": 0,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      },
+      {
+        "label": "Khúc xạ (i = 20°)",
+        "statePatch": {
+          "incidentAngleDeg": 20,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      },
+      {
+        "label": "Cận tới hạn (i = 40°)",
+        "statePatch": {
+          "incidentAngleDeg": 40,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      },
+      {
+        "label": "Tới hạn i_gh (41.8°)",
+        "statePatch": {
+          "incidentAngleDeg": 41.8,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      },
+      {
+        "label": "PXTP (i = 60°)",
+        "statePatch": {
+          "incidentAngleDeg": 60,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "optics-angle"
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/semicircular-glass-slab-protractor.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor/assets/semicircular-glass-slab-protractor.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Bản bán trụ thuỷ tinh & Đĩa chia độ 360°",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Bản bán trụ thủy tinh quang học Crown BK7 đặt đồng tâm trên đĩa tròn chia độ Hartmann 360°",
+    "sourceCredit": "OpenLab 3D Optics Lab / Chuẩn Thông tư 38/2021/TT-BGDĐT",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 190 × 48 × 190 mm · Khối lượng: 320 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 26,
+        "label": "Bản bán trụ thủy tinh Crown BK7 (R = 48 mm, n = 1.50)"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 52,
+        "label": "Tâm O định vị trên mặt phân cách phẳng (Z = 0)"
+      },
+      {
+        "xPercent": 25,
+        "yPercent": 36,
+        "label": "Cần xoay dẫn hướng mang đèn Laser bán dẫn và kim chỉ góc"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 84,
+        "label": "Mâm đĩa chia độ Hartmann 360° (ĐCNN 1°, đánh dấu i_gh = 41.8°)"
+      }
+    ]
+  },
+  "dossier": {
+    "assetId": "OL3D-EQP-SLB-0001",
+    "technicalStandard": "Thông tư 38/2021/TT-BGDĐT — Hình 1.2 trang 6 & Bài 5, 6 SGK KHTN 9",
+    "exactDimensionsSpec": "Bản bán trụ thủy tinh BK7: Bán kính R = 48 mm, dày 20 mm · Đế đĩa chia độ Hartmann tròn: Ø 190 mm (360°)",
+    "weightOrCapacitySpec": "Chiết suất chuẩn: n = 1.50 · Góc tới hạn phản xạ toàn phần: i_gh ≈ 41.8° · Khối lượng: 320 g",
+    "synthesizedFeatures": [
+      "Khối bán trụ bằng thủy tinh quang học BK7 (hoặc Acrylic quang học tinh khiết) đặt đồng tâm trên mâm chia độ tròn 360° (ĐCNN 1°).",
+      "Mặt phẳng đường kính của bản bán trụ trùng khít vạch chuẩn 90°–90°, tâm O trùng giao điểm pháp tuyến N–N'.",
+      "Khi chiếu tia laser qua mặt cong hướng vào tâm O (từ thủy tinh chiết suất n = 1.50 ra không khí): Góc tới i < 41.8° cho tia khúc xạ; khi i ≥ 41.8° tia khúc xạ biến mất hoàn toàn và xảy ra Phản xạ toàn phần (Bài 6 SGK KHTN 9)."
+    ],
+    "fiveWebSources": [
+      {
+        "siteName": "Thư viện Pháp luật (Thông tư 38/2021/TT-BGDĐT)",
+        "domain": "thuvienphapluat.vn",
+        "verifiedSpecSummary": "Bộ thí nghiệm quang hình THCS: Bản bán nguyệt thủy tinh trong suốt n=1.50, đĩa chia độ 360 độ."
+      },
+      {
+        "siteName": "SGK KHTN 9 Kết nối tri thức - Nhà xuất bản Giáo dục",
+        "domain": "nxbgd.vn",
+        "verifiedSpecSummary": "Hình 5.1 và Hình 6.1: Khảo sát khúc xạ và phản xạ toàn phần với bản bán trụ thủy tinh và nguồn laser."
+      },
+      {
+        "siteName": "Thiết bị Giáo dục Việt Nam (Viteco)",
+        "domain": "thietbigiaoduc.vn",
+        "verifiedSpecSummary": "Mâm tròn quang học Hartmann chia độ 4 góc phần tư đối xứng qua pháp tuyến N-N'."
+      },
+      {
+        "siteName": "PhET Interactive Simulations (Bending Light)",
+        "domain": "phet.colorado.edu",
+        "verifiedSpecSummary": "Mô phỏng khúc xạ ánh sáng theo định luật Snell n1 sin i = n2 sin r và góc tới hạn phản xạ toàn phần."
+      },
+      {
+        "siteName": "VietJack - Hướng dẫn thực hành KHTN 9 Bài 5 & 6",
+        "domain": "vietjack.com",
+        "verifiedSpecSummary": "Bảng số liệu góc tới i (0, 20, 40, 60 độ) và xác định góc tới hạn i_gh xấp xỉ 41.8 độ."
+      }
+    ]
+  },
+  "audit360": {
+    "assetId": "OL3D-EQP-SLB-0001",
+    "omnidirectionalReadout360": "Bàn chia độ tròn 360° (vạch chia mỗi 1°) kết hợp bản bán trụ trong suốt và các tia tới (đỏ), tia khúc xạ (lục), tia phản xạ (đỏ rực) hiển thị 360°.",
+    "coreInteractiveFunctions": [
+      "Thay đổi góc tới i (0°, 20°, 40°, 41.8°, 60°) để kiểm chứng định luật khúc xạ ánh sáng (n₁·sin i = n₂·sin r) và tìm góc tới hạn phản xạ toàn phần i_gh ≈ 41.8°."
+    ],
+    "environmentalAndCrossToolInteractions": [
+      "Khi góc tới i ≥ 41.8°, tia khúc xạ biến mất hoàn toàn và toàn bộ ánh sáng bị phản xạ toàn phần ngay tại mặt phân cách bán trụ – không khí (Bài 5 & Bài 6 SGK KHTN 9)."
+    ]
+  }
+}

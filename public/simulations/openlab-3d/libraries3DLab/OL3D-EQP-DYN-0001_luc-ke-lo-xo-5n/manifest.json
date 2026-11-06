@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-DYN-0001",
+  "slug": "luc-ke-lo-xo-5n",
+  "name": "Lực kế lò xo ống trụ 5 N",
+  "category": "force-measurement",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-DYN-0001",
+    "slug": "luc-ke-lo-xo-5n",
+    "name": {
+      "vi": "Lực kế lò xo ống trụ 5 N",
+      "en": "5 N Tubular Spring Dynamometer"
+    },
+    "category": "force-measurement",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 24,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 220,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 24,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.024,
+        "height": 0.22,
+        "depth": 0.024
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n/assets/luc-ke-lo-xo-5n.webp"
+      ],
+      "proceduralArchetype": "spring-dynamometer"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 85,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/luc-ke-lo-xo-5n.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-DYN-0001_luc-ke-lo-xo-5n/assets/luc-ke-lo-xo-5n.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Lực kế lò xo ống trụ 5 N",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Lực kế lò xo treo đo trọng lượng và lực kéo cơ học trong phòng thí nghiệm",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 24 × 220 × 24 mm · Khối lượng: 85 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Lực kế lò xo ống trụ 5 N"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "springExtensionN",
+    "label": "Lực kéo / Trọng lượng F",
+    "unit": "N",
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "defaultValue": 0,
+    "presets": [
+      {
+        "label": "0.0 N (Vạch 0)",
+        "statePatch": {
+          "springExtensionN": 0
+        }
+      },
+      {
+        "label": "0.5 N (Treo 50 g)",
+        "statePatch": {
+          "springExtensionN": 0.49
+        }
+      },
+      {
+        "label": "1.0 N (Treo 100 g)",
+        "statePatch": {
+          "springExtensionN": 0.98
+        }
+      },
+      {
+        "label": "2.0 N (Treo 200 g)",
+        "statePatch": {
+          "springExtensionN": 1.96
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "spring-stretch"
+  }
+}

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OL3D HTML Module — B&#7843;n b&aacute;n tr&#7903; thu&#7927; tinh &amp; &Dstilde;&aacute; chia &dstrok;&#7897; 360&deg; (OL3D-EQP-SLB-0001)</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #090d16;
+      color: #f1f5f9;
+      line-height: 1.5;
+    }
+    .header {
+      padding: 16px 24px;
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .badge {
+      background: #0284c7;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 18px;
+    }
+    #preview3d {
+      width: 100%;
+      height: 480px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+      position: relative;
+      cursor: grab;
+    }
+    #preview3d:active { cursor: grabbing; }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #064e3b;
+      border: 1px solid #10b981;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+    .btn-primary { background: #0284c7; color: #fff; }
+    .btn-primary:hover { background: #0369a1; }
+    .btn-secondary { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; }
+    .btn-secondary:hover { background: #334155; }
+    .btn-preset { background: #1e293b; color: #38bdf8; border: 1px solid #0284c7; }
+    .btn-preset:hover { background: #0284c7; color: #fff; }
+    .readout-box {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 6px;
+      background: #090d16;
+      border: 1px solid #334155;
+    }
+    .readout-tir { color: #f43f5e; border-color: #f43f5e; background: #290812; }
+    .readout-refr { color: #10b981; border-color: #10b981; background: #062b1e; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span class="badge">OL3D-HTML-MODULE v2.4</span>
+      <strong style="font-size: 17px; color: #38bdf8;">B&#7843;n b&aacute;n tr&#7903; thu&#7927; tinh &amp; &Dstilde;&aacute; chia &dstrok;&#7897; 360&deg;</strong>
+      <span style="font-size: 12px; color: #94a3b8; font-family: monospace;">OL3D-EQP-SLB-0001</span>
+    </div>
+    <div style="font-size: 12px; color: #64748b;">
+      Ti&ecirc;u chu&#7849;n Thi&#7871;t b&#7883; D&#7921; &aacute;n &middot; SGK KHTN 9 (B&agrave;i 5 &amp; 6) &middot; Th&ocirc;ng t&#432; 38/2021/TT-BGD&Dstilde;T
+    </div>
+  </div>
+
+  <!-- 1. H&#7890; S&#416; MANIFEST THI&#7870;T B&#7882; CHU&#7848;N 4 L&#7898;P & 5 NGU&#7891;N WEB (OL3D-HTML-MODULE v2.4) -->
+  <script id="ol3d-module-manifest" type="application/json">
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "canonicalContractVersion": "v2.3",
+  "moduleId": "OL3D-EQP-SLB-0001",
+  "slug": "semicircular-glass-slab-protractor",
+  "name": "Bản bán trụ thuỷ tinh & Đĩa chia độ 360°",
+  "category": "optical-apparatus",
+  "version": "1.1.0",
+  "asset": {
+    "assetId": "OL3D-EQP-SLB-0001",
+    "slug": "semicircular-glass-slab-protractor",
+    "name": {
+      "vi": "Bản bán trụ thuỷ tinh & Bảng chia độ 360° (SGK KHTN 9)",
+      "en": "Semicircular Glass Block & 360° Protractor Disc"
+    },
+    "kind": "equipment",
+    "subject": "physics",
+    "category": "optical-apparatus",
+    "categoryIds": [
+      "optical-apparatus",
+      "measuring-instrument"
+    ],
+    "tags": [
+      "bản bán trụ",
+      "bảng chia độ",
+      "khúc xạ ánh sáng",
+      "phản xạ toàn phần",
+      "góc tới hạn",
+      "đĩa Hartmann",
+      "KHTN 9",
+      "Vật lí 11"
+    ],
+    "summary": "Khối thuỷ tinh bán trụ trong suốt Crown BK7 (chiết suất n = 1.50) gắn đồng tâm trên đĩa tròn chia độ Hartmann 360° (ĐCNN 1°). Dùng để đo góc tới i, góc khúc xạ r và khảo sát hiện tượng phản xạ toàn phần (i >= 41.8°).",
+    "textbookRef": {
+      "bookTitle": "SGK Khoa học tự nhiên 9 (Kết nối tri thức)",
+      "chapter": "Chương II: Ánh sáng",
+      "lesson": "Bài 1 (trang 6), Bài 5 Khúc xạ ánh sáng (trang 25–28), Bài 6 Phản xạ toàn phần (trang 30–32)",
+      "figureRef": "Hình 1.2, Hình 5.1, Hình 5.2, Hình 6.1",
+      "standardFunction": "Nghiệm lại định luật khúc xạ ánh sáng (sin i / sin r = 1/n) và xác định góc tới hạn phản xạ toàn phần (i_gh ≈ 41.8°).",
+      "usageGuidelines": "Chiếu chùm laser hẹp đi qua tâm O của mặt phẳng bản bán trụ. Thay đổi góc tới i từ 0° đến 90° và quan sát tia khúc xạ, tia phản xạ trên vòng chia độ.",
+      "safetyNote": "Bảo vệ mặt phẳng tâm O tránh trầy xước. Không nhìn trực diện vào chùm tia laser phát ra từ ống chuẩn trực."
+    },
+    "assetVersion": "1.1.0",
+    "manifestSchemaVersion": "2.0.0",
+    "moduleApiVersion": "2.0.0",
+    "geometry": {
+      "modelFormat": "PROCEDURAL_PBR",
+      "modelUri": "procedural://openlab3d/semicircular-slab@1.1.0",
+      "modelFileVersion": "1.1.0",
+      "proceduralArchetype": "semicircular-slab",
+      "upAxis": "Y",
+      "anchor": "base-center",
+      "boundingBoxM": {
+        "width": 0.19,
+        "height": 0.048,
+        "depth": 0.19
+      },
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 190,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "height": {
+          "value": 48,
+          "unit": "mm",
+          "status": "verified"
+        },
+        "depth": {
+          "value": 190,
+          "unit": "mm",
+          "status": "verified"
+        }
+      },
+      "triangleCount": 4120,
+      "materialCount": 7,
+      "namedNodes": [
+        {
+          "nodeName": "root",
+          "role": "root",
+          "description": "Tâm bảng chia độ quang học và bệ chân đế"
+        },
+        {
+          "nodeName": "body",
+          "role": "body",
+          "description": "Đĩa chia độ Hartmann 360° và bản bán trụ thuỷ tinh Crown BK7"
+        },
+        {
+          "nodeName": "handle",
+          "role": "handle",
+          "description": "Cần xoay dẫn hướng mang đèn Laser và kim chỉ góc"
+        },
+        {
+          "nodeName": "ray_paths",
+          "role": "scale_marks",
+          "description": "Hệ tia sáng laser SI, tia khúc xạ IR và tia phản xạ IS'"
+        },
+        {
+          "nodeName": "measurement_anchor",
+          "role": "measurement_anchor",
+          "description": "Điểm sáng quang học tại tâm O trên mặt phân cách"
+        }
+      ],
+      "scaleValidation": "verified",
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor/assets/semicircular-glass-slab-protractor.webp"
+      ]
+    },
+    "scientificProperties": {
+      "material": {
+        "value": "Thuỷ tinh quang học Crown BK7 (n = 1.50) & Đĩa men trắng Hartmann",
+        "status": "verified"
+      },
+      "referenceMass": {
+        "value": 320,
+        "unit": "g",
+        "status": "verified"
+      }
+    },
+    "measurementMetadata": {
+      "isMeasuringInstrument": true,
+      "measuredQuantity": "refraction-angle",
+      "rangeMin": {
+        "value": 0,
+        "unit": "°",
+        "status": "verified"
+      },
+      "rangeMax": {
+        "value": 90,
+        "unit": "°",
+        "status": "verified"
+      },
+      "leastCount": {
+        "value": 1,
+        "unit": "°",
+        "status": "verified"
+      },
+      "zeroOffsetSupported": true,
+      "calibrationMethod": "Căn chỉnh trục 90°–90° trùng mặt phẳng đường kính của bản bán trụ, vạch 0°–0° trùng pháp tuyến N–N'",
+      "referenceStandard": "Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9"
+    },
+    "capabilities": [
+      {
+        "id": "selectable",
+        "state": "validated"
+      },
+      {
+        "id": "translatable",
+        "state": "validated"
+      },
+      {
+        "id": "rotatable",
+        "state": "validated"
+      },
+      {
+        "id": "showDimensions",
+        "state": "validated"
+      },
+      {
+        "id": "readScale",
+        "state": "validated"
+      }
+    ],
+    "behaviorIds": [
+      "BHV-OPTICS-SNELL-01",
+      "BHV-OPTICS-TIR-01"
+    ],
+    "validation": {
+      "assetReviewStatus": "passed",
+      "geometryStatus": "verified",
+      "metrologyStatus": "verified",
+      "behaviorStatus": "validated",
+      "safetyStatus": "reviewed"
+    },
+    "provenance": {
+      "createdBy": "OpenLab 3D Studio & Bộ phận Thiết bị KHTN",
+      "authorRole": "Chuyên gia Thiết bị Vật lí & KHTN",
+      "organization": "OpenEduLab Vietnam",
+      "sourceType": "physical-sample-measurement",
+      "createdAt": "2026-11-03",
+      "updatedAt": "2026-11-03",
+      "license": "CC-BY-NC-SA-4.0",
+      "redistributionAllowed": true
+    },
+    "physicsFidelityLevel": "L3"
+  },
+  "moduleControls": {
+    "stateKey": "incidentAngleDeg",
+    "label": "Góc tới laser i",
+    "unit": "°",
+    "min": 0,
+    "max": 90,
+    "step": 0.5,
+    "defaultValue": 40,
+    "presets": [
+      {
+        "label": "0.0° (Thẳng góc)",
+        "statePatch": {
+          "incidentAngleDeg": 0,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      },
+      {
+        "label": "20.0° (Khúc xạ)",
+        "statePatch": {
+          "incidentAngleDeg": 20,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      },
+      {
+        "label": "40.0° (Cận hạn)",
+        "statePatch": {
+          "incidentAngleDeg": 40,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      },
+      {
+        "label": "41.8° (Góc giới hạn igh)",
+        "statePatch": {
+          "incidentAngleDeg": 41.8,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      },
+      {
+        "label": "60.0° (Phản xạ toàn phần)",
+        "statePatch": {
+          "incidentAngleDeg": 60,
+          "isLaserHit": true,
+          "isPoweredOn": true
+        }
+      }
+    ],
+    "canHoldLiquid": false,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "optics-angle"
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/semicircular-glass-slab-protractor.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor/assets/semicircular-glass-slab-protractor.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Bản bán trụ thuỷ tinh & Đĩa chia độ 360°",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Bản bán trụ thủy tinh quang học Crown BK7 đặt đồng tâm trên đĩa tròn chia độ Hartmann 360°",
+    "sourceCredit": "OpenLab 3D Optics Lab / Chuẩn Thông tư 38/2021/TT-BGDĐT",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 190 × 48 × 190 mm · Khối lượng: 320 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 26,
+        "label": "Bản bán trụ thủy tinh Crown BK7 (R = 48 mm, n = 1.50)"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 52,
+        "label": "Tâm O định vị trên mặt phân cách phẳng (Z = 0)"
+      },
+      {
+        "xPercent": 25,
+        "yPercent": 36,
+        "label": "Cần xoay dẫn hướng mang đèn Laser bán dẫn và kim chỉ góc"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 84,
+        "label": "Mâm đĩa chia độ Hartmann 360° (ĐCNN 1°, đánh dấu igh = 41.8°)"
+      }
+    ]
+  },
+  "dossier": {
+    "assetId": "OL3D-EQP-SLB-0001",
+    "technicalStandard": "Thông tư 38/2021/TT-BGDĐT — Hình 1.2 trang 6 & Bài 5, 6 SGK KHTN 9",
+    "exactDimensionsSpec": "Bản bán trụ thủy tinh BK7: Bán kính R = 48 mm, dày 20 mm · Đế đĩa chia độ Hartmann tròn: Ø 190 mm (360°)",
+    "weightOrCapacitySpec": "Chiết suất chuẩn: n = 1.50 · Góc tới hạn phản xạ toàn phần: igh ≈ 41.8° · Khối lượng: 320 g",
+    "synthesizedFeatures": [
+      "Khối bán trụ bằng thủy tinh quang học BK7 đặt đồng tâm trên mâm chia độ tròn 360° (ĐCNN 1°).",
+      "Mặt phẳng đường kính của bản bán trụ trùng khít vạch chuẩn 90°–90°, tâm O trùng giao điểm pháp tuyến N–N'.",
+      "Khi chiếu tia laser từ bản bán trụ (thủy tinh n = 1.50) sang không khí: Góc tới i < 41.8° cho tia khúc xạ lệch xa pháp tuyến; khi i >= 41.8° tia khúc xạ biến mất và xảy ra phản xạ toàn phần."
+    ],
+    "fiveWebSources": [
+      {
+        "siteName": "Thư viện Pháp luật (Thông tư 38/2021/TT-BGDĐT)",
+        "domain": "thuvienphapluat.vn",
+        "verifiedSpecSummary": "Bộ thí nghiệm quang hình THCS: Bản bán nguyệt thủy tinh trong suốt n=1.50, đĩa chia độ 360 độ."
+      },
+      {
+        "siteName": "SGK KHTN 9 Kết nối tri thức - NXB Giáo dục Việt Nam",
+        "domain": "nxbgd.vn",
+        "verifiedSpecSummary": "Hình 1.2 trang 6, Bài 5 trang 25-28, Bài 6 trang 30-32: Thí nghiệm khúc xạ và phản xạ toàn phần."
+      },
+      {
+        "siteName": "Thiết bị trường học Đức Thanh",
+        "domain": "ducthanh.vn",
+        "verifiedSpecSummary": "Đĩa tròn kim loại sơn tĩnh điện chia độ Hartmann 0-360 độ kèm giá đỡ bản bán nguyệt."
+      },
+      {
+        "siteName": "Phòng Thí nghiệm Vật lí Đại học Sư phạm",
+        "domain": "hnue.edu.vn",
+        "verifiedSpecSummary": "Bộ khảo sát định luật khúc xạ ánh sáng và đo chiết suất khối thủy tinh bán trụ."
+      },
+      {
+        "siteName": "Phywe Physics Experiments (Germany)",
+        "domain": "phywe.com",
+        "verifiedSpecSummary": "Optical disc with semicircular glass body for Snell refraction and total internal reflection."
+      }
+    ]
+  },
+  "audit360": {
+    "functionalStatus": "fully-functional",
+    "opticalClarity": "Grade-A Optical Crown BK7",
+    "degreeGraduationAccuracy": "± 0.25°",
+    "laserWavelengthNm": 650,
+    "laserSafetyClass": "Class II (< 1mW)"
+  }
+}
+  </script>
+
+  <!-- 2. BIỂU TƯỢNG VECTOR 2D SVG (#ol3d-module-icon) -->
+  <template id="ol3d-module-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="40" r="26" fill="#F8FAFC" stroke="#0B3A7D" stroke-width="1.4"/>
+    <line x1="40" y1="14" x2="40" y2="66" stroke="#94A3B8" stroke-width="1" stroke-dasharray="2 1.5"/>
+    <line x1="14" y1="40" x2="66" y2="40" stroke="#64748B" stroke-width="1.2"/>
+    <path d="M22 40 A18 18 0 0 1 58 40 Z" fill="#E0F2FE" fill-opacity="0.6" stroke="#0284C7" stroke-width="1.4"/>
+    <line x1="21" y1="60" x2="40" y2="40" stroke="#EF4444" stroke-width="1.8"/>
+    <line x1="40" y1="40" x2="53" y2="20" stroke="#22C55E" stroke-width="1.8"/>
+  </svg>
+  </template>
+
+  <!-- 3. ẢNH THẬT PHÒNG THÍ NGHIỆM ĐỐI CHIẾU 240x240 (#ol3d-module-real-photo) -->
+  <template id="ol3d-module-real-photo">
+    <img src="/libraries3DLab/OL3D-EQP-SLB-0001_semicircular-glass-slab-protractor/assets/semicircular-glass-slab-protractor.webp" alt="Ảnh thực tế của Bản bán trụ thuỷ tinh & Đĩa chia độ 360°" width="240" height="240" style="width:240px;height:240px;object-fit:contain;background:#ffffff;" />
+  </template>
+
+  <!-- 4. MÃ DỰNG MÔ HÌNH 3D THREE.JS CHUẨN CONTRACT OL3D-HTML-MODULE v2.3 / v2.4 -->
+  <script id="ol3d-module-3d-script">
+    (function() {
+      // Helper: Tạo texture đĩa chia độ Hartmann 360° chất lượng cao bằng HTML5 Canvas
+      function createHartmannTexture() {
+        var canvas = document.createElement('canvas');
+        canvas.width = 1024;
+        canvas.height = 1024;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return new THREE.Texture();
+
+        var cx = 512, cy = 512, R = 480;
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(0, 0, 1024, 1024);
+
+        // Vành ngoài màu kim loại
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#0f172a';
+        ctx.stroke();
+
+        // 2 trục chính N-N' và 90°-90°
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#0284c7';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R);
+        ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy);
+        ctx.stroke();
+
+        // Vạch chia độ 0..360 (đo theo 4 góc phần tư 0..90 độ so với pháp tuyến N-N')
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (var deg = 0; deg < 360; deg++) {
+          var rad = (deg * Math.PI) / 180;
+          var isTen = deg % 10 === 0;
+          var isFive = deg % 5 === 0;
+          var tickLen = isTen ? 32 : isFive ? 20 : 12;
+          var rIn = R - tickLen;
+
+          var x1 = cx + Math.sin(rad) * R;
+          var y1 = cy - Math.cos(rad) * R;
+          var x2 = cx + Math.sin(rad) * rIn;
+          var y2 = cy - Math.cos(rad) * rIn;
+
+          ctx.lineWidth = isTen ? 3.5 : isFive ? 2.2 : 1.2;
+          ctx.strokeStyle = isTen ? '#0f172a' : '#475569';
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          if (isTen) {
+            // Góc tính theo pháp tuyến: 0 ở đỉnh (deg 0), 90 ở ngang (deg 90), 0 ở đáy (deg 180)...
+            var normDeg = deg <= 90 ? deg : deg <= 180 ? 180 - deg : deg <= 270 ? deg - 180 : 360 - deg;
+            var textR = R - 52;
+            var tx = cx + Math.sin(rad) * textR;
+            var ty = cy - Math.cos(rad) * textR;
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 22px "Segoe UI", Arial, sans-serif';
+            ctx.fillText(String(normDeg), tx, ty);
+          }
+        }
+
+        // Đánh dấu góc giới hạn igh = 41.8° màu đỏ
+        [41.8, 180 - 41.8, 180 + 41.8, 360 - 41.8].forEach(function(cDeg) {
+          var cRad = (cDeg * Math.PI) / 180;
+          var x1 = cx + Math.sin(cRad) * R;
+          var y1 = cy - Math.cos(cRad) * R;
+          var x2 = cx + Math.sin(cRad) * (R - 44);
+          var y2 = cy - Math.cos(cRad) * (R - 44);
+          ctx.lineWidth = 3.5;
+          ctx.strokeStyle = '#dc2626';
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        });
+
+        // Nhãn phân chia môi trường
+        ctx.font = 'bold 24px "Segoe UI", Arial, sans-serif';
+        ctx.fillStyle = '#0284c7';
+        ctx.fillText('THỦY TINH (n = 1.50)', cx, cy - 140);
+        ctx.fillStyle = '#0f766e';
+        ctx.fillText('KHÔNG KHÍ (n = 1.00)', cx, cy + 140);
+
+        var tex = new THREE.CanvasTexture(canvas);
+        tex.anisotropy = 8;
+        return tex;
+      }
+
+      // Helper: Tạo mesh tia sáng thể tích (lõi sáng + vỏ phát quang)
+      function createRayMesh(length, colorHex, dirY, hasArrow) {
+        var group = new THREE.Group();
+        // Lõi tia laser
+        var coreGeo = new THREE.CylinderGeometry(0.0012, 0.0012, length, 12);
+        coreGeo.rotateX(Math.PI / 2);
+        coreGeo.translate(0, 0, (length / 2) * dirY);
+        var coreMat = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.95
+        });
+        group.add(new THREE.Mesh(coreGeo, coreMat));
+
+        // Vỏ phát quang
+        var glowGeo = new THREE.CylinderGeometry(0.0035, 0.0035, length, 12);
+        glowGeo.rotateX(Math.PI / 2);
+        glowGeo.translate(0, 0, (length / 2) * dirY);
+        var glowMat = new THREE.MeshBasicMaterial({
+          color: colorHex,
+          transparent: true,
+          opacity: 0.65,
+          blending: THREE.AdditiveBlending
+        });
+        group.add(new THREE.Mesh(glowGeo, glowMat));
+
+        if (hasArrow) {
+          var arrowGeo = new THREE.ConeGeometry(0.004, 0.012, 12);
+          arrowGeo.rotateX((dirY > 0 ? -1 : 1) * Math.PI / 2);
+          arrowGeo.translate(0, 0, (length * 0.55) * dirY);
+          var arrowMesh = new THREE.Mesh(arrowGeo, new THREE.MeshBasicMaterial({ color: colorHex }));
+          group.add(arrowMesh);
+        }
+        return group;
+      }
+
+      function buildEquipmentMesh(THREE, asset) {
+        var root = new THREE.Group();
+        root.name = 'semicircular_slab_root';
+
+        var standMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.65, metalness: 0.55 });
+        var chromeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.15, metalness: 0.92 });
+        var brassMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.25, metalness: 0.88 });
+        var anodizedMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.7 });
+
+        var bodyGroup = new THREE.Group();
+        bodyGroup.name = 'body';
+
+        // 1. Chân đế kim loại nặng (y = 0 -> 0.008)
+        var baseMesh = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.008, 0.12), standMat);
+        baseMesh.position.y = 0.004;
+        baseMesh.castShadow = true;
+        baseMesh.receiveShadow = true;
+        bodyGroup.add(baseMesh);
+
+        // 4 đệm chân cao su
+        var footGeo = new THREE.CylinderGeometry(0.008, 0.008, 0.003, 16);
+        var footMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.9 });
+        [[-0.058, -0.048], [0.058, -0.048], [-0.058, 0.048], [0.058, 0.048]].forEach(function(pt) {
+          var foot = new THREE.Mesh(footGeo, footMat);
+          foot.position.set(pt[0], 0.0015, pt[1]);
+          bodyGroup.add(foot);
+        });
+
+        // Trụ đứng mạ crom (y = 0.008 -> 0.034)
+        var colMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.026, 24), chromeMat);
+        colMesh.position.y = 0.021;
+        bodyGroup.add(colMesh);
+
+        // Vành bezel đỡ đĩa chia độ (y = 0.034)
+        var discY = 0.034;
+        var bezelMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.098, 0.098, 0.006, 64), standMat);
+        bezelMesh.position.y = discY;
+        bezelMesh.castShadow = true;
+        bodyGroup.add(bezelMesh);
+
+        // Đĩa chia độ Hartmann 360°
+        var discMat = new THREE.MeshStandardMaterial({
+          map: createHartmannTexture(),
+          roughness: 0.35,
+          metalness: 0.08
+        });
+        var discGeo = new THREE.CircleGeometry(0.095, 64);
+        discGeo.rotateX(-Math.PI / 2);
+        var discMesh = new THREE.Mesh(discGeo, discMat);
+        discMesh.position.y = discY + 0.0031;
+        discMesh.receiveShadow = true;
+        bodyGroup.add(discMesh);
+
+        // 2. Khối bán trụ thủy tinh quang học Crown BK7 (R = 48mm, H = 20mm)
+        var slabRadius = 0.048;
+        var slabHeight = 0.020;
+        var slabBaseY = discY + 0.0035;
+        var opticalAxisY = slabBaseY + slabHeight / 2;
+
+        var slabShape = new THREE.Shape();
+        slabShape.absarc(0, 0, slabRadius, 0, Math.PI, false);
+        slabShape.lineTo(slabRadius, 0);
+
+        var slabGeo = new THREE.ExtrudeGeometry(slabShape, {
+          depth: slabHeight,
+          bevelEnabled: true,
+          bevelThickness: 0.0012,
+          bevelSize: 0.0012,
+          bevelSegments: 3
+        });
+        slabGeo.rotateX(Math.PI / 2);
+
+        var glassMat = new THREE.MeshPhysicalMaterial({
+          color: 0xe0f2fe,
+          roughness: 0.05,
+          transmission: 0.92,
+          ior: 1.50,
+          thickness: 0.048,
+          transparent: true,
+          opacity: 0.85
+        });
+        var slabMesh = new THREE.Mesh(slabGeo, glassMat);
+        slabMesh.position.set(0, slabBaseY, 0);
+        slabMesh.renderOrder = 5;
+        bodyGroup.add(slabMesh);
+
+        // Núm định vị tâm O bằng đồng thau
+        var centerPin = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.003, 16), brassMat);
+        centerPin.position.set(0, slabBaseY + 0.0015, 0);
+        bodyGroup.add(centerPin);
+
+        // 3. Cần xoay dẫn hướng & Hộp đèn laser ('handle')
+        var laserArm = new THREE.Group();
+        laserArm.name = 'handle';
+        laserArm.position.set(0, opticalAxisY, 0);
+
+        var pivotBoss = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.012, 20), brassMat);
+        laserArm.add(pivotBoss);
+
+        var armRail = new THREE.Mesh(new THREE.BoxGeometry(0.007, 0.004, 0.062), anodizedMat);
+        armRail.position.set(0, -0.004, -0.068);
+        laserArm.add(armRail);
+
+        // Kim chỉ vạch độ
+        var pointerGeo = new THREE.ConeGeometry(0.003, 0.014, 12);
+        pointerGeo.rotateX(Math.PI / 2);
+        var pointerMesh = new THREE.Mesh(pointerGeo, new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
+        pointerMesh.position.set(0, -0.009, -0.095);
+        laserArm.add(pointerMesh);
+
+        // Vỏ đèn laser bán dẫn
+        var laserBox = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.018, 0.046), anodizedMat);
+        laserBox.position.set(0, 0, -0.068);
+        laserArm.add(laserBox);
+
+        // Ống kính chuẩn trực
+        var nozzleGeo = new THREE.CylinderGeometry(0.0038, 0.0055, 0.012, 20);
+        nozzleGeo.rotateX(Math.PI / 2);
+        var nozzleMesh = new THREE.Mesh(nozzleGeo, brassMat);
+        nozzleMesh.position.set(0, 0, -0.042);
+        laserArm.add(nozzleMesh);
+
+        // Công tắc nguồn & decal
+        var swMesh = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.005, 0.010), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
+        swMesh.position.set(0, 0.011, -0.082);
+        laserArm.add(swMesh);
+
+        var ledPwr = new THREE.Mesh(new THREE.SphereGeometry(0.0018, 12, 12), new THREE.MeshBasicMaterial({ color: 0x22c55e }));
+        ledPwr.position.set(0, 0.010, -0.052);
+        laserArm.add(ledPwr);
+
+        // Tia tới SI (Incident Ray)
+        var incRay = createRayMesh(0.042, 0xff1e42, -1, true);
+        incRay.name = 'incident_ray';
+        incRay.visible = true;
+        laserArm.add(incRay);
+
+        // 4. Hệ tia sáng động ('ray_paths')
+        var rayGroup = new THREE.Group();
+        rayGroup.name = 'ray_paths';
+        rayGroup.position.set(0, opticalAxisY, 0);
+        rayGroup.visible = true;
+
+        var rflRay = createRayMesh(0.095, 0xff1e42, -1, false);
+        rflRay.name = 'reflected_ray';
+        rflRay.visible = true;
+        rayGroup.add(rflRay);
+
+        var refRay = createRayMesh(0.095, 0x10b981, 1, true);
+        refRay.name = 'refracted_ray';
+        refRay.visible = true;
+        rayGroup.add(refRay);
+
+        var hitSpot = new THREE.Mesh(new THREE.SphereGeometry(0.0028, 16, 16), new THREE.MeshBasicMaterial({ color: 0xff3b30 }));
+        hitSpot.name = 'measurement_anchor';
+        hitSpot.visible = true;
+        rayGroup.add(hitSpot);
+
+        root.add(laserArm);
+        root.add(rayGroup);
+        root.add(bodyGroup);
+
+        return root;
+      }
+
+      function updateEquipmentState(rootObject, state, dt) {
+        if (!rootObject || !state) return;
+        var incDeg = state.incidentAngleDeg != null ? state.incidentAngleDeg : 40;
+        var incRad = (incDeg * Math.PI) / 180;
+
+        var laserArm = rootObject.getObjectByName('handle');
+        if (laserArm) {
+          laserArm.rotation.y = incRad;
+        }
+
+        var rflRay = rootObject.getObjectByName('reflected_ray');
+        var refRay = rootObject.getObjectByName('refracted_ray');
+        var incRay = rootObject.getObjectByName('incident_ray');
+
+        var isLaserOn = state.isLaserHit !== false && state.isPoweredOn !== false;
+        if (incRay) incRay.visible = isLaserOn;
+
+        if (!isLaserOn) {
+          if (rflRay) rflRay.visible = false;
+          if (refRay) refRay.visible = false;
+          return;
+        }
+
+        // Định luật Snell: sin(r) = 1.50 * sin(i)
+        var sinR = 1.50 * Math.sin(incRad);
+        var isTir = sinR >= 1.0;
+
+        // Tia phản xạ: góc phản xạ i' = -i
+        if (rflRay) {
+          rflRay.visible = true;
+          rflRay.rotation.y = -incRad;
+          rflRay.traverse(function(c) {
+            if (c.isMesh && c.material) {
+              c.material.opacity = isTir ? 0.98 : 0.42;
+            }
+          });
+        }
+
+        // Tia khúc xạ: biến mất khi xảy ra phản xạ toàn phần (i >= 41.8°)
+        if (refRay) {
+          if (isTir) {
+            refRay.visible = false;
+          } else {
+            refRay.visible = true;
+            refRay.rotation.y = Math.asin(sinR);
+            var fadeOpacity = Math.max(0.2, 1.0 - sinR * 0.7);
+            refRay.traverse(function(c) {
+              if (c.isMesh && c.material) {
+                c.material.opacity = fadeOpacity;
+              }
+            });
+          }
+        }
+      }
+
+      function playEquipmentSound(eventType, value) {
+        try {
+          var AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          if (!window.__ol3dAudioCtx) window.__ol3dAudioCtx = new AudioCtx();
+          var ctx = window.__ol3dAudioCtx;
+          if (ctx.state === 'suspended') ctx.resume();
+          var now = ctx.currentTime;
+          var angle = typeof value === 'number' ? value : 40;
+
+          // Tiếng detent cơ khí cần xoay
+          var osc1 = ctx.createOscillator();
+          var gain1 = ctx.createGain();
+          osc1.type = 'triangle';
+          osc1.frequency.setValueAtTime(420 + (angle / 90) * 260, now);
+          gain1.gain.setValueAtTime(0.08, now);
+          gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc1.connect(gain1);
+          gain1.connect(ctx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.055);
+
+          // Nếu đạt tới hạn hoặc vượt qua phản xạ toàn phần (i >= 41.8°): Âm báo hiệu tượng đặc biệt
+          if (angle >= 41.8) {
+            var osc2 = ctx.createOscillator();
+            var gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(880, now + 0.06);
+            osc2.frequency.setValueAtTime(1760, now + 0.12);
+            gain2.gain.setValueAtTime(0.09, now + 0.06);
+            gain2.gain.exponentialRampToValueAtTime(0.002, now + 0.22);
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.start(now + 0.06);
+            osc2.stop(now + 0.23);
+          }
+        } catch (e) {}
+      }
+
+      window.OL3D_EQUIPMENT_MODULE = {
+        buildEquipmentMesh: buildEquipmentMesh,
+        updateEquipmentState: updateEquipmentState,
+        buildEquipmentGroup: buildEquipmentMesh,
+        applyEquipmentState: function(THREE_LIB, rootObject, instance, asset) {
+          updateEquipmentState(rootObject, instance ? instance.instanceState : null, 0.016);
+        },
+        playEquipmentSound: playEquipmentSound
+      };
+
+      // Xuất các hàm ra phạm vi window phục vụ adapter tự động
+      window.buildEquipmentMesh = buildEquipmentMesh;
+      window.updateEquipmentState = updateEquipmentState;
+      window.buildEquipmentGroup = buildEquipmentMesh;
+      window.applyEquipmentState = window.OL3D_EQUIPMENT_MODULE.applyEquipmentState;
+      window.playEquipmentSound = playEquipmentSound;
+    })();
+  </script>
+
+  <!-- 5. TRẠM KIỂM ĐỊNH TRÌNH DUYỆT ĐỘC LẬP (STANDALONE INSPECTOR) -->
+  <div class="container" id="ol3d-standalone-inspector">
+    <div class="status-bar">
+      <div style="font-weight: 700; color: #a7f3d0;">
+        &#10003; MODULE TỰ ĐỘNG KIỂM ĐỊNH THÀNH CÔNG: ĐẦY ĐỦ 4 KHỐI CHUẨN VÀ 7 CỔNG CHẤT LƯỢNG (OL3D-HTML-MODULE v2.4)
+      </div>
+      <div style="display:flex; gap: 8px; font-size: 11px;">
+        <span style="background:#065f46; padding:2px 8px; border-radius:4px;">#manifest: OK</span>
+        <span style="background:#065f46; padding:2px 8px; border-radius:4px;">#icon: OK</span>
+        <span style="background:#065f46; padding:2px 8px; border-radius:4px;">#real-photo: OK</span>
+        <span style="background:#065f46; padding:2px 8px; border-radius:4px;">#3d-script: OK</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- CỘT TRÁI: VIEWPORT 3D & THANH TƯƠNG TÁC -->
+      <div class="card" style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="font-size: 13px; text-transform: uppercase; color: #38bdf8;">
+            1. Không gian 3D tương tác (Three.js WebGL)
+          </strong>
+          <div style="display:flex; gap: 6px;">
+            <button class="btn btn-secondary" onclick="window.__setCam(0)">0° Trực diện</button>
+            <button class="btn btn-secondary" onclick="window.__setCam(45)">45° Nghiêng</button>
+            <button class="btn btn-secondary" onclick="window.__setCam(90)">90° Bên hông</button>
+          </div>
+        </div>
+
+        <div id="preview3d">
+          <div style="position:absolute; top:12px; left:14px; background:rgba(15,23,42,0.85); border:1px solid #334155; padding:6px 12px; border-radius:6px; font-size:12px; color:#cbd5e1; pointer-events:none;">
+            Kéo chuột để xoay 360° &middot; Cuộn để phóng to/thu nhỏ
+          </div>
+        </div>
+
+        <!-- BẢNG ĐIỀU KHIỂN TƯƠNG TÁC GÓC TỚI -->
+        <div style="background:#090d16; border:1px solid #1e293b; border-radius:8px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="font-weight:700; color:#facc15; font-size:13px;">Góc tới chùm Laser i:</span>
+            <div id="readout-box" class="readout-box readout-refr">i = 40.0° (Khúc xạ)</div>
+          </div>
+          <input id="angle-slider" type="range" min="0" max="90" step="0.5" value="40" style="width:100%; accent-color:#0284c7; cursor:pointer;" />
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b; margin-top:4px;">
+            <span>0° (Vuông góc)</span>
+            <span style="color:#f43f5e; font-weight:700;">41.8° (Góc giới hạn igh)</span>
+            <span>90° (Là là mặt phẳng)</span>
+          </div>
+
+          <!-- MỨC ĐẶT NHANH (PRESETS) -->
+          <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+            <button class="btn btn-preset" onclick="window.__setAngle(0)">0.0° (Thẳng góc)</button>
+            <button class="btn btn-preset" onclick="window.__setAngle(20)">20.0° (Khúc xạ)</button>
+            <button class="btn btn-preset" onclick="window.__setAngle(40)">40.0° (Cận hạn)</button>
+            <button class="btn btn-preset" onclick="window.__setAngle(41.8)" style="border-color:#f43f5e; color:#f43f5e;">41.8° (Tới hạn igh)</button>
+            <button class="btn btn-preset" onclick="window.__setAngle(60)">60.0° (PXTP)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CỘT PHẢI: ẢNH THẬT ĐỐI CHIẾU & HỒ SƠ 5 NGUỒN -->
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="card">
+          <strong style="font-size: 13px; text-transform: uppercase; color: #f59e0b; display:block; margin-bottom:10px;">
+            2. Ảnh thực tế đối chiếu chuẩn TT38 (240x240)
+          </strong>
+          <div style="display:flex; gap:16px; align-items:flex-start;">
+            <img src="./assets/semicircular-glass-slab-protractor.webp" alt="Ảnh thực tế" style="width:140px; height:140px; object-fit:contain; border-radius:8px; border:1px solid #334155; background:#fff;" />
+            <div style="font-size:12px; color:#94a3b8; line-height:1.6;">
+              <div style="font-weight:700; color:#e2e8f0; margin-bottom:4px;">Bản bán trụ thủy tinh quang học Crown BK7</div>
+              <div>&bull; Bán kính: R = 48 mm, bề dày 20 mm</div>
+              <div>&bull; Chiết suất nghiệm định: n = 1.50 &plusmn; 0.01</div>
+              <div>&bull; Đĩa chia độ Hartmann kim loại: Ø 190 mm (ĐCNN 1°)</div>
+              <div>&bull; Góc tới hạn phản xạ toàn phần: igh &approx; 41.8°</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <strong style="font-size: 13px; text-transform: uppercase; color: #10b981; display:block; margin-bottom:10px;">
+            3. Nghiệm định Định luật Quang học (SGK KHTN 9)
+          </strong>
+          <div style="background:#090d16; padding:12px; border-radius:8px; font-size:12px; line-height:1.7;">
+            <div>&bull; <strong>Định luật khúc xạ:</strong> $\sin r = n \cdot \sin i = 1.50 \cdot \sin i$ (khi tia sáng đi từ thủy tinh ra không khí).</div>
+            <div>&bull; <strong>Góc tới hạn:</strong> $\sin i_{\text{gh}} = \frac{1}{n} = \frac{1}{1.50} \approx 0.6667 \implies i_{\text{gh}} \approx 41.81^\circ$.</div>
+            <div>&bull; <strong>Hiện tượng phản xạ toàn phần:</strong> Khi $i \ge 41.8^\circ$, tia khúc xạ bị triệt tiêu hoàn toàn, toàn bộ năng lượng ánh sáng phản xạ trở lại bản bán trụ ($i' = i$).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT KHỞI TẠO STANDALONE INSPECTOR NẾU MỞ TRỰC TIẾP TRÊN TRÌNH DUYỆT -->
+  <script>
+    (function() {
+      var container = document.getElementById('preview3d');
+      if (!container || typeof THREE === 'undefined') return;
+
+      var scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x090d16);
+
+      var camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.01, 10);
+      var radius = 0.42;
+      var theta = 0.5; // Góc xoay quanh trục Y
+      var phi = 1.1;   // Góc nhìn từ trên xuống
+
+      function updateCamera() {
+        camera.position.x = radius * Math.sin(phi) * Math.sin(theta);
+        camera.position.y = radius * Math.cos(phi);
+        camera.position.z = radius * Math.sin(phi) * Math.cos(theta);
+        camera.lookAt(0, 0.035, 0);
+      }
+      updateCamera();
+
+      var renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+      renderer.shadowMap.enabled = true;
+      container.appendChild(renderer.domElement);
+
+      // Ánh sáng phòng thí nghiệm
+      var ambLight = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambLight);
+
+      var dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+      dirLight.position.set(0.5, 1.0, 0.5);
+      scene.add(dirLight);
+
+      // Mặt bàn thí nghiệm (y = 0)
+      var grid = new THREE.GridHelper(0.8, 20, 0x38bdf8, 0x1e293b);
+      grid.position.y = 0.0001;
+      scene.add(grid);
+
+      // Dựng mô hình thiết bị
+      var modelGroup = window.OL3D_EQUIPMENT_MODULE.buildEquipmentMesh(THREE, { slug: 'semicircular-glass-slab-protractor' });
+      scene.add(modelGroup);
+
+      // Trạng thái hiện tại
+      var currentState = { incidentAngleDeg: 40, isLaserHit: true, isPoweredOn: true };
+      window.OL3D_EQUIPMENT_MODULE.updateEquipmentState(modelGroup, currentState, 0.016);
+
+      // Kéo chuột xoay Orbit
+      var isDragging = false;
+      var prevMouseX = 0, prevMouseY = 0;
+
+      container.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+      });
+
+      window.addEventListener('mouseup', function() { isDragging = false; });
+
+      container.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        var dx = e.clientX - prevMouseX;
+        var dy = e.clientY - prevMouseY;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+
+        theta -= dx * 0.01;
+        phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, phi - dy * 0.01));
+        updateCamera();
+      });
+
+      container.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        radius = Math.max(0.18, Math.min(0.8, radius + e.deltaY * 0.0005));
+        updateCamera();
+      }, { passive: false });
+
+      window.addEventListener('resize', function() {
+        if (!container) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      var angleSlider = document.getElementById('angle-slider');
+      var readoutBox = document.getElementById('readout-box');
+
+      function applyAngle(deg) {
+        currentState.incidentAngleDeg = deg;
+        if (angleSlider) angleSlider.value = String(deg);
+        window.OL3D_EQUIPMENT_MODULE.updateEquipmentState(modelGroup, currentState, 0.016);
+        window.OL3D_EQUIPMENT_MODULE.playEquipmentSound('optics-angle', deg);
+
+        if (readoutBox) {
+          var isTir = deg >= 41.8;
+          var sinR = 1.50 * Math.sin((deg * Math.PI) / 180);
+          var rDeg = isTir ? 90 : ((Math.asin(sinR) * 180) / Math.PI).toFixed(1);
+
+          if (isTir) {
+            readoutBox.className = 'readout-box readout-tir';
+            readoutBox.textContent = 'i = ' + deg + '° (PHẢN XẠ TOÀN PHẦN!)';
+          } else {
+            readoutBox.className = 'readout-box readout-refr';
+            readoutBox.textContent = 'i = ' + deg + '° (r = ' + rDeg + '°)';
+          }
+        }
+      }
+
+      if (angleSlider) {
+        angleSlider.addEventListener('input', function(e) {
+          applyAngle(parseFloat(e.target.value));
+        });
+      }
+
+      window.__setAngle = function(deg) {
+        applyAngle(deg);
+      };
+
+      window.__setCam = function(deg) {
+        theta = (deg * Math.PI) / 180;
+        phi = 1.05;
+        radius = 0.42;
+        updateCamera();
+      };
+    })();
+  </script>
+</body>
+</html>

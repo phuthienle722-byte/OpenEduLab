@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "moduleSpecVersion": "OL3D-HTML-MODULE-v2.4",
+  "moduleId": "OL3D-EQP-DSH-0001",
+  "slug": "porcelain-evaporating-dish",
+  "name": "Bát sứ chịu nhiệt — Cô đặc & Đốt cháy cồn",
+  "category": "chemical-apparatus",
+  "version": "1.0.0",
+  "asset": {
+    "assetId": "OL3D-EQP-DSH-0001",
+    "slug": "porcelain-evaporating-dish",
+    "name": {
+      "vi": "Bát sứ chịu nhiệt — Cô đặc & Đốt cháy cồn",
+      "en": "Porcelain Evaporating Dish"
+    },
+    "category": "chemical-apparatus",
+    "geometry": {
+      "dimensions": {
+        "widthOrDiameter": {
+          "value": 95,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 42,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 95,
+          "unit": "mm"
+        }
+      },
+      "boundingBoxM": {
+        "width": 0.095,
+        "height": 0.042,
+        "depth": 0.095
+      },
+      "realPhotoUris": [
+        "/libraries3DLab/OL3D-EQP-DSH-0001_porcelain-evaporating-dish/assets/porcelain-evaporating-dish.webp"
+      ],
+      "proceduralArchetype": "porcelain-dish"
+    },
+    "scientificProperties": {
+      "referenceMass": {
+        "value": 110,
+        "unit": "g",
+        "status": "verified"
+      }
+    }
+  },
+  "realPhotoMeta": {
+    "available": true,
+    "src": "./assets/porcelain-evaporating-dish.webp",
+    "resolvedPublicUrl": "/libraries3DLab/OL3D-EQP-DSH-0001_porcelain-evaporating-dish/assets/porcelain-evaporating-dish.webp",
+    "mimeType": "image/webp",
+    "alt": "Ảnh thực tế của Bát sứ chịu nhiệt — Cô đặc & Đốt cháy cồn",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "ratio": "1:1",
+      "fit": "contain",
+      "background": "#ffffff"
+    },
+    "sourceKind": "real-photo",
+    "caption": "Bát sứ tráng men chịu nhiệt cao dùng cô cạn dung dịch muối và thí nghiệm nhiệt",
+    "sourceCredit": "Wikimedia Commons (CC BY-SA)",
+    "manufacturerRef": "Chuẩn Thông tư 38/2021/TT-BGDĐT · SGK KHTN 9",
+    "realWorldScaleNote": "Kích thước: 95 × 42 × 95 mm · Khối lượng: 110 g",
+    "annotations": [
+      {
+        "xPercent": 50,
+        "yPercent": 28,
+        "label": "Thân chính: Bát sứ chịu nhiệt — Cô đặc & Đốt cháy cồn"
+      },
+      {
+        "xPercent": 50,
+        "yPercent": 78,
+        "label": "Đế chuẩn đặt bàn thí nghiệm (y = 0)"
+      }
+    ]
+  },
+  "moduleControls": {
+    "stateKey": "liquidLevelMl",
+    "label": "Thể tích chất lỏng V",
+    "unit": "ml",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "defaultValue": 50,
+    "presets": [
+      {
+        "label": "0 ml (Rỗng)",
+        "statePatch": {
+          "liquidLevelMl": 0
+        }
+      },
+      {
+        "label": "50 ml (Nửa bình)",
+        "statePatch": {
+          "liquidLevelMl": 50
+        }
+      },
+      {
+        "label": "100 ml (Đầy bình)",
+        "statePatch": {
+          "liquidLevelMl": 100
+        }
+      }
+    ],
+    "canHoldLiquid": true,
+    "canBeWeighedOnBalance": true,
+    "canSubmergeInVessel": false,
+    "soundPhenomenon": "water-pour"
+  }
+}
