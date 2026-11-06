@@ -55,8 +55,6 @@ export const CompactListItem: React.FC<CompactListItemProps> = ({
 
   const handleVisit = () => {
     onVisit(project.id, project.url);
-    const targetUrl = isAdmin ? project.url : resolveGoUrl(project);
-    openManagedWindow(targetUrl);
   };
 
   return (

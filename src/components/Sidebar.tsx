@@ -22,6 +22,7 @@ interface SidebarProps {
   onOpenGuide: () => void;
   onCloseGuide: () => void;
   onOpenSubmit: () => void;
+  onOpen3DLab?: () => void;
   lang: Language;
   totalCount: number;
 }
@@ -41,6 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenGuide,
   onCloseGuide,
   onOpenSubmit,
+  onOpen3DLab,
   totalCount,
 }) => {
   const thcsSubjects: THCSSubject[] = [
@@ -146,6 +148,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* 3. Phần KIẾN TẠO độc lập dưới góc trái + Nút Chia sẻ */}
       <div className="space-y-2 shrink-0">
+        {/* Nút Phòng Lab 3D trực tiếp */}
+        <button
+          id="sidebar-nav-openlab3d"
+          onClick={onOpen3DLab ? onOpen3DLab : () => handleSelectSubject('natural_sciences')}
+          className="w-full p-2.5 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50/80 to-teal-50/80 hover:from-emerald-100 hover:to-teal-100 text-left transition-all cursor-pointer flex items-center space-x-2.5 shadow-2xs hover:shadow-xs hover:border-emerald-300"
+          title="Trải nghiệm Phòng Thí Nghiệm Ảo 3D KHTN THCS chuẩn TT 38"
+        >
+          <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <FlaskConical className="w-4 h-4 text-white" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between">
+              <span className="font-extrabold text-[#064E3B] text-xs">Phòng Lab 3D</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">
+                TT 38
+              </span>
+            </div>
+            <p className="text-[10px] text-emerald-700 truncate leading-tight mt-0.5">
+              10 nhóm thiết bị KHTN
+            </p>
+          </div>
+        </button>
+
         {/* Nút Kiến tạo độc lập */}
         <button
           id="sidebar-nav-kientao"

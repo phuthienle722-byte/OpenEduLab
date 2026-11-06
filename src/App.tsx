@@ -29,6 +29,8 @@ import { SubmitModal } from './components/SubmitModal';
 import { AdminModal } from './components/AdminModal';
 import { DeleteConfirmModal } from './components/DeleteConfirmModal';
 import { DiscussionHubModal } from './components/DiscussionHubModal';
+import { SimulationRunnerModal } from './components/SimulationRunnerModal';
+import { openManagedWindow } from './utils/windowManager';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Globe, Plus, Sparkles } from 'lucide-react';
 import {
@@ -218,6 +220,15 @@ const sanitizeAndMigrateProjects = (loadedList: WebProject[]): WebProject[] => {
   for (const fam of initialFamous) {
     if (!updated.some((p) => p.id === fam.id || p.url === fam.url)) {
       updated.push(fam);
+    }
+  }
+
+  // Bảo đảm các mô phỏng chuẩn nội bộ của OpenEduLab luôn hiện diện ở đầu danh sách
+  const initialLocalProjects = INITIAL_PROJECTS.filter((p) => p.isUserSubmission);
+  for (let i = initialLocalProjects.length - 1; i >= 0; i--) {
+    const localP = initialLocalProjects[i];
+    if (!updated.some((p) => p.id === localP.id)) {
+      updated.unshift(localP);
     }
   }
 
@@ -528,6 +539,7 @@ export default function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [selectedQRProject, setSelectedQRProject] = useState<WebProject | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<WebProject | null>(null);
+  const [runningSimulationProject, setRunningSimulationProject] = useState<WebProject | null>(null);
 
   /**
    * KĂ©o cĂ¡c bĂ i CHá»œ DUYá»†T / Tá»ª CHá»I tá»« tab WebHub_Submissions trĂªn Google Sheets vá»
@@ -827,7 +839,7 @@ export default function App() {
     markStatsDirty(projectId, { likes: updatedLikes });
   };
 
-  const handleVisit = (projectId: string) => {
+  const handleVisit = (projectId: string, projectUrl?: string) => {
     let updatedViews = 0;
     setProjects((prev) =>
       prev.map((p) => {
@@ -839,6 +851,31 @@ export default function App() {
       })
     );
     markStatsDirty(projectId, { views: updatedViews });
+
+    const target =
+      projects.find((p) => p.id === projectId) ||
+      INITIAL_PROJECTS.find((p) => p.id === projectId);
+
+    if (target && (target.id === 'proj-openlab-3d' || target.id === 'proj-khucxa-pxtp')) {
+      setRunningSimulationProject(target);
+    } else {
+      const destUrl = (target && target.url) || projectUrl;
+      if (destUrl) {
+        openManagedWindow(destUrl);
+      }
+    }
+  };
+
+  const handleOpen3DLabDirect = () => {
+    const target =
+      projects.find((p) => p.id === 'proj-openlab-3d') ||
+      INITIAL_PROJECTS.find((p) => p.id === 'proj-openlab-3d');
+    if (target) {
+      handleVisit(target.id);
+      setRunningSimulationProject(target);
+    } else {
+      setFilters((prev) => ({ ...prev, category: 'natural_sciences' }));
+    }
   };
 
   const handleDownload = (projectId: string, _type?: 'qr' | 'doc' | 'offline') => {
@@ -1280,19 +1317,27 @@ export default function App() {
         return true;
       })
       .sort((a, b) => {
+        // Luôn ghim 2 mô phỏng cốt lõi KHTN của đề tài Him Lam ở đầu danh sách
+        const isCoreA = a.id === 'proj-openlab-3d' ? 2 : a.id === 'proj-khucxa-pxtp' ? 1 : 0;
+        const isCoreB = b.id === 'proj-openlab-3d' ? 2 : b.id === 'proj-khucxa-pxtp' ? 1 : 0;
+        if (isCoreA !== isCoreB) {
+          return isCoreB - isCoreA;
+        }
+
         if (filters.sortBy === 'newest') {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          const diff = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          if (diff !== 0) return diff;
+        } else if (filters.sortBy === 'oldest') {
+          const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          if (diff !== 0) return diff;
+        } else if (filters.sortBy === 'most_liked') {
+          const diff = b.likes - a.likes;
+          if (diff !== 0) return diff;
+        } else if (filters.sortBy === 'most_viewed') {
+          const diff = (b.views || 0) - (a.views || 0);
+          if (diff !== 0) return diff;
         }
-        if (filters.sortBy === 'oldest') {
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        }
-        if (filters.sortBy === 'most_liked') {
-          return b.likes - a.likes;
-        }
-        if (filters.sortBy === 'most_viewed') {
-          return b.views - a.views;
-        }
-        return 0;
+        return a.id.localeCompare(b.id);
       });
   }, [localizedProjects, filters, communityOnly]);
 
@@ -1328,6 +1373,7 @@ export default function App() {
           onOpenGuide={handleOpenGuide}
           onCloseGuide={handleExitGuide}
           onOpenSubmit={handleOpenSubmitNew}
+          onOpen3DLab={handleOpen3DLabDirect}
           lang={lang}
           totalCount={filteredProjects.length}
         />
@@ -1661,6 +1707,14 @@ export default function App() {
       )}
 
       {/* Delete Confirmation Modal (Admin safety requirement) */}
+      {/* Interactive Simulation Runner Modal */}
+      <SimulationRunnerModal
+        project={runningSimulationProject}
+        isOpen={!!runningSimulationProject}
+        onClose={() => setRunningSimulationProject(null)}
+        lang={lang}
+      />
+
       <DeleteConfirmModal
         project={projectToDelete}
         isOpen={!!projectToDelete}

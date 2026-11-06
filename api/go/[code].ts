@@ -97,7 +97,41 @@ async function lookupProject(code: string): Promise<any | null> {
     console.warn('Cannot fetch projects from Google Sheet in serverless function:', err);
   }
 
-  return projectsCache.get(clean) || projectsCache.get('proj-' + clean) || null;
+  const found = projectsCache.get(clean) || projectsCache.get('proj-' + clean) || null;
+  if (found) return found;
+
+  const localFallbackMap: Record<string, any> = {
+    'proj-openlab-3d': {
+      id: 'proj-openlab-3d',
+      title: 'Phòng Thí Nghiệm Ảo 3D KHTN THCS (OpenLab 3D)',
+      url: 'http://localhost:3001',
+      authorName: 'Phan Bùi Giang Ngân & Trịnh Nguyễn Tường Vy',
+      authorContact: '0793067027 · Trường PTDTNT THCS Him Lam',
+    },
+    'openlab-3d': {
+      id: 'proj-openlab-3d',
+      title: 'Phòng Thí Nghiệm Ảo 3D KHTN THCS (OpenLab 3D)',
+      url: 'http://localhost:3001',
+      authorName: 'Phan Bùi Giang Ngân & Trịnh Nguyễn Tường Vy',
+      authorContact: '0793067027 · Trường PTDTNT THCS Him Lam',
+    },
+    'proj-khucxa-pxtp': {
+      id: 'proj-khucxa-pxtp',
+      title: 'Mô Phỏng Khúc Xạ & Phản Xạ Toàn Phần (KHTN 9)',
+      url: 'http://localhost:3002',
+      authorName: 'Nhóm Nghiên Cứu KHKT Him Lam',
+      authorContact: '0907324280 · Trường PTDTNT THCS Him Lam',
+    },
+    'khucxa-pxtp': {
+      id: 'proj-khucxa-pxtp',
+      title: 'Mô Phỏng Khúc Xạ & Phản Xạ Toàn Phần (KHTN 9)',
+      url: 'http://localhost:3002',
+      authorName: 'Nhóm Nghiên Cứu KHKT Him Lam',
+      authorContact: '0907324280 · Trường PTDTNT THCS Him Lam',
+    },
+  };
+
+  return localFallbackMap[clean] || null;
 }
 
 /**

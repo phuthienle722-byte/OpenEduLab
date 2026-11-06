@@ -1,21 +1,44 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig} from 'vite';
+import { defineConfig, Plugin } from 'vite';
+
+// Middleware điều hướng an toàn cho link /go/:code trên môi trường dev local
+function localGoRedirectPlugin(): Plugin {
+  return {
+    name: 'local-go-redirect',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url && req.url.startsWith('/go/')) {
+          const code = req.url.replace(/^\/go\//, '').split('?')[0];
+          const localMap: Record<string, string> = {
+            'proj-openlab-3d': 'http://localhost:3001',
+            'proj-khucxa-pxtp': 'http://localhost:3002',
+            'proj-1741697206385': 'https://donghobamgiay.netlify.app',
+          };
+          const targetUrl = localMap[code];
+          if (targetUrl) {
+            res.writeHead(302, { Location: targetUrl });
+            res.end();
+            return;
+          }
+        }
+        next();
+      });
+    },
+  };
+}
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), localGoRedirectPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
     },
-server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+    server: {
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
     build: {

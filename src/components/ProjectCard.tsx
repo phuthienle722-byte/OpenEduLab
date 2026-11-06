@@ -75,7 +75,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
   const handleVisit = () => {
     onVisit(project.id, project.url);
-    openManagedWindow(displayUrl || project.url);
   };
 
   const handleShare = async (e: React.MouseEvent) => {

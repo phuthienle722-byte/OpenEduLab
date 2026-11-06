@@ -94,6 +94,17 @@ export function resolveGoUrl(
     currentOrigin ||
     (typeof window !== 'undefined' && window.location ? window.location.origin : '');
 
+  // Tránh vòng lặp mở lại SPA trên localhost / môi trường dev
+  const isLocalHost =
+    typeof window !== 'undefined' &&
+    window.location &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname.includes('192.168.'));
+  if (isLocalHost) {
+    return project.url;
+  }
+
   // 1. Ưu tiên cao nhất: Link ngắn theo ID (ví dụ: https://.../go/proj-1792900734949)
   if (project.id && String(project.id).trim().length > 0) {
     const cleanId = String(project.id).trim();
